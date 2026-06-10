@@ -1,0 +1,10 @@
+# PowerSync sync rules — Personal Task Layer v1
+#
+# Sync every row owned by the authenticated user. One bucket keyed on user id,
+# so each device only ever downloads its own tasks and projects.
+bucket_definitions:
+  user_data:
+    parameters: select request.user_id() as user_id
+    data:
+      - select * from tasks    where user_id = bucket.user_id
+      - select * from projects where user_id = bucket.user_id

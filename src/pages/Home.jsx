@@ -1,8 +1,9 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
-import { ListChecks } from "lucide-react";
+import { ListChecks, Layers } from "lucide-react";
 import TaskInput from "../components/tasks/TaskInput";
 import TaskItem from "../components/tasks/TaskItem";
 import TaskStats from "../components/tasks/TaskStats";
@@ -47,6 +48,13 @@ export default function Home() {
           <p className="text-muted-foreground text-sm">
             Stay organized, one task at a time.
           </p>
+          <Link
+            to="/tasks"
+            className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline pt-1"
+          >
+            <Layers className="w-4 h-4" />
+            Open Task Layer
+          </Link>
         </div>
 
         {/* Input */}

@@ -16,5 +16,14 @@ export default defineConfig({
       visualEditAgent: true
     }),
     react(),
-  ]
+  ],
+  // PowerSync ships a wasm SQLite build + web workers. Vite must not try to
+  // pre-bundle these, and top-level await is required for the wasm modules.
+  optimizeDeps: {
+    exclude: ['@journeyapps/wa-sqlite', '@powersync/web'],
+    include: ['@powersync/web > js-logger'],
+    esbuildOptions: { target: 'es2022' },
+  },
+  build: { target: 'es2022' },
+  worker: { format: 'es' },
 });
