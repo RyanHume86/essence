@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { Plus } from "lucide-react";
+import { Plus, CalendarClock, X } from "lucide-react";
 import { motion } from "framer-motion";
+import { format } from "date-fns";
 
 const CATEGORIES = ["Personal", "Work", "Shopping", "Health", "Other"];
 
@@ -17,12 +18,14 @@ export const CATEGORY_BADGE_STYLES = CATEGORY_STYLES;
 export default function TaskInput({ onAdd }) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Personal");
+  const [dueDate, setDueDate] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onAdd(title.trim(), category);
+    onAdd(title.trim(), category, dueDate || null);
     setTitle("");
+    setDueDate("");
   };
 
   return (
@@ -46,22 +49,44 @@ export default function TaskInput({ onAdd }) {
         </motion.button>
       </form>
 
-      {/* Category pills */}
-      <div className="flex items-center gap-2 flex-wrap px-1">
-        {CATEGORIES.map((cat) => (
-          <button
-            key={cat}
-            type="button"
-            onClick={() => setCategory(cat)}
-            className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
-              category === cat
-                ? CATEGORY_STYLES[cat] + " ring-1 ring-offset-0 opacity-100"
-                : "bg-transparent border-border text-muted-foreground opacity-60 hover:opacity-90"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+      {/* Category pills + date picker row */}
+      <div className="flex items-center justify-between gap-2 flex-wrap px-1">
+        <div className="flex items-center gap-2 flex-wrap">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setCategory(cat)}
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
+                category === cat
+                  ? CATEGORY_STYLES[cat] + " ring-1 ring-offset-0 opacity-100"
+                  : "bg-transparent border-border text-muted-foreground opacity-60 hover:opacity-90"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Due date */}
+        <div className="relative flex items-center">
+          <CalendarClock className="absolute left-2.5 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+            className="pl-7 pr-2 py-1 rounded-full text-xs font-medium border border-border bg-card text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 focus:border-primary/50 transition-all duration-200 [color-scheme:dark]"
+          />
+          {dueDate && (
+            <button
+              type="button"
+              onClick={() => setDueDate("")}
+              className="absolute right-2 text-muted-foreground/60 hover:text-muted-foreground"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

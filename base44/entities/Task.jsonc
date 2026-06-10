@@ -22,6 +22,11 @@
       ],
       "default": "Personal",
       "description": "Task category"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Optional due date for the task (YYYY-MM-DD)"
     }
   },
   "required": [

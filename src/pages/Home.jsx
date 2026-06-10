@@ -17,11 +17,11 @@ export default function Home() {
 
   // Optimistic create
   const createMutation = useMutation({
-    mutationFn: ({ title, category }) => base44.entities.Task.create({ title, completed: false, category }),
-    onMutate: async ({ title, category }) => {
+    mutationFn: ({ title, category, due_date }) => base44.entities.Task.create({ title, completed: false, category, due_date }),
+    onMutate: async ({ title, category, due_date }) => {
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
       const previous = queryClient.getQueryData(["tasks"]);
-      const optimistic = { id: `optimistic-${Date.now()}`, title, completed: false, category, created_date: new Date().toISOString() };
+      const optimistic = { id: `optimistic-${Date.now()}`, title, completed: false, category, due_date, created_date: new Date().toISOString() };
       queryClient.setQueryData(["tasks"], (old = []) => [optimistic, ...old]);
       return { previous };
     },
@@ -77,7 +77,7 @@ export default function Home() {
         </div>
 
         {/* Input */}
-        <TaskInput onAdd={(title, category) => createMutation.mutate({ title, category })} />
+        <TaskInput onAdd={(title, category, due_date) => createMutation.mutate({ title, category, due_date })} />
 
         {/* Stats */}
         <TaskStats tasks={tasks} />

@@ -1,7 +1,27 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Check, Trash2 } from "lucide-react";
+import { Check, Trash2, CalendarClock } from "lucide-react";
 import CategoryBadge from "./CategoryBadge";
+import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
+
+function DueDateChip({ due_date, completed }) {
+  if (!due_date) return null;
+  const date = parseISO(due_date);
+  const overdue = !completed && isPast(date) && !isToday(date);
+  const label = isToday(date) ? "Today" : isTomorrow(date) ? "Tomorrow" : format(date, "d MMM");
+  return (
+    <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${
+      overdue
+        ? "bg-red-500/15 text-red-400 border-red-500/30"
+        : isToday(date)
+        ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
+        : "bg-primary/10 text-primary/80 border-primary/20"
+    }`}>
+      <CalendarClock className="w-2.5 h-2.5" />
+      {label}
+    </span>
+  );
+}
 
 export default function TaskItem({ task, onToggle, onDelete }) {
   return (
@@ -42,7 +62,10 @@ export default function TaskItem({ task, onToggle, onDelete }) {
         >
           {task.title}
         </span>
-        {task.category && <CategoryBadge category={task.category} />}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {task.category && <CategoryBadge category={task.category} />}
+          <DueDateChip due_date={task.due_date} completed={task.completed} />
+        </div>
       </div>
 
       <button
