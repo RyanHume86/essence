@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Check, Trash2 } from "lucide-react";
+import CategoryBadge from "./CategoryBadge";
 
 export default function TaskItem({ task, onToggle, onDelete }) {
   return (
@@ -31,15 +32,18 @@ export default function TaskItem({ task, onToggle, onDelete }) {
         )}
       </button>
 
-      <span
-        className={`flex-1 text-base transition-all duration-300 ${
-          task.completed
-            ? "line-through text-muted-foreground/50"
-            : "text-foreground"
-        }`}
-      >
-        {task.title}
-      </span>
+      <div className="flex-1 flex flex-col gap-1 min-w-0">
+        <span
+          className={`text-base transition-all duration-300 ${
+            task.completed
+              ? "line-through text-muted-foreground/50"
+              : "text-foreground"
+          }`}
+        >
+          {task.title}
+        </span>
+        {task.category && <CategoryBadge category={task.category} />}
+      </div>
 
       <button
         onClick={() => onDelete(task)}

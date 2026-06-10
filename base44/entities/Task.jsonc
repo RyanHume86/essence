@@ -10,6 +10,18 @@
       "type": "boolean",
       "default": false,
       "description": "Whether the task is completed"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "Work",
+        "Personal",
+        "Shopping",
+        "Health",
+        "Other"
+      ],
+      "default": "Personal",
+      "description": "Task category"
     }
   },
   "required": [
