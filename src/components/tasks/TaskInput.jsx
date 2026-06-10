@@ -26,7 +26,7 @@ export default function TaskInput({ onAdd }) {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         disabled={!title.trim()}
-        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-opacity duration-200"
+        className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-opacity duration-200 select-none"
       >
         <Plus className="w-4 h-4" />
       </motion.button>

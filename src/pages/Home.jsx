@@ -15,35 +15,62 @@ export default function Home() {
     queryFn: () => base44.entities.Task.list("-created_date"),
   });
 
+  // Optimistic create
   const createMutation = useMutation({
     mutationFn: (title) => base44.entities.Task.create({ title, completed: false }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+    onMutate: async (title) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+      const previous = queryClient.getQueryData(["tasks"]);
+      const optimistic = { id: `optimistic-${Date.now()}`, title, completed: false, created_date: new Date().toISOString() };
+      queryClient.setQueryData(["tasks"], (old = []) => [optimistic, ...old]);
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["tasks"], ctx.previous);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 
+  // Optimistic toggle
   const updateMutation = useMutation({
     mutationFn: (task) => base44.entities.Task.update(task.id, { completed: !task.completed }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+    onMutate: async (task) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+      const previous = queryClient.getQueryData(["tasks"]);
+      queryClient.setQueryData(["tasks"], (old = []) =>
+        old.map((t) => (t.id === task.id ? { ...t, completed: !t.completed } : t))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["tasks"], ctx.previous);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 
+  // Optimistic delete
   const deleteMutation = useMutation({
     mutationFn: (task) => base44.entities.Task.delete(task.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+    onMutate: async (task) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+      const previous = queryClient.getQueryData(["tasks"]);
+      queryClient.setQueryData(["tasks"], (old = []) => old.filter((t) => t.id !== task.id));
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["tasks"], ctx.previous);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
 
   const activeTasks = tasks.filter((t) => !t.completed);
   const completedTasks = tasks.filter((t) => t.completed);
 
   return (
-    <div className="min-h-screen bg-background flex items-start justify-center px-4 py-12 md:py-20">
-      <div className="w-full max-w-lg space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 mb-3">
-            <ListChecks className="w-6 h-6 text-primary" />
-          </div>
-          <h1 className="text-3xl md:text-4xl font-heading font-semibold text-foreground tracking-tight">
-            To Do
-          </h1>
+    <div className="flex items-start justify-center px-4 py-8">
+      <div className="w-full max-w-lg space-y-6">
+        {/* Page title */}
+        <div className="text-center space-y-1 pt-2">
           <p className="text-muted-foreground text-sm">
             Stay organized, one task at a time.
           </p>
@@ -80,7 +107,7 @@ export default function Home() {
 
         {/* Completed section */}
         {!isLoading && completedTasks.length > 0 && (
-          <div className="space-y-3 pt-4">
+          <div className="space-y-3 pt-2">
             <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest px-2">
               Completed
             </p>

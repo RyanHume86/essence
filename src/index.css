@@ -65,11 +65,6 @@
     --border: 20 10% 18%;
     --input: 20 10% 18%;
     --ring: 24 70% 55%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -88,5 +83,57 @@
 
   body {
     @apply bg-background text-foreground font-body;
+    /* Disable overscroll/rubber-band bounce in WebView */
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  html {
+    overscroll-behavior: none;
+  }
+
+  /* Safe area insets for notched / dynamic-island devices */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Height helpers that include safe areas */
+  .h-safe-top {
+    height: env(safe-area-inset-top);
+  }
+  .h-safe-bottom {
+    height: env(safe-area-inset-bottom);
+  }
+
+  /* Bottom nav clearance */
+  .pb-nav {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+
+  /* Prevent text/icon selection on interactive elements */
+  button,
+  [role="button"],
+  a,
+  nav,
+  .no-select {
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  svg {
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
   }
 }
