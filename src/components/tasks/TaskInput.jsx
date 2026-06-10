@@ -1,11 +1,16 @@
 import React, { useState } from "react";
-import { Plus, CalendarClock, X } from "lucide-react";
+import { Plus, CalendarClock, X, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
-import { format } from "date-fns";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
-const CATEGORIES = ["Personal", "Work", "Shopping", "Health", "Other"];
+export const CATEGORIES = ["Personal", "Work", "Shopping", "Health", "Other"];
 
-const CATEGORY_STYLES = {
+export const CATEGORY_STYLES = {
   Work:     "bg-blue-500/15 text-blue-300 border-blue-500/30",
   Personal: "bg-violet-500/15 text-violet-300 border-violet-500/30",
   Shopping: "bg-amber-500/15 text-amber-300 border-amber-500/30",
@@ -13,12 +18,14 @@ const CATEGORY_STYLES = {
   Other:    "bg-slate-500/15 text-slate-300 border-slate-500/30",
 };
 
+// Keep the legacy export name for backwards compat
 export const CATEGORY_BADGE_STYLES = CATEGORY_STYLES;
 
 export default function TaskInput({ onAdd }) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Personal");
   const [dueDate, setDueDate] = useState("");
+  const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,6 +33,11 @@ export default function TaskInput({ onAdd }) {
     onAdd(title.trim(), category, dueDate || null);
     setTitle("");
     setDueDate("");
+  };
+
+  const selectCategory = (cat) => {
+    setCategory(cat);
+    setCategoryDrawerOpen(false);
   };
 
   return (
@@ -49,24 +61,17 @@ export default function TaskInput({ onAdd }) {
         </motion.button>
       </form>
 
-      {/* Category pills + date picker row */}
-      <div className="flex items-center justify-between gap-2 flex-wrap px-1">
-        <div className="flex items-center gap-2 flex-wrap">
-          {CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              onClick={() => setCategory(cat)}
-              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
-                category === cat
-                  ? CATEGORY_STYLES[cat] + " ring-1 ring-offset-0 opacity-100"
-                  : "bg-transparent border-border text-muted-foreground opacity-60 hover:opacity-90"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+      {/* Category trigger + date picker row */}
+      <div className="flex items-center justify-between gap-2 px-1">
+        {/* Category selector button */}
+        <button
+          type="button"
+          onClick={() => setCategoryDrawerOpen(true)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none ${CATEGORY_STYLES[category]}`}
+        >
+          {category}
+          <ChevronDown className="w-3 h-3 opacity-70" />
+        </button>
 
         {/* Due date */}
         <div className="relative flex items-center">
@@ -88,6 +93,34 @@ export default function TaskInput({ onAdd }) {
           )}
         </div>
       </div>
+
+      {/* Category bottom-sheet drawer */}
+      <Drawer open={categoryDrawerOpen} onOpenChange={setCategoryDrawerOpen}>
+        <DrawerContent>
+          <DrawerHeader className="pb-2">
+            <DrawerTitle className="text-base">Select Category</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 pb-6 space-y-2" style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}>
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => selectCategory(cat)}
+                className={`w-full flex items-center justify-between px-4 py-3.5 rounded-xl border text-sm font-medium transition-all duration-200 select-none ${
+                  category === cat
+                    ? CATEGORY_STYLES[cat] + " ring-1 ring-inset"
+                    : "bg-card border-border text-foreground hover:bg-muted/50"
+                }`}
+              >
+                <span>{cat}</span>
+                {category === cat && (
+                  <div className="w-2 h-2 rounded-full bg-current opacity-70" />
+                )}
+              </button>
+            ))}
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }

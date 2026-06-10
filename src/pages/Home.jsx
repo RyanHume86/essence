@@ -1,19 +1,59 @@
-import React from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { AnimatePresence } from "framer-motion";
-import { ListChecks } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ListChecks, RefreshCw } from "lucide-react";
 import TaskInput from "../components/tasks/TaskInput";
 import TaskItem from "../components/tasks/TaskItem";
 import TaskStats from "../components/tasks/TaskStats";
 
+// ─── Pull-to-Refresh hook ────────────────────────────────────────────────────
+const PULL_THRESHOLD = 72; // px needed to trigger a refresh
+
+function usePullToRefresh(onRefresh) {
+  const [pullY, setPullY] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const startYRef = useRef(null);
+
+  const onTouchStart = useCallback((e) => {
+    // Only activate when already at the top of the scroll container
+    if (window.scrollY === 0) startYRef.current = e.touches[0].clientY;
+  }, []);
+
+  const onTouchMove = useCallback((e) => {
+    if (startYRef.current === null) return;
+    const delta = e.touches[0].clientY - startYRef.current;
+    if (delta > 0) setPullY(Math.min(delta * 0.45, PULL_THRESHOLD + 20));
+  }, []);
+
+  const onTouchEnd = useCallback(async () => {
+    if (pullY >= PULL_THRESHOLD && !refreshing) {
+      setRefreshing(true);
+      await onRefresh();
+      setRefreshing(false);
+    }
+    setPullY(0);
+    startYRef.current = null;
+  }, [pullY, refreshing, onRefresh]);
+
+  return { pullY, refreshing, onTouchStart, onTouchMove, onTouchEnd };
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function Home() {
   const queryClient = useQueryClient();
 
-  const { data: tasks = [], isLoading } = useQuery({
+  const { data: tasks = [], isLoading, refetch } = useQuery({
     queryKey: ["tasks"],
     queryFn: () => base44.entities.Task.list("-created_date"),
   });
+
+  const handleRefresh = useCallback(async () => {
+    await refetch();
+  }, [refetch]);
+
+  const { pullY, refreshing, onTouchStart, onTouchMove, onTouchEnd } =
+    usePullToRefresh(handleRefresh);
 
   // Optimistic create
   const createMutation = useMutation({
@@ -67,7 +107,24 @@ export default function Home() {
   const completedTasks = tasks.filter((t) => t.completed);
 
   return (
-    <div className="flex items-start justify-center px-4 py-8">
+    <div
+      className="flex items-start justify-center px-4 py-8"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      {/* Pull-to-refresh indicator */}
+      <motion.div
+        className="fixed top-0 left-0 right-0 z-30 flex items-end justify-center pointer-events-none"
+        style={{ paddingTop: "calc(3.5rem + env(safe-area-inset-top))" }}
+        animate={{ height: pullY > 0 || refreshing ? pullY || 48 : 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        <div className={`mb-2 w-8 h-8 rounded-full bg-card border border-border flex items-center justify-center shadow-md transition-opacity duration-200 ${pullY > 0 || refreshing ? "opacity-100" : "opacity-0"}`}>
+          <RefreshCw className={`w-4 h-4 text-primary ${refreshing ? "animate-spin" : ""}`} style={{ transform: `rotate(${(pullY / PULL_THRESHOLD) * 180}deg)` }} />
+        </div>
+      </motion.div>
+
       <div className="w-full max-w-lg space-y-6">
         {/* Page title */}
         <div className="text-center space-y-1 pt-2">

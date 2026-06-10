@@ -7,8 +7,15 @@ const NAV_ITEMS = [
   { label: "Settings", path: "/settings", icon: Settings },
 ];
 
+// Each tab owns a "stack root". Tapping a tab navigates to its root,
+// preserving the illusion of independent stacks (native-like behaviour).
 export default function BottomNav() {
   const { pathname } = useLocation();
+
+  // A tab is "active" if the current path starts with its root
+  // (handles future child routes like /settings/privacy, etc.)
+  const isActive = (path) =>
+    path === "/" ? pathname === "/" : pathname.startsWith(path);
 
   return (
     <nav
@@ -17,18 +24,18 @@ export default function BottomNav() {
     >
       <div className="flex items-center h-16">
         {NAV_ITEMS.map(({ label, path, icon: Icon }) => {
-          const active = pathname === path;
+          const active = isActive(path);
           return (
             <Link
               key={path}
               to={path}
+              // Replace so back-button doesn't cycle through tab switches
+              replace
               className="flex-1 flex flex-col items-center justify-center gap-1 h-full transition-colors duration-200"
             >
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${
-                  active
-                    ? "bg-primary/10"
-                    : "hover:bg-muted"
+                  active ? "bg-primary/10" : "hover:bg-muted"
                 }`}
               >
                 <Icon
