@@ -58,11 +58,12 @@ export default function Home() {
 
   // Optimistic create
   const createMutation = useMutation({
-    mutationFn: ({ title, category, due_date }) => base44.entities.Task.create({ title, completed: false, category, due_date }),
-    onMutate: async ({ title, category, due_date }) => {
+    mutationFn: ({ title, category, due_date, comment }) =>
+      base44.entities.Task.create({ title, completed: false, category, due_date, comment, subtasks: [] }),
+    onMutate: async ({ title, category, due_date, comment }) => {
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
       const previous = queryClient.getQueryData(["tasks"]);
-      const optimistic = { id: `optimistic-${Date.now()}`, title, completed: false, category, due_date, created_date: new Date().toISOString() };
+      const optimistic = { id: `optimistic-${Date.now()}`, title, completed: false, category, due_date, comment, subtasks: [], created_date: new Date().toISOString() };
       queryClient.setQueryData(["tasks"], (old = []) => [optimistic, ...old]);
       return { previous };
     },
@@ -80,6 +81,23 @@ export default function Home() {
       const previous = queryClient.getQueryData(["tasks"]);
       queryClient.setQueryData(["tasks"], (old = []) =>
         old.map((t) => (t.id === task.id ? { ...t, completed: !t.completed } : t))
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(["tasks"], ctx.previous);
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+  });
+
+  // Partial update (subtasks, etc.)
+  const patchMutation = useMutation({
+    mutationFn: ({ task, patch }) => base44.entities.Task.update(task.id, patch),
+    onMutate: async ({ task, patch }) => {
+      await queryClient.cancelQueries({ queryKey: ["tasks"] });
+      const previous = queryClient.getQueryData(["tasks"]);
+      queryClient.setQueryData(["tasks"], (old = []) =>
+        old.map((t) => (t.id === task.id ? { ...t, ...patch } : t))
       );
       return { previous };
     },
@@ -168,7 +186,7 @@ export default function Home() {
         </div>
 
         {/* Input */}
-        <TaskInput onAdd={(title, category, due_date) => createMutation.mutate({ title, category, due_date })} />
+        <TaskInput onAdd={(title, category, due_date, comment) => createMutation.mutate({ title, category, due_date, comment })} />
 
         {/* Stats */}
         <TaskStats tasks={tasks} />
@@ -206,6 +224,7 @@ export default function Home() {
                   task={task}
                   onToggle={(t) => updateMutation.mutate(t)}
                   onDelete={(t) => deleteMutation.mutate(t)}
+                  onUpdate={(t, patch) => patchMutation.mutate({ task: t, patch })}
                 />
               ))}
             </AnimatePresence>
@@ -225,6 +244,7 @@ export default function Home() {
                   task={task}
                   onToggle={(t) => updateMutation.mutate(t)}
                   onDelete={(t) => deleteMutation.mutate(t)}
+                  onUpdate={(t, patch) => patchMutation.mutate({ task: t, patch })}
                 />
               ))}
             </AnimatePresence>

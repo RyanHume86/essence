@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, CalendarClock, X, ChevronDown } from "lucide-react";
+import { Plus, CalendarClock, X, ChevronDown, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Drawer,
@@ -25,14 +25,18 @@ export default function TaskInput({ onAdd }) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Personal");
   const [dueDate, setDueDate] = useState("");
+  const [comment, setComment] = useState("");
+  const [showComment, setShowComment] = useState(false);
   const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onAdd(title.trim(), category, dueDate || null);
+    onAdd(title.trim(), category, dueDate || null, comment.trim() || null);
     setTitle("");
     setDueDate("");
+    setComment("");
+    setShowComment(false);
   };
 
   const selectCategory = (cat) => {
@@ -61,6 +65,17 @@ export default function TaskInput({ onAdd }) {
         </motion.button>
       </form>
 
+      {/* Optional comment field */}
+      {showComment && (
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          placeholder="Add a note or comment…"
+          rows={2}
+          className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 resize-none transition-all duration-200 font-body"
+        />
+      )}
+
       {/* Category trigger + date picker row */}
       <div className="flex items-center justify-between gap-2 px-1">
         {/* Category selector button */}
@@ -71,6 +86,20 @@ export default function TaskInput({ onAdd }) {
         >
           {category}
           <ChevronDown className="w-3 h-3 opacity-70" />
+        </button>
+
+        {/* Comment toggle */}
+        <button
+          type="button"
+          onClick={() => setShowComment((v) => !v)}
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
+            showComment || comment
+              ? "bg-primary/10 text-primary border-primary/30"
+              : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/40"
+          }`}
+        >
+          <MessageSquare className="w-3 h-3" />
+          Note
         </button>
 
         {/* Due date */}

@@ -27,6 +27,48 @@
       "type": "string",
       "format": "date",
       "description": "Optional due date for the task (YYYY-MM-DD)"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Optional comment or note for the task"
+    },
+    "subtasks": {
+      "type": "array",
+      "description": "List of subtasks",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "completed": {
+            "type": "boolean",
+            "default": false
+          },
+          "subtasks": {
+            "type": "array",
+            "description": "Nested subtasks (one level deep)",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "completed": {
+                  "type": "boolean",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "required": [
