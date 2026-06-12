@@ -13,10 +13,10 @@ function DueDateChip({ due_date, completed }) {
   return (
     <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${
       overdue
-        ? "bg-red-500/15 text-red-400 border-red-500/30"
+        ? "bg-highlight/15 text-highlight border-highlight/40"
         : isToday(date)
-        ? "bg-amber-500/15 text-amber-300 border-amber-500/30"
-        : "bg-primary/10 text-primary/80 border-primary/20"
+        ? "bg-muted text-highlight border-border"
+        : "bg-muted text-muted-foreground border-border"
     }`}>
       <CalendarClock className="w-2.5 h-2.5" />
       {label}

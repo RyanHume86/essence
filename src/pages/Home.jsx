@@ -205,11 +205,11 @@ export default function Home() {
             <div className="flex items-center gap-3 px-1">
               <span className={`text-xs font-semibold uppercase tracking-widest whitespace-nowrap ${
                 groupKey === "Overdue"
-                  ? "text-red-400"
+                  ? "text-highlight"
                   : groupKey === "Today"
-                  ? "text-amber-400"
+                  ? "text-foreground"
                   : groupKey === "Tomorrow"
-                  ? "text-primary"
+                  ? "text-foreground/70"
                   : "text-muted-foreground"
               }`}>
                 {groupKey}

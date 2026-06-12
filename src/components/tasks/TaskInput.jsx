@@ -10,12 +10,16 @@ import {
 
 export const CATEGORIES = ["Personal", "Work", "Shopping", "Health", "Other"];
 
+// Categories are decorative, not status — a single neutral surface chip,
+// distinguished by label (the palette runs one accent only).
+const CATEGORY_CHIP = "bg-surface text-foreground border-border";
+
 export const CATEGORY_STYLES = {
-  Work:     "bg-blue-500/15 text-blue-300 border-blue-500/30",
-  Personal: "bg-violet-500/15 text-violet-300 border-violet-500/30",
-  Shopping: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  Health:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  Other:    "bg-slate-500/15 text-slate-300 border-slate-500/30",
+  Work: CATEGORY_CHIP,
+  Personal: CATEGORY_CHIP,
+  Shopping: CATEGORY_CHIP,
+  Health: CATEGORY_CHIP,
+  Other: CATEGORY_CHIP,
 };
 
 // Keep the legacy export name for backwards compat
@@ -94,7 +98,7 @@ export default function TaskInput({ onAdd }) {
           onClick={() => setShowComment((v) => !v)}
           className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
             showComment || comment
-              ? "bg-primary/10 text-primary border-primary/30"
+              ? "bg-primary/10 text-highlight border-primary/30"
               : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/40"
           }`}
         >

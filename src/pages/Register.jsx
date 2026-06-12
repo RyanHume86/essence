@@ -116,7 +116,7 @@ export default function Register() {
         </Button>
         <p className="text-center text-sm text-muted-foreground mt-4">
           Didn't receive the code?{" "}
-          <button onClick={handleResend} className="text-primary font-medium hover:underline">
+          <button onClick={handleResend} className="text-highlight font-medium hover:underline">
             Resend
           </button>
         </p>
@@ -132,7 +132,7 @@ export default function Register() {
       footer={
         <>
           Already have an account?{" "}
-          <Link to="/login" className="text-primary font-medium hover:underline">
+          <Link to="/login" className="text-highlight font-medium hover:underline">
             Log in
           </Link>
         </>

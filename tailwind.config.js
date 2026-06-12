@@ -1,6 +1,16 @@
 /** @type {import('tailwindcss').Config} */
+//
+// Dark-only deep-sea-blue theme. There is NO light theme and NO `dark:` variant
+// switching — the whole app renders one dark palette (see src/index.css).
+//
+// Three scales (light→dark, Tailwind convention):
+//   seablue  — structure: backgrounds, surfaces, borders. Recedes.
+//   teal     — the single accent: actions, links, active states, key data. Advances.
+//   success  — semantic success ONLY, never decorative.
+//
+// The shadcn semantic tokens (background, card, primary, …) are kept so the
+// component library resolves, but their values now point at this palette.
 module.exports = {
-    darkMode: ["class"],
     content: ["./index.html", "./src/**/*.{ts,tsx,js,jsx}"],
   theme: {
   	extend: {
@@ -10,55 +20,57 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
-  			background: 'hsl(var(--background))',
-  			foreground: 'hsl(var(--foreground))',
-  			card: {
-  				DEFAULT: 'hsl(var(--card))',
-  				foreground: 'hsl(var(--card-foreground))'
+  			// ── Structure scale — backgrounds, surfaces, borders. Recedes. ──
+  			seablue: {
+  				50: '#014c75', 100: '#014368', 200: '#013b5b', 300: '#01324e', 400: '#012a41',
+  				500: '#002234', 600: '#001927', 700: '#00111a', 800: '#00080d', 900: '#000000',
   			},
-  			popover: {
-  				DEFAULT: 'hsl(var(--popover))',
-  				foreground: 'hsl(var(--popover-foreground))'
+  			// ── Accent scale — the single accent. Advances. Keep to ~10% of a screen. ──
+  			teal: {
+  				50: '#69c4d2', 100: '#3cb0b0', 200: '#00a1a1', 300: '#008080', 400: '#005757', 500: '#003636',
   			},
-  			primary: {
-  				DEFAULT: 'hsl(var(--primary))',
-  				foreground: 'hsl(var(--primary-foreground))'
+  			// ── Success — semantic only. DEFAULT (bg-success) === success-200. ──
+  			success: {
+  				DEFAULT: '#2D6D54',
+  				50: '#7EB5A1', 100: '#4B8C7A', 200: '#2D6D54', 300: '#1E4B3A', 400: '#0F3A28',
   			},
-  			secondary: {
-  				DEFAULT: 'hsl(var(--secondary))',
-  				foreground: 'hsl(var(--secondary-foreground))'
-  			},
-  			muted: {
-  				DEFAULT: 'hsl(var(--muted))',
-  				foreground: 'hsl(var(--muted-foreground))'
-  			},
-  			accent: {
-  				DEFAULT: 'hsl(var(--accent))',
-  				foreground: 'hsl(var(--accent-foreground))'
-  			},
-  			destructive: {
-  				DEFAULT: 'hsl(var(--destructive))',
-  				foreground: 'hsl(var(--destructive-foreground))'
-  			},
-  			border: 'hsl(var(--border))',
-  			input: 'hsl(var(--input))',
-  			ring: 'hsl(var(--ring))',
+
+  			// ── Semantic aliases (use these in markup) ──
+  			background: '#00111a',            // seablue-700
+  			'background-deep': '#00080d',     // seablue-800
+  			foreground: '#ffffff',            // near-white text on dark surfaces
+  			surface: '#012a41',               // seablue-400
+  			'surface-hover': '#013b5b',       // seablue-200
+  			highlight: '#69c4d2',             // teal-50 — links / active / focus / key numeric data
+  			'primary-hover': '#00a1a1',       // teal-200
+
+  			// ── shadcn semantic tokens, mapped onto the palette ──
+  			card:      { DEFAULT: '#012a41', foreground: '#ffffff' }, // surface
+  			popover:   { DEFAULT: '#012a41', foreground: '#ffffff' }, // surface
+  			primary:   { DEFAULT: '#008080', foreground: '#ffffff' }, // teal-300 (single accent)
+  			secondary: { DEFAULT: '#014c75', foreground: '#ffffff' }, // seablue-50 — demoted old accent, now a secondary surface
+  			muted:     { DEFAULT: '#001927', foreground: 'rgb(255 255 255 / 0.7)' }, // seablue-600 + muted text = white @70%
+  			accent:    { DEFAULT: '#013b5b', foreground: '#ffffff' }, // surface-hover — hover via lightness, not hue
+  			destructive: { DEFAULT: '#e8eef0', foreground: '#00111a' }, // inverted light error block + dark text
+  			border: '#002234',                // seablue-500
+  			input: '#002234',                 // seablue-500
+  			ring: '#69c4d2',                  // highlight — focus rings
   			chart: {
-  				'1': 'hsl(var(--chart-1))',
-  				'2': 'hsl(var(--chart-2))',
-  				'3': 'hsl(var(--chart-3))',
-  				'4': 'hsl(var(--chart-4))',
-  				'5': 'hsl(var(--chart-5))'
+  				'1': '#008080', // teal-300
+  				'2': '#69c4d2', // teal-50
+  				'3': '#2D6D54', // success-200
+  				'4': '#014c75', // seablue-50
+  				'5': '#3cb0b0', // teal-100
   			},
   			sidebar: {
-  				DEFAULT: 'hsl(var(--sidebar-background))',
-  				foreground: 'hsl(var(--sidebar-foreground))',
-  				primary: 'hsl(var(--sidebar-primary))',
-  				'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-  				accent: 'hsl(var(--sidebar-accent))',
-  				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-  				border: 'hsl(var(--sidebar-border))',
-  				ring: 'hsl(var(--sidebar-ring))'
+  				DEFAULT: '#00080d',            // background-deep
+  				foreground: '#ffffff',
+  				primary: '#008080',            // teal-300
+  				'primary-foreground': '#ffffff',
+  				accent: '#013b5b',             // surface-hover
+  				'accent-foreground': '#ffffff',
+  				border: '#002234',             // seablue-500
+  				ring: '#69c4d2',               // highlight
   			}
   		},
   		fontFamily: {

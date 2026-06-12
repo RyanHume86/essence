@@ -6,109 +6,32 @@
 
 /*
   ╔══════════════════════════════════════════════════════════════╗
-  ║  Deep-sea blue palette  —  based on #015482                  ║
+  ║  Dark-only deep-sea-blue theme.                              ║
   ║                                                              ║
-  ║  Contrast check (white text):                                ║
-  ║  #014c75  ~4.6:1  ✅ AA (large text / UI controls)          ║
-  ║           ⚠️  borderline for small body text (<18px normal)  ║
-  ║  #013b5b  ~6.4:1  ✅ AA + AAA (large text)                  ║
-  ║  #01324e  ~7.8:1  ✅ AAA all text                           ║
-  ║  #00111a ~18.0:1  ✅ AAA all text                           ║
+  ║  All colours live as named tokens in tailwind.config.js      ║
+  ║  (seablue / teal / success scales + semantic aliases).       ║
+  ║  This file holds only non-colour design tokens (radius,      ║
+  ║  fonts). There is no light theme and no `.dark` switching —  ║
+  ║  the whole app renders one dark palette.                     ║
+  ║                                                              ║
+  ║  White-text contrast on structural surfaces:                 ║
+  ║  seablue-50  #014c75  ~4.6:1  AA (UI/large; borderline body) ║
+  ║  seablue-400 #012a41  ~13:1   AAA all text                   ║
+  ║  seablue-700 #00111a  ~18:1   AAA all text                   ║
+  ║  teal-300    #008080  ~4.8:1  AA normal text                 ║
   ╚══════════════════════════════════════════════════════════════╝
 */
 
 @layer base {
   :root {
-    /* ── Named palette tokens ─────────────────────────────── */
-    --color-blue-1:  #014c75;   /* primary brand / lightest blue  */
-    --color-blue-2:  #014368;
-    --color-blue-3:  #013b5b;   /* hover / active state           */
-    --color-blue-4:  #01324e;
-    --color-blue-5:  #012a41;   /* elevated surface / borders     */
-    --color-blue-6:  #002234;
-    --color-blue-7:  #001927;
-    --color-blue-8:  #00111a;   /* main dark background           */
-    --color-blue-9:  #00080d;   /* deepest background             */
-    --color-black:   #000000;
-
-    /* ── Semantic tokens (light mode) ────────────────────── */
-    /* Light mode keeps a warm-white surface so the app is usable
-       on desktop without being a pure dark UI by default.
-       Users on mobile WebView will typically be in dark mode. */
-    --background:               210 100% 98%;   /* near-white tinted blue */
-    --foreground:               213 90% 8%;     /* very dark navy text    */
-    --card:                     210 60% 99%;
-    --card-foreground:          213 90% 8%;
-    --popover:                  210 60% 99%;
-    --popover-foreground:       213 90% 8%;
-    --primary:                  204 97% 19%;    /* #013b5b — upgraded from #014c75 for AA body-text contrast (6.4:1 vs 4.6:1) */
-    --primary-foreground:       0 0% 100%;
-    --secondary:                210 40% 93%;
-    --secondary-foreground:     213 60% 15%;
-    --muted:                    210 30% 94%;
-    --muted-foreground:         213 30% 45%;
-    --accent:                   205 80% 90%;
-    --accent-foreground:        204 97% 16%;
-    --destructive:              0 72% 55%;
-    --destructive-foreground:   0 0% 100%;
-    --border:                   210 40% 88%;
-    --input:                    210 40% 88%;
-    --ring:                     204 97% 19%;
-    --chart-1:                  205 98% 23%;
-    --chart-2:                  173 58% 39%;
-    --chart-3:                  197 37% 24%;
-    --chart-4:                  43  74% 66%;
-    --chart-5:                  27  87% 67%;
+    /* Non-colour design tokens only. Colours are named tokens in the
+       Tailwind config (dark-only palette). */
     --radius:                   0.75rem;
     --font-heading:             'Playfair Display', serif;
     --font-body:                'Inter', sans-serif;
     --font-display:             'Playfair Display', serif;
     --font-mono:                ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
                                 "Liberation Mono", "Courier New", monospace;
-    --sidebar-background:       210 60% 99%;
-    --sidebar-foreground:       213 60% 20%;
-    --sidebar-primary:          205 98% 23%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:           210 40% 93%;
-    --sidebar-accent-foreground: 213 60% 15%;
-    --sidebar-border:           210 40% 88%;
-    --sidebar-ring:             205 98% 23%;
-  }
-
-  .dark {
-    /* ── Semantic tokens (dark / WebView default) ─────────── */
-    --background:               205 100% 5%;    /* #00111a */
-    --foreground:               210 60% 93%;    /* near-white, warm blue tint */
-    --card:                     207 96% 15%;    /* #01324e */
-    --card-foreground:          210 60% 93%;
-    --popover:                  207 96% 15%;
-    --popover-foreground:       210 60% 93%;
-    --primary:                  204 97% 19%;    /* #013b5b — 6.4:1 vs white, passes AA all text sizes */
-    --primary-foreground:       0 0% 100%;
-    --secondary:                207 96% 13%;    /* #012a41 */
-    --secondary-foreground:     210 60% 85%;
-    --muted:                    207 96% 11%;    /* ~#00111a–#012a41 mid */
-    --muted-foreground:         210 30% 60%;
-    --accent:                   204 97% 14%;    /* #013b5b darkened tint */
-    --accent-foreground:        210 80% 88%;
-    --destructive:              0 62% 38%;
-    --destructive-foreground:   0 0% 100%;
-    --border:                   207 80% 16%;    /* #012a41 */
-    --input:                    207 80% 16%;
-    --ring:                     204 97% 30%;
-    --chart-1:                  205 98% 40%;
-    --chart-2:                  160 60% 45%;
-    --chart-3:                  30  80% 55%;
-    --chart-4:                  280 65% 60%;
-    --chart-5:                  340 75% 55%;
-    --sidebar-background:       205 100% 5%;
-    --sidebar-foreground:       210 60% 85%;
-    --sidebar-primary:          205 98% 23%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent:           207 96% 13%;
-    --sidebar-accent-foreground: 210 60% 85%;
-    --sidebar-border:           207 80% 16%;
-    --sidebar-ring:             205 98% 35%;
   }
 }
 

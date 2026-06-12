@@ -40,13 +40,13 @@ export default function BottomNav() {
               >
                 <Icon
                   className={`w-5 h-5 transition-colors duration-200 ${
-                    active ? "text-primary" : "text-muted-foreground"
+                    active ? "text-highlight" : "text-muted-foreground"
                   }`}
                 />
               </div>
               <span
                 className={`text-[10px] font-medium transition-colors duration-200 ${
-                  active ? "text-primary" : "text-muted-foreground"
+                  active ? "text-highlight" : "text-muted-foreground"
                 }`}
               >
                 {label}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { User, LogOut, Trash2, ChevronRight, ShieldAlert } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   Drawer,
   DrawerContent,
@@ -136,7 +136,7 @@ export default function Settings() {
             >
               {isDeleting ? (
                 <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" />
                   Deleting…
                 </>
               ) : (
