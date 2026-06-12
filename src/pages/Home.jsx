@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { ListChecks, RefreshCw } from "lucide-react";
+import { parseISO, isToday, isTomorrow, isPast, format } from "date-fns";
 import TaskInput from "../components/tasks/TaskInput";
 import TaskItem from "../components/tasks/TaskItem";
 import TaskStats from "../components/tasks/TaskStats";
@@ -106,6 +107,39 @@ export default function Home() {
   const activeTasks = tasks.filter((t) => !t.completed);
   const completedTasks = tasks.filter((t) => t.completed);
 
+  // ── Group active tasks by due date ──────────────────────────────────────
+  const groupLabel = (due_date) => {
+    if (!due_date) return "No Due Date";
+    const d = parseISO(due_date);
+    if (isPast(d) && !isToday(d)) return "Overdue";
+    if (isToday(d)) return "Today";
+    if (isTomorrow(d)) return "Tomorrow";
+    return format(d, "EEE, d MMM"); // e.g. "Wed, 18 Jun"
+  };
+
+  const GROUP_ORDER = ["Overdue", "Today", "Tomorrow"];
+
+  const activeGroups = activeTasks.reduce((acc, task) => {
+    const label = groupLabel(task.due_date);
+    if (!acc[label]) acc[label] = [];
+    acc[label].push(task);
+    return acc;
+  }, {});
+
+  // Sort group keys: Overdue → Today → Tomorrow → future dates → No Due Date
+  const sortedGroupKeys = Object.keys(activeGroups).sort((a, b) => {
+    const ia = GROUP_ORDER.indexOf(a);
+    const ib = GROUP_ORDER.indexOf(b);
+    if (a === "No Due Date") return 1;
+    if (b === "No Due Date") return -1;
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    if (ia !== -1) return -1;
+    if (ib !== -1) return 1;
+    // Both are date strings — sort chronologically
+    return new Date(a) - new Date(b);
+  });
+  // ────────────────────────────────────────────────────────────────────────
+
   return (
     <div
       className="flex items-start justify-center px-4 py-8"
@@ -146,11 +180,27 @@ export default function Home() {
           </div>
         )}
 
-        {/* Active tasks */}
-        {!isLoading && (
-          <div className="space-y-3">
+        {/* Active tasks — grouped by due date */}
+        {!isLoading && sortedGroupKeys.map((groupKey) => (
+          <div key={groupKey} className="space-y-3">
+            {/* Group header */}
+            <div className="flex items-center gap-3 px-1">
+              <span className={`text-xs font-semibold uppercase tracking-widest whitespace-nowrap ${
+                groupKey === "Overdue"
+                  ? "text-red-400"
+                  : groupKey === "Today"
+                  ? "text-amber-400"
+                  : groupKey === "Tomorrow"
+                  ? "text-primary"
+                  : "text-muted-foreground"
+              }`}>
+                {groupKey}
+              </span>
+              <div className="flex-1 h-px bg-border" />
+              <span className="text-xs text-muted-foreground/60">{activeGroups[groupKey].length}</span>
+            </div>
             <AnimatePresence mode="popLayout">
-              {activeTasks.map((task) => (
+              {activeGroups[groupKey].map((task) => (
                 <TaskItem
                   key={task.id}
                   task={task}
@@ -160,7 +210,7 @@ export default function Home() {
               ))}
             </AnimatePresence>
           </div>
-        )}
+        ))}
 
         {/* Completed section */}
         {!isLoading && completedTasks.length > 0 && (
