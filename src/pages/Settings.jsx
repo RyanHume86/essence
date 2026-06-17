@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
-import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/lib/AuthContext";
 import { User, LogOut, Trash2, ChevronRight, ShieldAlert } from "lucide-react";
 import { motion } from "framer-motion";
 import {
@@ -18,10 +18,7 @@ export default function Settings() {
   const [confirmText, setConfirmText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const { data: user } = useQuery({
-    queryKey: ["me"],
-    queryFn: () => base44.auth.me(),
-  });
+  const { user } = useAuth();
 
   const handleLogout = () => {
     base44.auth.logout();
@@ -30,9 +27,10 @@ export default function Settings() {
   const handleDeleteAccount = async () => {
     if (confirmText !== "DELETE") return;
     setIsDeleting(true);
-    // In a real app you'd call a backend function to delete account data
-    // then log out. Here we just log out after a brief delay.
-    await new Promise((r) => setTimeout(r, 1200));
+    // TODO: call a backend account/data deletion function once one exists.
+    // The @base44/sdk auth module exposes no user/data deletion method, so we
+    // cannot permanently erase the account from the client. For now we sign the
+    // user out; true deletion must be requested from the app administrator.
     base44.auth.logout();
   };
 
@@ -78,7 +76,7 @@ export default function Settings() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-destructive">Delete Account</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Permanently delete your account and all data
+                  Sign out and request account deletion
                 </p>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
@@ -103,7 +101,7 @@ export default function Settings() {
               <div>
                 <DrawerTitle className="text-destructive">Delete Account</DrawerTitle>
                 <DrawerDescription className="text-xs mt-0.5">
-                  This action is permanent and cannot be undone.
+                  Deletion is not yet automated in-app.
                 </DrawerDescription>
               </div>
             </div>
@@ -111,7 +109,7 @@ export default function Settings() {
 
           <div className="px-4 pb-2 space-y-4">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Deleting your account will permanently remove all your tasks and personal data. You will not be able to recover this information.
+              Account deletion is not yet automated. Confirming will sign you out of this device. To permanently erase your account and all associated data, please contact the app administrator.
             </p>
             <div className="space-y-2">
               <label className="text-xs font-medium text-foreground">
@@ -137,10 +135,10 @@ export default function Settings() {
               {isDeleting ? (
                 <>
                   <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" />
-                  Deleting…
+                  Signing out…
                 </>
               ) : (
-                "Delete my account"
+                "Sign out"
               )}
             </motion.button>
             <DrawerClose asChild>

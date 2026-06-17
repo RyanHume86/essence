@@ -7,22 +7,46 @@ import { parseISO, isToday, isTomorrow, isPast, format } from "date-fns";
 import TaskInput from "../components/tasks/TaskInput";
 import TaskItem from "../components/tasks/TaskItem";
 import TaskStats from "../components/tasks/TaskStats";
+import { useToast } from "@/components/ui/use-toast";
 
 // ─── Pull-to-Refresh hook ────────────────────────────────────────────────────
 const PULL_THRESHOLD = 72; // px needed to trigger a refresh
+
+// Find the nearest scrollable ancestor of a node. The list scrolls inside the
+// <main> in AppLayout, not the window, so we must read that element's scrollTop.
+function getScrollParent(node) {
+  let el = node instanceof Element ? node : null;
+  while (el && el !== document.body) {
+    const overflowY = window.getComputedStyle(el).overflowY;
+    if (/(auto|scroll)/.test(overflowY) && el.scrollHeight > el.clientHeight) {
+      return el;
+    }
+    el = el.parentElement;
+  }
+  return document.scrollingElement || document.documentElement;
+}
 
 function usePullToRefresh(onRefresh) {
   const [pullY, setPullY] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
   const startYRef = useRef(null);
+  const scrollElRef = useRef(null);
 
   const onTouchStart = useCallback((e) => {
-    // Only activate when already at the top of the scroll container
-    if (window.scrollY === 0) startYRef.current = e.touches[0].clientY;
+    const scrollEl = getScrollParent(e.target);
+    scrollElRef.current = scrollEl;
+    // Only begin a pull when the actual scroll container is at the very top.
+    startYRef.current = (scrollEl?.scrollTop ?? 0) <= 0 ? e.touches[0].clientY : null;
   }, []);
 
   const onTouchMove = useCallback((e) => {
     if (startYRef.current === null) return;
+    // Abort if the container has scrolled away from the top mid-gesture.
+    if ((scrollElRef.current?.scrollTop ?? 0) > 0) {
+      startYRef.current = null;
+      setPullY(0);
+      return;
+    }
     const delta = e.touches[0].clientY - startYRef.current;
     if (delta > 0) setPullY(Math.min(delta * 0.45, PULL_THRESHOLD + 20));
   }, []);
@@ -43,6 +67,7 @@ function usePullToRefresh(onRefresh) {
 
 export default function Home() {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: tasks = [], isLoading, refetch } = useQuery({
     queryKey: ["tasks"],
@@ -63,12 +88,13 @@ export default function Home() {
     onMutate: async ({ title, category, due_date, comment }) => {
       await queryClient.cancelQueries({ queryKey: ["tasks"] });
       const previous = queryClient.getQueryData(["tasks"]);
-      const optimistic = { id: `optimistic-${Date.now()}`, title, completed: false, category, due_date, comment, subtasks: [], created_date: new Date().toISOString() };
+      const optimistic = { id: crypto.randomUUID(), title, completed: false, category, due_date, comment, subtasks: [], created_date: new Date().toISOString() };
       queryClient.setQueryData(["tasks"], (old = []) => [optimistic, ...old]);
       return { previous };
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) queryClient.setQueryData(["tasks"], ctx.previous);
+      toast({ variant: "destructive", title: "Could not add task", description: "Please try again." });
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
@@ -86,6 +112,7 @@ export default function Home() {
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) queryClient.setQueryData(["tasks"], ctx.previous);
+      toast({ variant: "destructive", title: "Could not update task", description: "Please try again." });
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
@@ -103,6 +130,7 @@ export default function Home() {
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) queryClient.setQueryData(["tasks"], ctx.previous);
+      toast({ variant: "destructive", title: "Could not save changes", description: "Please try again." });
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });
@@ -118,6 +146,7 @@ export default function Home() {
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) queryClient.setQueryData(["tasks"], ctx.previous);
+      toast({ variant: "destructive", title: "Could not delete task", description: "Please try again." });
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
   });

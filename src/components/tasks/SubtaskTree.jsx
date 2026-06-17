@@ -127,7 +127,7 @@ export default function SubtaskTree({ subtasks = [], onChange }) {
   const addChildSubtask = (parentId, title) => {
     const updated = subtasks.map((s) =>
       s.id === parentId
-        ? { ...s, subtasks: [...(s.subtasks || []), { id: `st-${Date.now()}`, title, completed: false }] }
+        ? { ...s, subtasks: [...(s.subtasks || []), { id: crypto.randomUUID(), title, completed: false }] }
         : s
     );
     onChange(updated);
@@ -136,7 +136,7 @@ export default function SubtaskTree({ subtasks = [], onChange }) {
   const addTopLevel = (e) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
-    onChange([...subtasks, { id: `st-${Date.now()}`, title: newTitle.trim(), completed: false, subtasks: [] }]);
+    onChange([...subtasks, { id: crypto.randomUUID(), title: newTitle.trim(), completed: false, subtasks: [] }]);
     setNewTitle("");
   };
 
