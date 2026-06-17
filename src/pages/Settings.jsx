@@ -86,7 +86,7 @@ export default function Settings() {
 
         {/* App info */}
         <p className="text-center text-xs text-muted-foreground/50 pb-4">
-          To Do App · Version 1.0.0
+          Essence · Version 1.0.0
         </p>
       </div>
 

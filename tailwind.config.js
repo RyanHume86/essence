@@ -36,24 +36,35 @@ module.exports = {
   			},
 
   			// ── Semantic aliases (use these in markup) ──
-  			background: '#00111a',            // seablue-700
+  			// Structural values are lifted off the raw seablue scale to give
+  			// cards real elevation against the background (lightness, not hue).
+  			background: '#04141f',            // page background (lifted from seablue-700)
   			'background-deep': '#00080d',     // seablue-800
   			foreground: '#ffffff',            // near-white text on dark surfaces
-  			surface: '#012a41',               // seablue-400
-  			'surface-hover': '#013b5b',       // seablue-200
+  			surface: '#0a3450',               // elevated surface (lifted)
+  			'surface-hover': '#114660',       // surface hover (lifted)
   			highlight: '#69c4d2',             // teal-50 — links / active / focus / key numeric data
   			'primary-hover': '#00a1a1',       // teal-200
 
+  			// ── Low-saturation category tints (decorative, kept quiet) ──
+  			category: {
+  				work: '#9fb6d0',     // slate-blue
+  				personal: '#6cc0c0', // teal
+  				health: '#9ec3ab',   // sage
+  				shopping: '#d4bd8f', // muted sand
+  				other: '#c4a8c2',    // mauve
+  			},
+
   			// ── shadcn semantic tokens, mapped onto the palette ──
-  			card:      { DEFAULT: '#012a41', foreground: '#ffffff' }, // surface
-  			popover:   { DEFAULT: '#012a41', foreground: '#ffffff' }, // surface
+  			card:      { DEFAULT: '#0a3450', foreground: '#ffffff' }, // surface (lifted)
+  			popover:   { DEFAULT: '#0a3450', foreground: '#ffffff' }, // surface (lifted)
   			primary:   { DEFAULT: '#008080', foreground: '#ffffff' }, // teal-300 (single accent)
   			secondary: { DEFAULT: '#014c75', foreground: '#ffffff' }, // seablue-50 — demoted old accent, now a secondary surface
   			muted:     { DEFAULT: '#001927', foreground: 'rgb(255 255 255 / 0.7)' }, // seablue-600 + muted text = white @70%
-  			accent:    { DEFAULT: '#013b5b', foreground: '#ffffff' }, // surface-hover — hover via lightness, not hue
-  			destructive: { DEFAULT: '#e8eef0', foreground: '#00111a' }, // inverted light error block + dark text
-  			border: '#002234',                // seablue-500
-  			input: '#002234',                 // seablue-500
+  			accent:    { DEFAULT: '#114660', foreground: '#ffffff' }, // surface-hover — hover via lightness, not hue
+  			destructive: { DEFAULT: '#d9485a', foreground: '#ffffff' }, // red danger; white label on the button
+  			border: '#0a3a52',                // lifted so card edges read against background
+  			input: '#0a3a52',
   			ring: '#69c4d2',                  // highlight — focus rings
   			chart: {
   				'1': '#008080', // teal-300

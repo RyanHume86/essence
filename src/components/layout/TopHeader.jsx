@@ -32,7 +32,7 @@ export default function TopHeader() {
             <ListChecks className="w-4 h-4 text-primary" />
           </div>
           <span className="font-heading font-semibold text-lg text-foreground tracking-tight">
-            To Do
+            Essence
           </span>
         </div>
       </div>

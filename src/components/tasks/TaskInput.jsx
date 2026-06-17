@@ -10,16 +10,14 @@ import {
 
 export const CATEGORIES = ["Personal", "Work", "Shopping", "Health", "Other"];
 
-// Categories are decorative, not status — a single neutral surface chip,
-// distinguished by label (the palette runs one accent only).
-const CATEGORY_CHIP = "bg-surface text-foreground border-border";
-
+// Quiet, low-saturation category tints (faint fill plus matching border),
+// cohesive with the navy palette. Tokens live in tailwind.config.js.
 export const CATEGORY_STYLES = {
-  Work: CATEGORY_CHIP,
-  Personal: CATEGORY_CHIP,
-  Shopping: CATEGORY_CHIP,
-  Health: CATEGORY_CHIP,
-  Other: CATEGORY_CHIP,
+  Work:     "bg-category-work/15 text-category-work border-category-work/30",
+  Personal: "bg-category-personal/15 text-category-personal border-category-personal/30",
+  Shopping: "bg-category-shopping/15 text-category-shopping border-category-shopping/30",
+  Health:   "bg-category-health/15 text-category-health border-category-health/30",
+  Other:    "bg-category-other/15 text-category-other border-category-other/30",
 };
 
 // Keep the legacy export name for backwards compat

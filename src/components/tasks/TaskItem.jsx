@@ -50,7 +50,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
           onClick={() => onToggle(task)}
           className={`flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
             task.completed
-              ? "bg-primary border-primary"
+              ? "bg-success border-success"
               : "border-border hover:border-primary/50"
           }`}
         >
