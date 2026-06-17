@@ -15,21 +15,23 @@ function SubtaskRow({ subtask, depth = 0, onToggle, onDelete, onAddChild, canNes
   };
 
   return (
-    <div className={depth > 0 ? "ml-5 border-l border-border pl-3" : ""}>
-      <div className="group flex items-center gap-2 py-1.5">
+    // Top-level cards indent a little; nested cards indent further with a thin
+    // connector so the two-level hierarchy stays legible.
+    <div className={depth > 0 ? "ml-4 border-l border-border/60 pl-3" : "ml-2"}>
+      <div className="subtask-card group flex items-center gap-2 px-3 py-2">
         {/* Checkbox */}
         <button
           onClick={() => onToggle(subtask.id)}
           role="checkbox"
           aria-checked={subtask.completed}
           aria-label={`Mark "${subtask.title}" complete`}
-          className={`checkbox ${subtask.completed ? "done" : ""} flex-shrink-0 w-5 h-5 rounded flex items-center justify-center`}
+          className={`checkbox ${subtask.completed ? "done" : ""} flex-shrink-0 w-4 h-4 rounded flex items-center justify-center`}
         >
-          {subtask.completed && <Check className="w-3 h-3 text-primary-foreground" />}
+          {subtask.completed && <Check className="w-2.5 h-2.5 text-primary-foreground" />}
         </button>
 
         {/* Title */}
-        <span className={`flex-1 text-sm transition-all duration-200 ${
+        <span className={`flex-1 text-[13px] leading-snug transition-all duration-200 ${
           subtask.completed ? "line-through text-muted-foreground/50" : "text-foreground"
         }`}>
           {subtask.title}
@@ -40,22 +42,22 @@ function SubtaskRow({ subtask, depth = 0, onToggle, onDelete, onAddChild, canNes
           {canNest && (
             <button
               onClick={() => setAddingChild((v) => !v)}
-              className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+              className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
               title="Add subtask"
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-2.5 h-2.5" />
             </button>
           )}
           <button
             onClick={() => onDelete(subtask.id)}
-            className="w-6 h-6 rounded flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+            className="w-5 h-5 rounded flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
           >
-            <Trash2 className="w-3 h-3" />
+            <Trash2 className="w-2.5 h-2.5" />
           </button>
         </div>
       </div>
 
-      {/* Inline add-child input */}
+      {/* Inline add-child input — slim, aligned under the card like a nested item */}
       <AnimatePresence>
         {addingChild && (
           <motion.form
@@ -63,14 +65,14 @@ function SubtaskRow({ subtask, depth = 0, onToggle, onDelete, onAddChild, canNes
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             onSubmit={submitChild}
-            className={`flex items-center gap-2 py-1 ${depth > 0 ? "ml-5 pl-3" : "ml-5 border-l border-border pl-3"}`}
+            className="flex items-center gap-2 mt-1.5 ml-4 border-l border-border/60 pl-3"
           >
             <input
               autoFocus
               value={childTitle}
               onChange={(e) => setChildTitle(e.target.value)}
               placeholder="Subtask title…"
-              className="flex-1 text-xs px-2 py-1 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/40"
+              className="flex-1 text-xs px-2 py-1 bg-background/40 border border-border/60 rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/40"
             />
             <button type="submit" disabled={!childTitle.trim()} className="w-6 h-6 rounded flex items-center justify-center bg-primary text-primary-foreground disabled:opacity-30">
               <Plus className="w-3 h-3" />
@@ -83,17 +85,21 @@ function SubtaskRow({ subtask, depth = 0, onToggle, onDelete, onAddChild, canNes
       </AnimatePresence>
 
       {/* Nested children */}
-      {subtask.subtasks?.map((child) => (
-        <SubtaskRow
-          key={child.id}
-          subtask={child}
-          depth={depth + 1}
-          onToggle={(id) => onToggle(id, subtask.id)}
-          onDelete={(id) => onDelete(id, subtask.id)}
-          onAddChild={onAddChild}
-          canNest={false} // only 2 levels deep
-        />
-      ))}
+      {subtask.subtasks?.length > 0 && (
+        <div className="space-y-1.5 mt-1.5">
+          {subtask.subtasks.map((child) => (
+            <SubtaskRow
+              key={child.id}
+              subtask={child}
+              depth={depth + 1}
+              onToggle={(id) => onToggle(id, subtask.id)}
+              onDelete={(id) => onDelete(id, subtask.id)}
+              onAddChild={onAddChild}
+              canNest={false} // only 2 levels deep
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -142,7 +148,7 @@ export default function SubtaskTree({ subtasks = [], onChange }) {
   };
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       <AnimatePresence initial={false}>
         {subtasks.map((s) => (
           <motion.div
@@ -163,13 +169,13 @@ export default function SubtaskTree({ subtasks = [], onChange }) {
         ))}
       </AnimatePresence>
 
-      {/* Add top-level subtask */}
-      <form onSubmit={addTopLevel} className="flex items-center gap-2 pt-1">
+      {/* Add top-level subtask — a quiet, flat affordance aligned with the cards */}
+      <form onSubmit={addTopLevel} className="flex items-center gap-2 ml-2 pt-0.5">
         <input
           value={newTitle}
           onChange={(e) => setNewTitle(e.target.value)}
           placeholder="Add subtask…"
-          className="flex-1 text-xs px-3 py-1.5 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/40"
+          className="flex-1 text-xs px-3 py-1.5 bg-background/40 border border-border/60 rounded-lg text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-primary/40"
         />
         <button
           type="submit"
