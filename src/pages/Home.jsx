@@ -233,10 +233,18 @@ export default function Home() {
         {/* Stats */}
         <TaskStats tasks={tasks} />
 
-        {/* Loading */}
+        {/* Loading: placeholder rows shaped like task cards */}
         {isLoading && (
-          <div className="flex justify-center py-12">
-            <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="surface-raised rounded-2xl px-5 py-4 flex items-center gap-4">
+                <div className="skeleton w-6 h-6 rounded-lg flex-shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="skeleton h-4 w-3/5 rounded" />
+                  <div className="skeleton h-3 w-2/5 rounded" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -260,10 +268,11 @@ export default function Home() {
               <span className="text-xs text-muted-foreground/60">{activeGroups[groupKey].length}</span>
             </div>
             <AnimatePresence mode="popLayout">
-              {activeGroups[groupKey].map((task) => (
+              {activeGroups[groupKey].map((task, i) => (
                 <TaskItem
                   key={task.id}
                   task={task}
+                  index={i}
                   onToggle={(t) => updateMutation.mutate(t)}
                   onDelete={(t) => deleteMutation.mutate(t)}
                   onUpdate={(t, patch) => patchMutation.mutate({ task: t, patch })}
@@ -280,10 +289,11 @@ export default function Home() {
               Completed
             </p>
             <AnimatePresence mode="popLayout">
-              {completedTasks.map((task) => (
+              {completedTasks.map((task, i) => (
                 <TaskItem
                   key={task.id}
                   task={task}
+                  index={i}
                   onToggle={(t) => updateMutation.mutate(t)}
                   onDelete={(t) => deleteMutation.mutate(t)}
                   onUpdate={(t, patch) => patchMutation.mutate({ task: t, patch })}

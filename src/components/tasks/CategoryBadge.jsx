@@ -1,4 +1,5 @@
 import React from "react";
+import { Briefcase, User, Heart, ShoppingBag, MoreHorizontal } from "lucide-react";
 
 // Quiet, low-saturation category tints: a faint fill plus a matching border,
 // kept cohesive with the navy palette. The accent (teal) and success green are
@@ -11,11 +12,22 @@ const STYLES = {
   Other:    "bg-category-other/15 text-category-other border-category-other/30",
 };
 
+// Leading icon per category, shared with the input picker so chips and picker match.
+export const CATEGORY_ICONS = {
+  Work: Briefcase,
+  Personal: User,
+  Health: Heart,
+  Shopping: ShoppingBag,
+  Other: MoreHorizontal,
+};
+
 export default function CategoryBadge({ category }) {
   if (!category) return null;
   const style = STYLES[category] ?? STYLES.Other;
+  const Icon = CATEGORY_ICONS[category] ?? MoreHorizontal;
   return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${style}`}>
+    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border ${style}`}>
+      <Icon className="w-3 h-3" />
       {category}
     </span>
   );

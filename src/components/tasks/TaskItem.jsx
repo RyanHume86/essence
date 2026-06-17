@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Check, Trash2, CalendarClock, ChevronDown, MessageSquare } from "lucide-react";
 import CategoryBadge from "./CategoryBadge";
 import SubtaskTree from "./SubtaskTree";
@@ -24,9 +24,14 @@ function DueDateChip({ due_date, completed }) {
   );
 }
 
-export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
+export default function TaskItem({ task, onToggle, onDelete, onUpdate, index = 0 }) {
   const hasExtras = task.comment || (task.subtasks && task.subtasks.length > 0);
   const [expanded, setExpanded] = useState(hasExtras);
+
+  // Staggered entrance, gated behind reduced-motion. Items are keyed by id and
+  // persist, so this only runs on mount, not when a task is toggled.
+  const reduce = useReducedMotion();
+  const delay = reduce ? 0 : Math.min(index * 0.04, 0.3);
 
   const subtaskCount = task.subtasks?.length ?? 0;
   const completedSubtasks = task.subtasks?.filter((s) => s.completed).length ?? 0;
@@ -38,10 +43,10 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 12 }}
+      initial={reduce ? false : { opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -40 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
+      transition={{ duration: 0.3, ease: "easeOut", delay }}
       className="group surface-raised rounded-2xl hover:border-primary/20 hover:shadow-sm transition-all duration-300 select-none overflow-hidden"
     >
       {/* Main row */}
@@ -66,8 +71,8 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
         </button>
 
         <div className="flex-1 flex flex-col gap-1 min-w-0">
-          <span className={`text-base transition-all duration-300 ${
-            task.completed ? "line-through text-muted-foreground/50" : "text-foreground"
+          <span className={`title-strike ${task.completed ? "done" : ""} text-base transition-all duration-300 ${
+            task.completed ? "text-muted-foreground/50" : "text-foreground"
           }`}>
             {task.title}
           </span>
