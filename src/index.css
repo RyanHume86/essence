@@ -65,6 +65,16 @@
     outline: none;
   }
 
+  /* Subtask mini-card: a flatter, slightly lighter tone than the parent's
+     raised gradient, with a clear border so each subtask reads as its own card. */
+  .subtask-card {
+    background: #0f3c5b;
+    border: 1px solid #1a5077;
+    border-radius: 10px;
+    transition: border-color .2s ease, background .2s ease;
+  }
+  .subtask-card:hover { border-color: #246088; }
+
   /* Tappable checkbox: a visible, slightly recessed unchecked box with a teal
      hover and focus ring; the done state is the existing success green. */
   .checkbox {
