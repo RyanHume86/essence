@@ -38,7 +38,7 @@ export default function Settings() {
     <div className="flex justify-center px-4 py-8">
       <div className="w-full max-w-lg space-y-6">
         {/* Profile card */}
-        <div className="bg-card border border-border rounded-2xl p-5 flex items-center gap-4">
+        <div className="surface-raised rounded-2xl p-5 flex items-center gap-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
             <User className="w-6 h-6 text-primary" />
           </div>
@@ -51,7 +51,7 @@ export default function Settings() {
         </div>
 
         {/* Account actions */}
-        <div className="bg-card border border-border rounded-2xl overflow-hidden divide-y divide-border">
+        <div className="surface-raised rounded-2xl overflow-hidden divide-y divide-border">
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-5 py-4 hover:bg-muted/50 transition-colors duration-200 text-left"

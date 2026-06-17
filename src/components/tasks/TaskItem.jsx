@@ -42,7 +42,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -40 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="group bg-card border border-border rounded-2xl hover:border-primary/20 hover:shadow-sm transition-all duration-300 select-none overflow-hidden"
+      className="group surface-raised rounded-2xl hover:border-primary/20 hover:shadow-sm transition-all duration-300 select-none overflow-hidden"
     >
       {/* Main row */}
       <div className="flex items-center gap-4 px-5 py-4">

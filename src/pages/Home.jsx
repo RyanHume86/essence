@@ -7,7 +7,14 @@ import { parseISO, isToday, isTomorrow, isPast, format } from "date-fns";
 import TaskInput from "../components/tasks/TaskInput";
 import TaskItem from "../components/tasks/TaskItem";
 import TaskStats from "../components/tasks/TaskStats";
+import ProgressRing from "../components/tasks/ProgressRing";
 import { useToast } from "@/components/ui/use-toast";
+
+function greetingForHour(hour) {
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
 
 // ─── Pull-to-Refresh hook ────────────────────────────────────────────────────
 const PULL_THRESHOLD = 72; // px needed to trigger a refresh
@@ -207,11 +214,17 @@ export default function Home() {
       </motion.div>
 
       <div className="w-full max-w-lg space-y-6">
-        {/* Page title */}
-        <div className="text-center space-y-1 pt-2">
-          <p className="text-muted-foreground text-sm">
-            Stay organized, one task at a time.
-          </p>
+        {/* Focal header: greeting, date, and a live progress ring */}
+        <div className="flex items-center justify-between gap-4 pt-2">
+          <div className="min-w-0">
+            <h1 className="font-heading text-2xl font-semibold text-foreground tracking-tight">
+              {greetingForHour(new Date().getHours())}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {format(new Date(), "EEEE, d MMMM")}
+            </p>
+          </div>
+          <ProgressRing completed={completedTasks.length} total={tasks.length} />
         </div>
 
         {/* Input */}
@@ -234,12 +247,12 @@ export default function Home() {
             <div className="flex items-center gap-3 px-1">
               <span className={`text-xs font-semibold uppercase tracking-widest whitespace-nowrap ${
                 groupKey === "Overdue"
-                  ? "text-highlight"
+                  ? "text-destructive"
                   : groupKey === "Today"
-                  ? "text-foreground"
-                  : groupKey === "Tomorrow"
-                  ? "text-foreground/70"
-                  : "text-muted-foreground"
+                  ? "text-highlight"
+                  : groupKey === "No Due Date"
+                  ? "text-muted-foreground"
+                  : "text-foreground/70"
               }`}>
                 {groupKey}
               </span>
