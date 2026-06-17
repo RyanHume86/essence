@@ -65,6 +65,26 @@
     outline: none;
   }
 
+  /* Tappable checkbox: a visible, slightly recessed unchecked box with a teal
+     hover and focus ring; the done state is the existing success green. */
+  .checkbox {
+    border: 2px solid #3f6f8c;
+    background: rgba(0, 0, 0, 0.18);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.30);
+    transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
+  }
+  .checkbox:hover { border-color: #69c4d2; }
+  .checkbox:focus-visible {
+    outline: none;
+    border-color: #69c4d2;
+    box-shadow: 0 0 0 3px rgba(105, 196, 210, 0.20);
+  }
+  .checkbox.done {
+    background: #2D6D54;
+    border-color: #2D6D54;
+    box-shadow: none;
+  }
+
   /* Loading placeholder shimmer. */
   .skeleton {
     background: linear-gradient(90deg, #0d3a58 25%, #16486a 50%, #0d3a58 75%);

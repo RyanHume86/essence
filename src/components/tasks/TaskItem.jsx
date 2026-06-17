@@ -53,11 +53,10 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, index = 0
       <div className="flex items-center gap-4 px-5 py-4">
         <button
           onClick={() => onToggle(task)}
-          className={`flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${
-            task.completed
-              ? "bg-success border-success"
-              : "border-border hover:border-primary/50"
-          }`}
+          role="checkbox"
+          aria-checked={task.completed}
+          aria-label={`Mark "${task.title}" complete`}
+          className={`checkbox ${task.completed ? "done" : ""} flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center`}
         >
           {task.completed && (
             <motion.div
