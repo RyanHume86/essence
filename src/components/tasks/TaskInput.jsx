@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Plus, CalendarClock, X, ChevronDown, MessageSquare } from "lucide-react";
-import { motion } from "framer-motion";
+import { CATEGORY_ICONS } from "./CategoryBadge";
 import {
   Drawer,
   DrawerContent,
@@ -50,21 +50,20 @@ export default function TaskInput({ onAdd }) {
     <div className="space-y-3">
       <form onSubmit={handleSubmit} className="relative">
         <input
+          id="task-quick-input"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="What needs to be done?"
-          className="w-full px-6 py-4 pr-14 bg-card border border-border rounded-2xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-300 text-base font-body"
+          className="w-full px-6 py-4 pr-14 surface-raised input-glow rounded-2xl text-foreground placeholder:text-muted-foreground/60 focus:outline-none transition-all duration-300 text-base font-body"
         />
-        <motion.button
+        <button
           type="submit"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
           disabled={!title.trim()}
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed transition-opacity duration-200 select-none"
+          className="absolute right-3 top-2 w-10 h-10 rounded-xl btn-accent-3d text-primary-foreground flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed select-none"
         >
           <Plus className="w-4 h-4" />
-        </motion.button>
+        </button>
       </form>
 
       {/* Optional comment field */}
@@ -86,6 +85,7 @@ export default function TaskInput({ onAdd }) {
           onClick={() => setCategoryDrawerOpen(true)}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none ${CATEGORY_STYLES[category]}`}
         >
+          {React.createElement(CATEGORY_ICONS[category], { className: "w-3.5 h-3.5" })}
           {category}
           <ChevronDown className="w-3 h-3 opacity-70" />
         </button>
@@ -143,7 +143,10 @@ export default function TaskInput({ onAdd }) {
                     : "bg-card border-border text-foreground hover:bg-muted/50"
                 }`}
               >
-                <span>{cat}</span>
+                <span className="flex items-center gap-2">
+                  {React.createElement(CATEGORY_ICONS[cat], { className: "w-4 h-4" })}
+                  {cat}
+                </span>
                 {category === cat && (
                   <div className="w-2 h-2 rounded-full bg-current opacity-70" />
                 )}
