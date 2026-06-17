@@ -62,7 +62,7 @@ module.exports = {
   			secondary: { DEFAULT: '#014c75', foreground: '#ffffff' }, // seablue-50 — demoted old accent, now a secondary surface
   			muted:     { DEFAULT: '#001927', foreground: 'rgb(255 255 255 / 0.7)' }, // seablue-600 + muted text = white @70%
   			accent:    { DEFAULT: '#114660', foreground: '#ffffff' }, // surface-hover — hover via lightness, not hue
-  			destructive: { DEFAULT: '#d9485a', foreground: '#ffffff' }, // red danger; white label on the button
+  			destructive: { DEFAULT: '#e85d6e', foreground: '#ffffff' }, // brighter red so the small Delete Account label reads on the card
   			border: '#0a3a52',                // lifted so card edges read against background
   			input: '#0a3a52',
   			ring: '#69c4d2',                  // highlight — focus rings
