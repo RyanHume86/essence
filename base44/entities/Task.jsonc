@@ -57,6 +57,10 @@
       "type": "string",
       "description": "Optional comment or note for the task"
     },
+    "gcal_event_id": {
+      "type": "string",
+      "description": "ID of the synced Google Calendar event, if any"
+    },
     "subtasks": {
       "type": "array",
       "description": "List of subtasks",

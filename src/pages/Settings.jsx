@@ -13,6 +13,7 @@ import {
   DrawerFooter,
   DrawerClose,
 } from "@/components/ui/drawer";
+import CalendarSync from "@/components/settings/CalendarSync";
 
 export default function Settings() {
   const [deleteDrawerOpen, setDeleteDrawerOpen] = useState(false);
@@ -54,6 +55,9 @@ export default function Settings() {
             <p className="text-sm text-muted-foreground truncate">{user?.email || ""}</p>
           </div>
         </div>
+
+        {/* Integrations */}
+        <CalendarSync />
 
         {/* Navigation + account actions */}
         <div className="surface-raised rounded-2xl overflow-hidden divide-y divide-border">
