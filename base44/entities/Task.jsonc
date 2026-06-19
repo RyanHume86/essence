@@ -18,13 +18,21 @@
     },
     "priority": {
       "type": "string",
-      "enum": ["normal", "high"],
+      "enum": [
+        "normal",
+        "high"
+      ],
       "default": "normal",
       "description": "Task priority; high tasks sort first"
     },
     "recurrence": {
       "type": "string",
-      "enum": ["none", "daily", "weekdays", "weekly"],
+      "enum": [
+        "none",
+        "daily",
+        "weekdays",
+        "weekly"
+      ],
       "default": "none",
       "description": "Recurrence; on completion the next instance is created"
     },
@@ -90,5 +98,17 @@
   },
   "required": [
     "title"
-  ]
+  ],
+  "rls": {
+    "create": true,
+    "read": {
+      "created_by_id": "{{user.id}}"
+    },
+    "update": {
+      "created_by_id": "{{user.id}}"
+    },
+    "delete": {
+      "created_by_id": "{{user.id}}"
+    }
+  }
 }

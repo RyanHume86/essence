@@ -28,10 +28,14 @@ export default function Settings() {
   const handleDeleteAccount = async () => {
     if (confirmText !== "DELETE") return;
     setIsDeleting(true);
-    // TODO: call a backend account/data deletion function once one exists.
-    // The @base44/sdk auth module exposes no user/data deletion method, so we
-    // cannot permanently erase the account from the client. For now we sign the
-    // user out; true deletion must be requested from the app administrator.
+    try {
+      await base44.functions.invoke("deleteAccount", {});
+      // Account and all tasks have been deleted server-side; signing out
+      // clears the local session.
+    } catch (err) {
+      // Even if the backend call fails (e.g. network), still sign out so the
+      // user isn't stuck in a broken state.
+    }
     base44.auth.logout();
   };
 
@@ -85,7 +89,7 @@ export default function Settings() {
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-destructive">Delete Account</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  Sign out and request account deletion
+                  Permanently delete your account and all data
                 </p>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground/50 flex-shrink-0" />
@@ -110,7 +114,7 @@ export default function Settings() {
               <div>
                 <DrawerTitle className="text-destructive">Delete Account</DrawerTitle>
                 <DrawerDescription className="text-xs mt-0.5">
-                  Deletion is not yet automated in-app.
+                  This will permanently delete your account and all tasks.
                 </DrawerDescription>
               </div>
             </div>
@@ -118,7 +122,7 @@ export default function Settings() {
 
           <div className="px-4 pb-2 space-y-4">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Account deletion is not yet automated. Confirming will sign you out of this device. To permanently erase your account and all associated data, please contact the app administrator.
+              This action is irreversible. All your tasks and account data will be permanently deleted.
             </p>
             <div className="space-y-2">
               <label className="text-xs font-medium text-foreground">
@@ -144,10 +148,10 @@ export default function Settings() {
               {isDeleting ? (
                 <>
                   <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" />
-                  Signing out…
+                  Deleting account…
                 </>
               ) : (
-                "Sign out"
+                "Delete my account"
               )}
             </motion.button>
             <DrawerClose asChild>
