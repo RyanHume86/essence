@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, CalendarClock, X, ChevronDown, MessageSquare } from "lucide-react";
+import { Plus, CalendarClock, X, ChevronDown, MessageSquare, Flag, Repeat } from "lucide-react";
 import { format, addDays, nextSaturday } from "date-fns";
 import { CATEGORY_ICONS } from "./CategoryBadge";
 
@@ -33,15 +33,19 @@ export default function TaskInput({ onAdd }) {
   const [comment, setComment] = useState("");
   const [showComment, setShowComment] = useState(false);
   const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
+  const [priority, setPriority] = useState("normal");
+  const [recurrence, setRecurrence] = useState("none");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onAdd(title.trim(), category, dueDate || null, comment.trim() || null);
+    onAdd({ title: title.trim(), category, due_date: dueDate || null, comment: comment.trim() || null, priority, recurrence });
     setTitle("");
     setDueDate("");
     setComment("");
     setShowComment(false);
+    setPriority("normal");
+    setRecurrence("none");
   };
 
   const selectCategory = (cat) => {
@@ -110,7 +114,7 @@ export default function TaskInput({ onAdd }) {
       </div>
 
       {/* Category trigger + date picker row */}
-      <div className="flex items-center justify-between gap-2 px-1">
+      <div className="flex items-center flex-wrap justify-between gap-2 px-1">
         {/* Category selector button */}
         <button
           type="button"
@@ -136,6 +140,22 @@ export default function TaskInput({ onAdd }) {
           Note
         </button>
 
+        {/* Priority toggle */}
+        <button
+          type="button"
+          onClick={() => setPriority((p) => (p === "high" ? "normal" : "high"))}
+          aria-pressed={priority === "high"}
+          aria-label="Toggle high priority"
+          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
+            priority === "high"
+              ? "bg-primary/10 text-highlight border-primary/30"
+              : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/40"
+          }`}
+        >
+          <Flag className="w-3 h-3" />
+          High
+        </button>
+
         {/* Due date */}
         <div className="relative flex items-center">
           <CalendarClock className="absolute left-2.5 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
@@ -154,6 +174,24 @@ export default function TaskInput({ onAdd }) {
               <X className="w-3 h-3" />
             </button>
           )}
+        </div>
+
+        {/* Recurrence */}
+        <div className="relative flex items-center">
+          <Repeat className={`absolute left-2.5 w-3.5 h-3.5 pointer-events-none ${recurrence !== "none" ? "text-highlight" : "text-muted-foreground"}`} />
+          <select
+            value={recurrence}
+            onChange={(e) => setRecurrence(e.target.value)}
+            aria-label="Repeat"
+            className={`pl-7 pr-2 py-1 rounded-full text-xs font-medium border bg-card focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all duration-200 [color-scheme:dark] ${
+              recurrence !== "none" ? "text-highlight border-primary/30" : "text-muted-foreground border-border"
+            }`}
+          >
+            <option value="none">No repeat</option>
+            <option value="daily">Daily</option>
+            <option value="weekdays">Weekdays</option>
+            <option value="weekly">Weekly</option>
+          </select>
         </div>
       </div>
 

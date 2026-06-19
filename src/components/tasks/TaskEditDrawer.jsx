@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { format, addDays, nextSaturday } from "date-fns";
+import { Flag, Repeat } from "lucide-react";
+
+const RECURRENCE_OPTIONS = [
+  { value: "none", label: "No repeat" },
+  { value: "daily", label: "Daily" },
+  { value: "weekdays", label: "Weekdays" },
+  { value: "weekly", label: "Weekly" },
+];
 import {
   Drawer,
   DrawerContent,
@@ -20,6 +28,8 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
   const [category, setCategory] = useState("Personal");
   const [dueDate, setDueDate] = useState("");
   const [comment, setComment] = useState("");
+  const [priority, setPriority] = useState("normal");
+  const [recurrence, setRecurrence] = useState("none");
 
   // Re-seed the fields whenever a task is opened for editing.
   useEffect(() => {
@@ -28,6 +38,8 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
       setCategory(task.category || "Personal");
       setDueDate(task.due_date || "");
       setComment(task.comment || "");
+      setPriority(task.priority || "normal");
+      setRecurrence(task.recurrence || "none");
     }
   }, [open, task]);
 
@@ -40,7 +52,7 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
   const save = () => {
     const t = title.trim();
     if (!t) return;
-    onSave({ title: t, category, due_date: dueDate || null, comment: comment.trim() || null });
+    onSave({ title: t, category, due_date: dueDate || null, comment: comment.trim() || null, priority, recurrence });
     onOpenChange(false);
   };
 
@@ -104,6 +116,43 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
               onChange={(e) => setDueDate(e.target.value)}
               className="ml-auto px-2 py-1 rounded-full text-xs font-medium border border-border bg-card text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 [color-scheme:dark]"
             />
+          </div>
+
+          {/* Priority */}
+          <button
+            type="button"
+            onClick={() => setPriority((p) => (p === "high" ? "normal" : "high"))}
+            aria-pressed={priority === "high"}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
+              priority === "high"
+                ? "bg-primary/10 text-highlight border-primary/30"
+                : "border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Flag className="w-3.5 h-3.5" />
+            High priority
+          </button>
+
+          {/* Recurrence */}
+          <div className="flex items-center flex-wrap gap-2">
+            <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground mr-1">
+              <Repeat className="w-3.5 h-3.5" /> Repeat
+            </span>
+            {RECURRENCE_OPTIONS.map((opt) => {
+              const active = recurrence === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setRecurrence(opt.value)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
+                    active ? "bg-primary/10 text-highlight border-primary/30" : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
           </div>
 
           {/* Note */}

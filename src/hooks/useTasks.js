@@ -2,6 +2,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { format, addDays } from "date-fns";
+import { buildNextRecurringTask } from "@/lib/recurrence";
 
 const KEY = ["tasks"];
 const tomorrowISO = () => format(addDays(new Date(), 1), "yyyy-MM-dd");
@@ -37,21 +38,55 @@ export function useTasks() {
       onSettled: () => queryClient.invalidateQueries({ queryKey: KEY }),
     });
 
+  const buildNew = (v) => ({
+    title: v.title,
+    completed: false,
+    category: v.category,
+    due_date: v.due_date ?? null,
+    comment: v.comment ?? null,
+    today: !!v.today,
+    priority: v.priority || "normal",
+    recurrence: v.recurrence || "none",
+    subtasks: [],
+  });
+
   const createM = useOptimisticMutation(
-    ({ title, category, due_date, comment, today }) =>
-      base44.entities.Task.create({ title, completed: false, category, due_date, comment, today: !!today, subtasks: [] }),
-    (old, { title, category, due_date, comment, today }) => [
-      { id: crypto.randomUUID(), title, completed: false, category, due_date, comment, today: !!today, subtasks: [], created_date: new Date().toISOString() },
-      ...old,
-    ],
+    (v) => base44.entities.Task.create(buildNew(v)),
+    (old, v) => [{ id: crypto.randomUUID(), created_date: new Date().toISOString(), ...buildNew(v) }, ...old],
     "Could not add task"
   );
 
-  const toggleM = useOptimisticMutation(
-    (task) => base44.entities.Task.update(task.id, { completed: !task.completed }),
-    (old, task) => old.map((t) => (t.id === task.id ? { ...t, completed: !t.completed } : t)),
-    "Could not update task"
-  );
+  // Toggle is recurrence-aware: completing a recurring task also spawns its next
+  // instance. Written out (not via the factory) because of that extra write.
+  const toggleM = useMutation({
+    mutationFn: async (task) => {
+      const completing = !task.completed;
+      await base44.entities.Task.update(task.id, { completed: completing });
+      if (completing) {
+        const next = buildNextRecurringTask(task);
+        if (next) await base44.entities.Task.create(next);
+      }
+    },
+    onMutate: async (task) => {
+      await queryClient.cancelQueries({ queryKey: KEY });
+      const previous = queryClient.getQueryData(KEY);
+      const completing = !task.completed;
+      queryClient.setQueryData(KEY, (old = []) => {
+        let list = old.map((t) => (t.id === task.id ? { ...t, completed: completing } : t));
+        if (completing) {
+          const next = buildNextRecurringTask(task);
+          if (next) list = [{ id: crypto.randomUUID(), created_date: new Date().toISOString(), ...next }, ...list];
+        }
+        return list;
+      });
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(KEY, ctx.previous);
+      toast({ variant: "destructive", title: "Could not update task", description: "Please try again." });
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: KEY }),
+  });
 
   const patchM = useOptimisticMutation(
     ({ task, patch }) => base44.entities.Task.update(task.id, patch),
@@ -77,6 +112,15 @@ export function useTasks() {
     "Could not update task"
   );
 
+  const clearCompletedM = useOptimisticMutation(
+    async () => {
+      const done = (queryClient.getQueryData(KEY) || []).filter((t) => t.completed);
+      await Promise.all(done.map((t) => base44.entities.Task.delete(t.id)));
+    },
+    (old) => old.filter((t) => !t.completed),
+    "Could not clear completed tasks"
+  );
+
   const actions = {
     create: (vars) => createM.mutate(vars),
     toggle: (task) => toggleM.mutate(task),
@@ -84,6 +128,7 @@ export function useTasks() {
     remove: (task) => deleteM.mutate(task),
     defer: (task) => deferM.mutate(task),
     toggleToday: (task) => todayM.mutate(task),
+    clearCompleted: () => clearCompletedM.mutate(),
   };
 
   return { tasks, isLoading, refetch, actions };

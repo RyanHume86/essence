@@ -16,6 +16,18 @@
       "default": false,
       "description": "Whether the task is flagged for the Today view"
     },
+    "priority": {
+      "type": "string",
+      "enum": ["normal", "high"],
+      "default": "normal",
+      "description": "Task priority; high tasks sort first"
+    },
+    "recurrence": {
+      "type": "string",
+      "enum": ["none", "daily", "weekdays", "weekly"],
+      "default": "none",
+      "description": "Recurrence; on completion the next instance is created"
+    },
     "category": {
       "type": "string",
       "enum": [

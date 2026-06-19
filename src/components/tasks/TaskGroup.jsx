@@ -6,6 +6,8 @@ import TaskItem from "./TaskItem";
 // the object returned by useTasks; the relevant handlers are passed to each row.
 export default function TaskGroup({ label, labelClass = "text-foreground/70", tasks, actions, leading = null }) {
   if (!tasks.length) return null;
+  // High-priority tasks sort first within the group (stable otherwise).
+  const ordered = [...tasks].sort((a, b) => (b.priority === "high" ? 1 : 0) - (a.priority === "high" ? 1 : 0));
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3 px-1">
@@ -17,7 +19,7 @@ export default function TaskGroup({ label, labelClass = "text-foreground/70", ta
         <span className="text-xs text-muted-foreground/60">{tasks.length}</span>
       </div>
       <AnimatePresence mode="popLayout">
-        {tasks.map((task, i) => (
+        {ordered.map((task, i) => (
           <TaskItem
             key={task.id}
             task={task}

@@ -10,6 +10,7 @@ import AppLayout from './components/layout/AppLayout';
 import Today from './pages/Today';
 import Upcoming from './pages/Upcoming';
 import Browse from './pages/Browse';
+import Completed from './pages/Completed';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -50,6 +51,7 @@ const AuthenticatedApp = () => {
           <Route path="/" element={<Today />} />
           <Route path="/upcoming" element={<Upcoming />} />
           <Route path="/browse" element={<Browse />} />
+          <Route path="/completed" element={<Completed />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Route>

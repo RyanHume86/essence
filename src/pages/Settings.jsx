@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { User, LogOut, Trash2, ChevronRight, ShieldAlert } from "lucide-react";
+import { User, LogOut, Trash2, ChevronRight, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Drawer,
@@ -50,8 +51,16 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Account actions */}
+        {/* Navigation + account actions */}
         <div className="surface-raised rounded-2xl overflow-hidden divide-y divide-border">
+          <Link
+            to="/completed"
+            className="w-full flex items-center gap-3 px-5 py-4 hover:bg-muted/50 transition-colors duration-200 text-left"
+          >
+            <CheckCircle2 className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+            <span className="flex-1 text-sm font-medium text-foreground">Completed tasks</span>
+            <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
+          </Link>
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-5 py-4 hover:bg-muted/50 transition-colors duration-200 text-left"
