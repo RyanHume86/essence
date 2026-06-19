@@ -21,6 +21,15 @@ export const CATEGORY_ICONS = {
   Other: MoreHorizontal,
 };
 
+// Solid category colour for the card's left accent bar.
+export const CATEGORY_BAR = {
+  Work: "bg-category-work",
+  Personal: "bg-category-personal",
+  Health: "bg-category-health",
+  Shopping: "bg-category-shopping",
+  Other: "bg-category-other",
+};
+
 export default function CategoryBadge({ category }) {
   if (!category) return null;
   const style = STYLES[category] ?? STYLES.Other;

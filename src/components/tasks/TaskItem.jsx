@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, Star } from "lucide-react";
-import CategoryBadge from "./CategoryBadge";
+import CategoryBadge, { CATEGORY_BAR } from "./CategoryBadge";
 import SubtaskTree from "./SubtaskTree";
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 
@@ -76,6 +76,11 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
         onDragEnd={handleDragEnd}
         className="relative surface-raised rounded-2xl hover:border-primary/20 transition-colors duration-300"
       >
+      {/* Category accent bar */}
+      {task.category && CATEGORY_BAR[task.category] && (
+        <div className={`absolute left-0 top-0 bottom-0 w-1 ${CATEGORY_BAR[task.category]}`} aria-hidden="true" />
+      )}
+
       {/* Main row */}
       <div className="flex items-center gap-4 px-5 py-4">
         <button
@@ -97,7 +102,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
         </button>
 
         <div className="flex-1 flex flex-col gap-1 min-w-0">
-          <span className={`title-strike ${task.completed ? "done" : ""} text-base transition-all duration-300 ${
+          <span className={`title-strike ${task.completed ? "done" : ""} text-base font-medium leading-snug transition-all duration-300 ${
             task.completed ? "text-muted-foreground/50" : "text-foreground"
           }`}>
             {task.title}
