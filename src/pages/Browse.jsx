@@ -1,6 +1,8 @@
 import React from "react";
+import { LayoutGrid } from "lucide-react";
 import TaskGroup from "../components/tasks/TaskGroup";
 import PullToRefresh from "../components/PullToRefresh";
+import EmptyState from "../components/EmptyState";
 import { useTasks } from "@/hooks/useTasks";
 import { CATEGORIES } from "../components/tasks/TaskInput";
 import { CATEGORY_ICONS } from "../components/tasks/CategoryBadge";
@@ -50,9 +52,7 @@ export default function Browse() {
       ))}
 
       {!isLoading && !hasAny && (
-        <p className="text-center text-muted-foreground text-sm py-12">
-          No active tasks. Add one from Today.
-        </p>
+        <EmptyState icon={LayoutGrid} title="No active tasks" subtitle="Add one from Today." />
       )}
     </PullToRefresh>
   );

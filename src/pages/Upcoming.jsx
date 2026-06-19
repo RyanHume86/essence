@@ -1,7 +1,9 @@
 import React from "react";
 import { parseISO, isTomorrow, format } from "date-fns";
+import { CalendarDays } from "lucide-react";
 import TaskGroup from "../components/tasks/TaskGroup";
 import PullToRefresh from "../components/PullToRefresh";
+import EmptyState from "../components/EmptyState";
 import { useTasks } from "@/hooks/useTasks";
 import { inUpcoming } from "@/lib/taskUtils";
 
@@ -48,9 +50,7 @@ export default function Upcoming() {
       ))}
 
       {!isLoading && keys.length === 0 && (
-        <p className="text-center text-muted-foreground text-sm py-12">
-          Nothing upcoming. You are all caught up.
-        </p>
+        <EmptyState icon={CalendarDays} title="Nothing upcoming" subtitle="You are all caught up." />
       )}
     </PullToRefresh>
   );

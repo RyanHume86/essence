@@ -1,9 +1,11 @@
 import React from "react";
 import { format } from "date-fns";
+import { PartyPopper, Coffee } from "lucide-react";
 import TaskInput from "../components/tasks/TaskInput";
 import TaskGroup from "../components/tasks/TaskGroup";
 import ProgressRing from "../components/tasks/ProgressRing";
 import PullToRefresh from "../components/PullToRefresh";
+import EmptyState from "../components/EmptyState";
 import { useTasks } from "@/hooks/useTasks";
 import { inToday, isOverdue, isDueToday } from "@/lib/taskUtils";
 
@@ -66,10 +68,20 @@ export default function Today() {
             <TaskGroup label="Completed" labelClass="text-muted-foreground" tasks={doneToday} actions={actions} />
           )}
 
-          {todayActive.length === 0 && doneToday.length === 0 && (
-            <p className="text-center text-muted-foreground text-sm py-12">
-              Nothing for today. Capture something above, or check Upcoming.
-            </p>
+          {todayActive.length === 0 && (
+            doneToday.length > 0 ? (
+              <EmptyState
+                icon={PartyPopper}
+                title="All clear for today"
+                subtitle="Every task for today is done. Nice work."
+              />
+            ) : (
+              <EmptyState
+                icon={Coffee}
+                title="Nothing for today"
+                subtitle="Capture something above, or check Upcoming."
+              />
+            )
           )}
         </>
       )}

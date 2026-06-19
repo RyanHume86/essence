@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Plus, CalendarClock, X, ChevronDown, MessageSquare } from "lucide-react";
+import { format, addDays, nextSaturday } from "date-fns";
 import { CATEGORY_ICONS } from "./CategoryBadge";
+
+const iso = (d) => format(d, "yyyy-MM-dd");
 import {
   Drawer,
   DrawerContent,
@@ -46,6 +49,14 @@ export default function TaskInput({ onAdd }) {
     setCategoryDrawerOpen(false);
   };
 
+  // Capture-time quick dates. Tapping a chip sets (or clears) the due date.
+  const quickDates = [
+    { label: "Today", value: iso(new Date()) },
+    { label: "Tomorrow", value: iso(addDays(new Date(), 1)) },
+    { label: "Weekend", value: iso(nextSaturday(new Date())) },
+  ];
+  const setQuickDate = (value) => setDueDate((cur) => (cur === value ? "" : value));
+
   return (
     <div className="space-y-3">
       <form onSubmit={handleSubmit} className="relative">
@@ -76,6 +87,27 @@ export default function TaskInput({ onAdd }) {
           className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 resize-none transition-all duration-200 font-body"
         />
       )}
+
+      {/* Quick dates */}
+      <div className="flex items-center gap-2 px-1">
+        {quickDates.map((q) => {
+          const active = dueDate === q.value;
+          return (
+            <button
+              key={q.label}
+              type="button"
+              onClick={() => setQuickDate(q.value)}
+              className={`px-3 py-1 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
+                active
+                  ? "bg-primary/10 text-highlight border-primary/30"
+                  : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/40"
+              }`}
+            >
+              {q.label}
+            </button>
+          );
+        })}
+      </div>
 
       {/* Category trigger + date picker row */}
       <div className="flex items-center justify-between gap-2 px-1">
