@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { CalendarDays, RefreshCw, LogIn, Check, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
+import { CALENDAR_CONNECTED_KEY } from "@/hooks/useTasks";
 
 const CONNECTOR_ID = "6a352aeee5ea6ecec4029b4f";
 
@@ -13,13 +14,23 @@ export default function CalendarSync() {
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
 
+  // Persist connection state so the auto-sync in useTasks only runs when linked.
+  const markConnected = (value) => {
+    setConnected(value);
+    try {
+      window.localStorage.setItem(CALENDAR_CONNECTED_KEY, value ? "true" : "false");
+    } catch {
+      /* ignore storage failures */
+    }
+  };
+
   // Reusable connection check — succeeds only if the user is connected.
   const checkConnection = async () => {
     try {
       await base44.functions.invoke("checkCalendarConnection", {});
-      setConnected(true);
+      markConnected(true);
     } catch {
-      setConnected(false);
+      markConnected(false);
     }
   };
 
@@ -44,7 +55,7 @@ export default function CalendarSync() {
 
   const handleDisconnect = async () => {
     await base44.connectors.disconnectAppUser(CONNECTOR_ID);
-    setConnected(false);
+    markConnected(false);
   };
 
   const handleSync = async () => {

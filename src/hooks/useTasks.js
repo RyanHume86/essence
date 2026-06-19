@@ -7,6 +7,21 @@ import { buildNextRecurringTask } from "@/lib/recurrence";
 const KEY = ["tasks"];
 const tomorrowISO = () => format(addDays(new Date(), 1), "yyyy-MM-dd");
 
+// Auto-sync: after task changes settle, push to Google Calendar so it does not
+// drift. Debounced so a burst of edits triggers a single reconcile, and gated on
+// a connection flag (written by CalendarSync) so unconnected users incur no
+// calls. Best-effort and silent; the manual "Sync now" still reports results.
+export const CALENDAR_CONNECTED_KEY = "essence_calendar_connected";
+let autoSyncTimer = null;
+function scheduleAutoSync() {
+  if (typeof window === "undefined") return;
+  if (window.localStorage.getItem(CALENDAR_CONNECTED_KEY) !== "true") return;
+  clearTimeout(autoSyncTimer);
+  autoSyncTimer = setTimeout(() => {
+    base44.functions.invoke("syncTasksToCalendar", {}).catch(() => {});
+  }, 2500);
+}
+
 // Shared task data plus optimistic mutations, so every view (Today, Upcoming,
 // Browse) reads and writes the same cache. Returns the task list and an
 // `actions` object with the handlers each view passes down to TaskItem.
@@ -35,7 +50,10 @@ export function useTasks() {
         if (ctx?.previous) queryClient.setQueryData(KEY, ctx.previous);
         toast({ variant: "destructive", title: errorTitle, description: "Please try again." });
       },
-      onSettled: () => queryClient.invalidateQueries({ queryKey: KEY }),
+      onSettled: () => {
+        queryClient.invalidateQueries({ queryKey: KEY });
+        scheduleAutoSync();
+      },
     });
 
   const buildNew = (v) => ({
@@ -85,7 +103,10 @@ export function useTasks() {
       if (ctx?.previous) queryClient.setQueryData(KEY, ctx.previous);
       toast({ variant: "destructive", title: "Could not update task", description: "Please try again." });
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: KEY }),
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: KEY });
+      scheduleAutoSync();
+    },
   });
 
   const patchM = useOptimisticMutation(
