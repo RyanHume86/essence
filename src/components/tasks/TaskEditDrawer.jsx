@@ -27,6 +27,7 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Personal");
   const [dueDate, setDueDate] = useState("");
+  const [dueTime, setDueTime] = useState("");
   const [comment, setComment] = useState("");
   const [priority, setPriority] = useState("normal");
   const [recurrence, setRecurrence] = useState("none");
@@ -37,6 +38,7 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
       setTitle(task.title || "");
       setCategory(task.category || "Personal");
       setDueDate(task.due_date || "");
+      setDueTime(task.due_time || "");
       setComment(task.comment || "");
       setPriority(task.priority || "normal");
       setRecurrence(task.recurrence || "none");
@@ -52,7 +54,15 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
   const save = () => {
     const t = title.trim();
     if (!t) return;
-    onSave({ title: t, category, due_date: dueDate || null, comment: comment.trim() || null, priority, recurrence });
+    onSave({
+      title: t,
+      category,
+      due_date: dueDate || null,
+      due_time: dueDate ? (dueTime || null) : null,
+      comment: comment.trim() || null,
+      priority,
+      recurrence,
+    });
     onOpenChange(false);
   };
 
@@ -113,9 +123,20 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
             <input
               type="date"
               value={dueDate || ""}
-              onChange={(e) => setDueDate(e.target.value)}
+              onChange={(e) => { setDueDate(e.target.value); if (!e.target.value) setDueTime(""); }}
               className="ml-auto px-2 py-1 rounded-full text-xs font-medium border border-border bg-card text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 [color-scheme:dark]"
             />
+            {dueDate && (
+              <input
+                type="time"
+                value={dueTime}
+                onChange={(e) => setDueTime(e.target.value)}
+                aria-label="Time of day"
+                className={`px-2 py-1 rounded-full text-xs font-medium border bg-card focus:outline-none focus:ring-1 focus:ring-primary/40 [color-scheme:dark] ${
+                  dueTime ? "text-highlight border-primary/30" : "text-muted-foreground border-border"
+                }`}
+              />
+            )}
           </div>
 
           {/* Priority */}

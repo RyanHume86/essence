@@ -62,6 +62,7 @@ export function useTasks() {
     completed: false,
     category: v.category,
     due_date: v.due_date ?? null,
+    due_time: v.due_date ? (v.due_time ?? null) : null,
     comment: v.comment ?? null,
     today: !!v.today,
     priority: v.priority || "normal",
