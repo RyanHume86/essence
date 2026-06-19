@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, Star, MoreVertical, Pencil } from "lucide-react";
+import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, Star, MoreVertical, Pencil, Flag } from "lucide-react";
 import CategoryBadge, { CATEGORY_BAR } from "./CategoryBadge";
 import SubtaskTree from "./SubtaskTree";
 import TaskEditDrawer from "./TaskEditDrawer";
@@ -112,6 +112,12 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
             {task.title}
           </span>
           <div className="flex items-center gap-1.5 flex-wrap">
+            {task.priority === "high" && !task.completed && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-highlight/15 text-highlight border border-highlight/40">
+                <Flag className="w-2.5 h-2.5" />
+                High
+              </span>
+            )}
             {task.category && <CategoryBadge category={task.category} />}
             <DueDateChip due_date={task.due_date} completed={task.completed} />
             {/* Subtask progress pill */}

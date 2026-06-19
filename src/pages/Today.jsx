@@ -61,7 +61,7 @@ export default function Today() {
       </div>
 
       {/* Capture: the single create path */}
-      <TaskInput onAdd={(title, category, due_date, comment, today) => actions.create({ title, category, due_date, comment, today })} />
+      <TaskInput onAdd={(vals) => actions.create(vals)} />
 
       {isLoading && <LoadingRows />}
 

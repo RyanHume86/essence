@@ -16,6 +16,12 @@
       "default": false,
       "description": "Whether the task is flagged for the Today view"
     },
+    "priority": {
+      "type": "string",
+      "enum": ["normal", "high"],
+      "default": "normal",
+      "description": "Task priority; high tasks sort first"
+    },
     "category": {
       "type": "string",
       "enum": [

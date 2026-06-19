@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { format, addDays, nextSaturday } from "date-fns";
+import { Flag } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -20,6 +21,7 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
   const [category, setCategory] = useState("Personal");
   const [dueDate, setDueDate] = useState("");
   const [comment, setComment] = useState("");
+  const [priority, setPriority] = useState("normal");
 
   // Re-seed the fields whenever a task is opened for editing.
   useEffect(() => {
@@ -28,6 +30,7 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
       setCategory(task.category || "Personal");
       setDueDate(task.due_date || "");
       setComment(task.comment || "");
+      setPriority(task.priority || "normal");
     }
   }, [open, task]);
 
@@ -40,7 +43,7 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
   const save = () => {
     const t = title.trim();
     if (!t) return;
-    onSave({ title: t, category, due_date: dueDate || null, comment: comment.trim() || null });
+    onSave({ title: t, category, due_date: dueDate || null, comment: comment.trim() || null, priority });
     onOpenChange(false);
   };
 
@@ -105,6 +108,21 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
               className="ml-auto px-2 py-1 rounded-full text-xs font-medium border border-border bg-card text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 [color-scheme:dark]"
             />
           </div>
+
+          {/* Priority */}
+          <button
+            type="button"
+            onClick={() => setPriority((p) => (p === "high" ? "normal" : "high"))}
+            aria-pressed={priority === "high"}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
+              priority === "high"
+                ? "bg-primary/10 text-highlight border-primary/30"
+                : "border-border text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Flag className="w-3.5 h-3.5" />
+            High priority
+          </button>
 
           {/* Note */}
           <textarea

@@ -37,13 +37,20 @@ export function useTasks() {
       onSettled: () => queryClient.invalidateQueries({ queryKey: KEY }),
     });
 
+  const buildNew = (v) => ({
+    title: v.title,
+    completed: false,
+    category: v.category,
+    due_date: v.due_date ?? null,
+    comment: v.comment ?? null,
+    today: !!v.today,
+    priority: v.priority || "normal",
+    subtasks: [],
+  });
+
   const createM = useOptimisticMutation(
-    ({ title, category, due_date, comment, today }) =>
-      base44.entities.Task.create({ title, completed: false, category, due_date, comment, today: !!today, subtasks: [] }),
-    (old, { title, category, due_date, comment, today }) => [
-      { id: crypto.randomUUID(), title, completed: false, category, due_date, comment, today: !!today, subtasks: [], created_date: new Date().toISOString() },
-      ...old,
-    ],
+    (v) => base44.entities.Task.create(buildNew(v)),
+    (old, v) => [{ id: crypto.randomUUID(), created_date: new Date().toISOString(), ...buildNew(v) }, ...old],
     "Could not add task"
   );
 
