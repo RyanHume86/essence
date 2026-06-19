@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Plus, CalendarClock, X, ChevronDown, MessageSquare, Flag, Repeat } from "lucide-react";
-import { format, addDays, nextSaturday } from "date-fns";
+import { format, addDays, nextSaturday, parseISO } from "date-fns";
 import { CATEGORY_ICONS } from "./CategoryBadge";
 
 const iso = (d) => format(d, "yyyy-MM-dd");
@@ -36,6 +36,7 @@ export default function TaskInput({ onAdd }) {
   const [dueTime, setDueTime] = useState("");
   const [priority, setPriority] = useState("normal");
   const [recurrence, setRecurrence] = useState("none");
+  const [showDetails, setShowDetails] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -56,6 +57,7 @@ export default function TaskInput({ onAdd }) {
     setShowComment(false);
     setPriority("normal");
     setRecurrence("none");
+    setShowDetails(false);
   };
 
   const selectCategory = (cat) => {
@@ -70,6 +72,15 @@ export default function TaskInput({ onAdd }) {
     { label: "Weekend", value: iso(nextSaturday(new Date())) },
   ];
   const setQuickDate = (value) => setDueDate((cur) => (cur === value ? "" : value));
+
+  // Compact summary of chosen facets, shown when details are collapsed.
+  const summaryParts = [
+    category,
+    dueDate ? (dueTime ? `${format(parseISO(dueDate), "d MMM")} ${dueTime}` : format(parseISO(dueDate), "d MMM")) : null,
+    priority === "high" ? "High" : null,
+    recurrence !== "none" ? (recurrence === "weekdays" ? "Weekdays" : recurrence[0].toUpperCase() + recurrence.slice(1)) : null,
+    comment ? "Note" : null,
+  ].filter(Boolean);
 
   return (
     <div className="space-y-3">
@@ -91,17 +102,23 @@ export default function TaskInput({ onAdd }) {
         </button>
       </form>
 
-      {/* Optional comment field */}
-      {showComment && (
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          placeholder="Add a note or comment…"
-          rows={2}
-          className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 resize-none transition-all duration-200 font-body"
-        />
-      )}
+      {/* Details disclosure — keeps capture light by default */}
+      <div className="flex items-center gap-2 px-1">
+        <button
+          type="button"
+          onClick={() => setShowDetails((v) => !v)}
+          className="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium border border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/40 transition-all duration-200 select-none flex-shrink-0"
+        >
+          <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${showDetails ? "rotate-180" : ""}`} />
+          {showDetails ? "Hide details" : "Add details"}
+        </button>
+        {!showDetails && summaryParts.length > 0 && (
+          <span className="text-xs text-muted-foreground/80 truncate">{summaryParts.join(" · ")}</span>
+        )}
+      </div>
 
+      {showDetails && (
+        <div className="space-y-3">
       {/* Quick dates */}
       <div className="flex items-center gap-2 px-1">
         {quickDates.map((q) => {
@@ -217,6 +234,19 @@ export default function TaskInput({ onAdd }) {
           </select>
         </div>
       </div>
+
+          {/* Optional note */}
+          {showComment && (
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Add a note or comment…"
+              rows={2}
+              className="w-full px-4 py-2.5 bg-card border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 resize-none transition-all duration-200 font-body"
+            />
+          )}
+        </div>
+      )}
 
       {/* Category bottom-sheet drawer */}
       <Drawer open={categoryDrawerOpen} onOpenChange={setCategoryDrawerOpen}>
