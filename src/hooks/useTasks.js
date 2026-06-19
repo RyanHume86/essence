@@ -18,7 +18,8 @@ function scheduleAutoSync() {
   if (window.localStorage.getItem(CALENDAR_CONNECTED_KEY) !== "true") return;
   clearTimeout(autoSyncTimer);
   autoSyncTimer = setTimeout(() => {
-    base44.functions.invoke("syncTasksToCalendar", {}).catch(() => {});
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    base44.functions.invoke("syncTasksToCalendar", { timeZone }).catch(() => {});
   }, 2500);
 }
 
