@@ -11,6 +11,11 @@
       "default": false,
       "description": "Whether the task is completed"
     },
+    "today": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether the task is flagged for the Today view"
+    },
     "category": {
       "type": "string",
       "enum": [

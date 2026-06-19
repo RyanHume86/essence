@@ -7,7 +7,9 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AppLayout from './components/layout/AppLayout';
-import Home from './pages/Home';
+import Today from './pages/Today';
+import Upcoming from './pages/Upcoming';
+import Browse from './pages/Browse';
 import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -45,7 +47,9 @@ const AuthenticatedApp = () => {
       {/* Protected app routes — wrapped in AppLayout (header + bottom nav) */}
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Today />} />
+          <Route path="/upcoming" element={<Upcoming />} />
+          <Route path="/browse" element={<Browse />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
       </Route>

@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Check, Trash2, CalendarClock, ChevronDown, MessageSquare } from "lucide-react";
-import CategoryBadge from "./CategoryBadge";
+import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, Star } from "lucide-react";
+import CategoryBadge, { CATEGORY_BAR } from "./CategoryBadge";
 import SubtaskTree from "./SubtaskTree";
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
+
+const SWIPE_THRESHOLD = 80; // px to trigger a swipe action
 
 function DueDateChip({ due_date, completed }) {
   if (!due_date) return null;
@@ -24,7 +26,7 @@ function DueDateChip({ due_date, completed }) {
   );
 }
 
-export default function TaskItem({ task, onToggle, onDelete, onUpdate, index = 0 }) {
+export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, onToggleToday, index = 0 }) {
   const hasExtras = task.comment || (task.subtasks && task.subtasks.length > 0);
   const [expanded, setExpanded] = useState(hasExtras);
 
@@ -40,6 +42,12 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, index = 0
     onUpdate(task, { subtasks: newSubtasks });
   };
 
+  // Swipe right to complete, swipe left to defer to tomorrow.
+  const handleDragEnd = (_e, info) => {
+    if (info.offset.x > SWIPE_THRESHOLD) onToggle(task);
+    else if (info.offset.x < -SWIPE_THRESHOLD && !task.completed && onDefer) onDefer(task);
+  };
+
   return (
     <motion.div
       layout
@@ -47,8 +55,32 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, index = 0
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: -40 }}
       transition={{ duration: 0.3, ease: "easeOut", delay }}
-      className="group surface-raised rounded-2xl hover:border-primary/20 hover:shadow-sm transition-all duration-300 select-none overflow-hidden"
+      className="group relative rounded-2xl overflow-hidden select-none"
     >
+      {/* Swipe action hints, revealed as the card slides */}
+      <div className="absolute inset-0 flex items-center justify-between px-5 pointer-events-none" aria-hidden="true">
+        <span className="flex items-center gap-1.5 text-success text-sm font-medium">
+          <Check className="w-4 h-4" /> Done
+        </span>
+        <span className="flex items-center gap-1.5 text-highlight text-sm font-medium">
+          Tomorrow <CalendarPlus className="w-4 h-4" />
+        </span>
+      </div>
+
+      <motion.div
+        drag="x"
+        dragDirectionLock
+        dragSnapToOrigin
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.5}
+        onDragEnd={handleDragEnd}
+        className="relative surface-raised rounded-2xl hover:border-primary/20 transition-colors duration-300"
+      >
+      {/* Category accent bar */}
+      {task.category && CATEGORY_BAR[task.category] && (
+        <div className={`absolute left-0 top-0 bottom-0 w-1 ${CATEGORY_BAR[task.category]}`} aria-hidden="true" />
+      )}
+
       {/* Main row */}
       <div className="flex items-center gap-4 px-5 py-4">
         <button
@@ -70,7 +102,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, index = 0
         </button>
 
         <div className="flex-1 flex flex-col gap-1 min-w-0">
-          <span className={`title-strike ${task.completed ? "done" : ""} text-base transition-all duration-300 ${
+          <span className={`title-strike ${task.completed ? "done" : ""} text-base font-medium leading-snug transition-all duration-300 ${
             task.completed ? "text-muted-foreground/50" : "text-foreground"
           }`}>
             {task.title}
@@ -92,6 +124,17 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, index = 0
             )}
           </div>
         </div>
+
+        {/* Today flag */}
+        {onToggleToday && (
+          <button
+            onClick={() => onToggleToday(task)}
+            aria-label={task.today ? `Remove "${task.title}" from Today` : `Add "${task.title}" to Today`}
+            className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200"
+          >
+            <Star className={`w-4 h-4 transition-colors duration-200 ${task.today ? "text-highlight fill-highlight" : "text-muted-foreground/40 hover:text-muted-foreground"}`} />
+          </button>
+        )}
 
         {/* Expand/collapse toggle */}
         <button
@@ -132,6 +175,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, index = 0
           </motion.div>
         )}
       </AnimatePresence>
+      </motion.div>
     </motion.div>
   );
 }
