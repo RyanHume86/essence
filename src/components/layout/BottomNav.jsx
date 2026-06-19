@@ -1,9 +1,14 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { CheckSquare, Settings, Plus } from "lucide-react";
+import { CheckSquare, CalendarDays, LayoutGrid, Settings, Plus } from "lucide-react";
 
-const SIDE_ITEMS = [
-  { label: "Home", path: "/", icon: CheckSquare },
+// Two side slots either side of the centre FAB.
+const LEFT_ITEMS = [
+  { label: "Today", path: "/", icon: CheckSquare },
+  { label: "Upcoming", path: "/upcoming", icon: CalendarDays },
+];
+const RIGHT_ITEMS = [
+  { label: "Browse", path: "/browse", icon: LayoutGrid },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
 
@@ -14,7 +19,7 @@ export default function BottomNav() {
   const isActive = (path) =>
     path === "/" ? pathname === "/" : pathname.startsWith(path);
 
-  // The centre FAB never creates a task. It returns to Home (if needed) and
+  // The centre FAB never creates a task. It returns to Today (if needed) and
   // focuses the existing rich input, which stays the single create path.
   const focusQuickInput = () => {
     if (pathname !== "/") navigate("/");
@@ -31,6 +36,7 @@ export default function BottomNav() {
     const active = isActive(path);
     return (
       <Link
+        key={path}
         to={path}
         replace
         className="flex-1 flex flex-col items-center justify-center gap-1 h-full transition-colors duration-200"
@@ -40,17 +46,9 @@ export default function BottomNav() {
             active ? "bg-primary/10" : "hover:bg-muted"
           }`}
         >
-          <Icon
-            className={`w-5 h-5 transition-colors duration-200 ${
-              active ? "text-highlight" : "text-muted-foreground"
-            }`}
-          />
+          <Icon className={`w-5 h-5 transition-colors duration-200 ${active ? "text-highlight" : "text-muted-foreground"}`} />
         </div>
-        <span
-          className={`text-[10px] font-medium transition-colors duration-200 ${
-            active ? "text-highlight" : "text-muted-foreground"
-          }`}
-        >
+        <span className={`text-[10px] font-medium transition-colors duration-200 ${active ? "text-highlight" : "text-muted-foreground"}`}>
           {label}
         </span>
       </Link>
@@ -63,7 +61,7 @@ export default function BottomNav() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex items-center h-16">
-        {renderSlot(SIDE_ITEMS[0])}
+        {LEFT_ITEMS.map(renderSlot)}
 
         {/* Centre FAB: focuses the rich input, lifted to overlap the nav edge */}
         <div className="flex-1 flex items-start justify-center">
@@ -77,7 +75,7 @@ export default function BottomNav() {
           </button>
         </div>
 
-        {renderSlot(SIDE_ITEMS[1])}
+        {RIGHT_ITEMS.map(renderSlot)}
       </div>
     </nav>
   );
