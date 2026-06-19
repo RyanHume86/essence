@@ -61,9 +61,18 @@ export default function CalendarSync() {
   const handleSync = async () => {
     setSyncing(true);
     try {
-      const res = await base44.functions.invoke("syncTasksToCalendar", {});
-      const { created = 0, updated = 0, removed = 0 } = res.data || {};
-      toast({ title: "Calendar synced", description: `${created} added · ${updated} updated · ${removed} removed.` });
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const res = await base44.functions.invoke("syncTasksToCalendar", { timeZone });
+      const { created = 0, updated = 0, removed = 0, failed = 0 } = res.data || {};
+      if (failed > 0) {
+        toast({
+          variant: "destructive",
+          title: "Synced with errors",
+          description: `${created} added · ${updated} updated · ${removed} removed · ${failed} failed.`,
+        });
+      } else {
+        toast({ title: "Calendar synced", description: `${created} added · ${updated} updated · ${removed} removed.` });
+      }
     } catch {
       toast({ variant: "destructive", title: "Sync failed", description: "Please try again." });
     }

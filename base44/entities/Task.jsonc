@@ -53,6 +53,10 @@
       "format": "date",
       "description": "Optional due date for the task (YYYY-MM-DD)"
     },
+    "due_time": {
+      "type": "string",
+      "description": "Optional time of day (HH:MM, 24h); makes the calendar event timed"
+    },
     "comment": {
       "type": "string",
       "description": "Optional comment or note for the task"

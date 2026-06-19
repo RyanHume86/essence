@@ -9,11 +9,12 @@ import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 
 const SWIPE_THRESHOLD = 80; // px to trigger a swipe action
 
-function DueDateChip({ due_date, completed }) {
+function DueDateChip({ due_date, due_time, completed }) {
   if (!due_date) return null;
   const date = parseISO(due_date);
   const overdue = !completed && isPast(date) && !isToday(date);
-  const label = isToday(date) ? "Today" : isTomorrow(date) ? "Tomorrow" : format(date, "d MMM");
+  const base = isToday(date) ? "Today" : isTomorrow(date) ? "Tomorrow" : format(date, "d MMM");
+  const label = due_time ? `${base} ${due_time}` : base;
   return (
     <span className={`inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full border ${
       overdue
@@ -119,7 +120,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
               </span>
             )}
             {task.category && <CategoryBadge category={task.category} />}
-            <DueDateChip due_date={task.due_date} completed={task.completed} />
+            <DueDateChip due_date={task.due_date} due_time={task.due_time} completed={task.completed} />
             {/* Subtask progress pill */}
             {subtaskCount > 0 && (
               <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">

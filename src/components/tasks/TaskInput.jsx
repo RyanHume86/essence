@@ -33,15 +33,25 @@ export default function TaskInput({ onAdd }) {
   const [comment, setComment] = useState("");
   const [showComment, setShowComment] = useState(false);
   const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
+  const [dueTime, setDueTime] = useState("");
   const [priority, setPriority] = useState("normal");
   const [recurrence, setRecurrence] = useState("none");
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
-    onAdd({ title: title.trim(), category, due_date: dueDate || null, comment: comment.trim() || null, priority, recurrence });
+    onAdd({
+      title: title.trim(),
+      category,
+      due_date: dueDate || null,
+      due_time: dueDate ? (dueTime || null) : null,
+      comment: comment.trim() || null,
+      priority,
+      recurrence,
+    });
     setTitle("");
     setDueDate("");
+    setDueTime("");
     setComment("");
     setShowComment(false);
     setPriority("normal");
@@ -168,13 +178,26 @@ export default function TaskInput({ onAdd }) {
           {dueDate && (
             <button
               type="button"
-              onClick={() => setDueDate("")}
+              onClick={() => { setDueDate(""); setDueTime(""); }}
               className="absolute right-2 text-muted-foreground/60 hover:text-muted-foreground"
             >
               <X className="w-3 h-3" />
             </button>
           )}
         </div>
+
+        {/* Time of day (only meaningful with a date) */}
+        {dueDate && (
+          <input
+            type="time"
+            value={dueTime}
+            onChange={(e) => setDueTime(e.target.value)}
+            aria-label="Time of day"
+            className={`px-2 py-1 rounded-full text-xs font-medium border bg-card focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all duration-200 [color-scheme:dark] ${
+              dueTime ? "text-highlight border-primary/30" : "text-muted-foreground border-border"
+            }`}
+          />
+        )}
 
         {/* Recurrence */}
         <div className="relative flex items-center">

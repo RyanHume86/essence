@@ -18,7 +18,8 @@ function scheduleAutoSync() {
   if (window.localStorage.getItem(CALENDAR_CONNECTED_KEY) !== "true") return;
   clearTimeout(autoSyncTimer);
   autoSyncTimer = setTimeout(() => {
-    base44.functions.invoke("syncTasksToCalendar", {}).catch(() => {});
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    base44.functions.invoke("syncTasksToCalendar", { timeZone }).catch(() => {});
   }, 2500);
 }
 
@@ -61,6 +62,7 @@ export function useTasks() {
     completed: false,
     category: v.category,
     due_date: v.due_date ?? null,
+    due_time: v.due_date ? (v.due_time ?? null) : null,
     comment: v.comment ?? null,
     today: !!v.today,
     priority: v.priority || "normal",
