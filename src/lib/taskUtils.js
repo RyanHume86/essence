@@ -23,6 +23,12 @@ export function inUpcoming(task) {
   return !task.completed && !inToday(task);
 }
 
+// Case-insensitive title match for search. An empty query matches everything.
+export function matchesQuery(task, q) {
+  if (!q) return true;
+  return (task.title || "").toLowerCase().includes(q);
+}
+
 // Label for an Upcoming task's date group.
 export function upcomingGroupLabel(task) {
   if (!task.due_date) return "No Due Date";

@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import TopHeader from "./TopHeader";
 import BottomNav from "./BottomNav";
+import { SearchProvider } from "@/lib/SearchContext";
 
 const pageVariants = {
   initial: { opacity: 0, x: 24 },
@@ -19,6 +20,7 @@ export default function AppLayout() {
   const location = useLocation();
 
   return (
+    <SearchProvider>
     <div
       className="flex flex-col min-h-screen bg-background"
       style={{
@@ -52,5 +54,6 @@ export default function AppLayout() {
 
       <BottomNav />
     </div>
+    </SearchProvider>
   );
 }

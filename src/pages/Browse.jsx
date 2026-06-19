@@ -1,9 +1,11 @@
 import React from "react";
-import { LayoutGrid } from "lucide-react";
+import { LayoutGrid, Search } from "lucide-react";
 import TaskGroup from "../components/tasks/TaskGroup";
 import PullToRefresh from "../components/PullToRefresh";
 import EmptyState from "../components/EmptyState";
 import { useTasks } from "@/hooks/useTasks";
+import { useSearch } from "@/lib/SearchContext";
+import { matchesQuery } from "@/lib/taskUtils";
 import { CATEGORIES } from "../components/tasks/TaskInput";
 import { CATEGORY_ICONS } from "../components/tasks/CategoryBadge";
 
@@ -17,7 +19,9 @@ const CAT_TEXT = {
 
 export default function Browse() {
   const { tasks, isLoading, refetch, actions } = useTasks();
-  const active = tasks.filter((t) => !t.completed);
+  const { query } = useSearch();
+  const q = query.trim().toLowerCase();
+  const active = tasks.filter((t) => !t.completed && matchesQuery(t, q));
 
   const order = [...CATEGORIES];
   const byCategory = order.map((cat) => ({
@@ -52,7 +56,11 @@ export default function Browse() {
       ))}
 
       {!isLoading && !hasAny && (
-        <EmptyState icon={LayoutGrid} title="No active tasks" subtitle="Add one from Today." />
+        q ? (
+          <EmptyState icon={Search} title="No matches" subtitle={`No active tasks match "${query}".`} />
+        ) : (
+          <EmptyState icon={LayoutGrid} title="No active tasks" subtitle="Add one from Today." />
+        )
       )}
     </PullToRefresh>
   );

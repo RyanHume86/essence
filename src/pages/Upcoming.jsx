@@ -1,11 +1,12 @@
 import React from "react";
 import { parseISO, isTomorrow, format } from "date-fns";
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Search } from "lucide-react";
 import TaskGroup from "../components/tasks/TaskGroup";
 import PullToRefresh from "../components/PullToRefresh";
 import EmptyState from "../components/EmptyState";
 import { useTasks } from "@/hooks/useTasks";
-import { inUpcoming } from "@/lib/taskUtils";
+import { useSearch } from "@/lib/SearchContext";
+import { inUpcoming, matchesQuery } from "@/lib/taskUtils";
 
 function groupLabel(task) {
   if (!task.due_date) return "No Due Date";
@@ -15,9 +16,11 @@ function groupLabel(task) {
 
 export default function Upcoming() {
   const { tasks, isLoading, refetch, actions } = useTasks();
+  const { query } = useSearch();
+  const q = query.trim().toLowerCase();
 
   // Sort by due date (dateless last), then group preserving chronological order.
-  const sorted = [...tasks].filter(inUpcoming).sort((a, b) => {
+  const sorted = [...tasks].filter((t) => inUpcoming(t) && matchesQuery(t, q)).sort((a, b) => {
     if (!a.due_date) return 1;
     if (!b.due_date) return -1;
     return a.due_date.localeCompare(b.due_date);
@@ -50,7 +53,11 @@ export default function Upcoming() {
       ))}
 
       {!isLoading && keys.length === 0 && (
-        <EmptyState icon={CalendarDays} title="Nothing upcoming" subtitle="You are all caught up." />
+        q ? (
+          <EmptyState icon={Search} title="No matches" subtitle={`Nothing upcoming matches "${query}".`} />
+        ) : (
+          <EmptyState icon={CalendarDays} title="Nothing upcoming" subtitle="You are all caught up." />
+        )
       )}
     </PullToRefresh>
   );
