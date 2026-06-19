@@ -5,7 +5,12 @@ import { parseISO, isToday, isTomorrow, isPast } from "date-fns";
 export function isOverdue(task) {
   if (!task.due_date || task.completed) return false;
   const d = parseISO(task.due_date);
-  return isPast(d) && !isToday(d);
+  if (isPast(d) && !isToday(d)) return true;
+  // Same-day task with a time that has already passed counts as overdue.
+  if (isToday(d) && task.due_time) {
+    return isPast(parseISO(`${task.due_date}T${task.due_time}`));
+  }
+  return false;
 }
 
 export function isDueToday(task) {

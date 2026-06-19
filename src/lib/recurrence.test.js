@@ -37,12 +37,13 @@ test("buildNextRecurringTask returns null when not recurring", () => {
 test("buildNextRecurringTask copies fields, advances date, clears completion", () => {
   const next = buildNextRecurringTask({
     id: "abc", title: "Run", category: "Health", comment: "5k",
-    due_date: "2026-06-10", recurrence: "daily", priority: "high",
+    due_date: "2026-06-10", due_time: "07:00", recurrence: "daily", priority: "high",
     completed: true, today: true, subtasks: [{ id: "s", title: "warm up", completed: true }],
   });
   assert.equal(next.title, "Run");
   assert.equal(next.category, "Health");
   assert.equal(next.due_date, "2026-06-11");
+  assert.equal(next.due_time, "07:00");
   assert.equal(next.recurrence, "daily");
   assert.equal(next.priority, "high");
   assert.equal(next.completed, false);
