@@ -95,7 +95,18 @@ export function useTasks() {
   );
 
   const deleteM = useOptimisticMutation(
-    (task) => base44.entities.Task.delete(task.id),
+    async (task) => {
+      await base44.entities.Task.delete(task.id);
+      // Best-effort: remove the linked calendar event so it does not orphan.
+      // A failure here must not roll back the (already done) task deletion.
+      if (task.gcal_event_id) {
+        try {
+          await base44.functions.invoke("deleteCalendarEvent", { eventId: task.gcal_event_id });
+        } catch {
+          /* calendar cleanup is best-effort */
+        }
+      }
+    },
     (old, task) => old.filter((t) => t.id !== task.id),
     "Could not delete task"
   );

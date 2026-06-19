@@ -3,6 +3,14 @@ import { createClientFromRequest } from "npm:@base44/sdk@0.8.31";
 const CONNECTOR_ID = "6a352aeee5ea6ecec4029b4f";
 const CAL_URL = "https://www.googleapis.com/calendar/v3/calendars/primary/events";
 
+// Google treats an all-day event's end.date as exclusive, so a single-day event
+// must end on the following day.
+function nextDay(isoDate: string): string {
+  const d = new Date(`${isoDate}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + 1);
+  return d.toISOString().slice(0, 10);
+}
+
 // Syncs the current app user's task due dates to their Google Calendar as
 // all-day events. Idempotent: each task stores its calendar event id, so
 // re-running updates existing events instead of creating duplicates.
@@ -32,7 +40,7 @@ Deno.serve(async (req) => {
           summary: task.title,
           description: task.comment || "Task from Essence",
           start: { date: task.due_date },
-          end: { date: task.due_date },
+          end: { date: nextDay(task.due_date) },
         };
 
         if (task.gcal_event_id) {
