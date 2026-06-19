@@ -12,7 +12,10 @@ const SWIPE_THRESHOLD = 80; // px to trigger a swipe action
 function DueDateChip({ due_date, due_time, completed }) {
   if (!due_date) return null;
   const date = parseISO(due_date);
-  const overdue = !completed && isPast(date) && !isToday(date);
+  const overdue =
+    !completed &&
+    ((isPast(date) && !isToday(date)) ||
+      (isToday(date) && !!due_time && isPast(parseISO(`${due_date}T${due_time}`))));
   const base = isToday(date) ? "Today" : isTomorrow(date) ? "Tomorrow" : format(date, "d MMM");
   const label = due_time ? `${base} ${due_time}` : base;
   return (

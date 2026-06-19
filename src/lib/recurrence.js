@@ -69,6 +69,7 @@ export function buildNextRecurringTask(task, today = todayISO()) {
     category: task.category ?? null,
     comment: task.comment ?? null,
     due_date: getNextDueDate(task.due_date, task.recurrence, today),
+    due_time: task.due_time ?? null,
     recurrence: task.recurrence,
     priority: task.priority ?? "normal",
     completed: false,
