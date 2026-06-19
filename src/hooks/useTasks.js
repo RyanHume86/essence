@@ -84,6 +84,15 @@ export function useTasks() {
     "Could not update task"
   );
 
+  const clearCompletedM = useOptimisticMutation(
+    async () => {
+      const done = (queryClient.getQueryData(KEY) || []).filter((t) => t.completed);
+      await Promise.all(done.map((t) => base44.entities.Task.delete(t.id)));
+    },
+    (old) => old.filter((t) => !t.completed),
+    "Could not clear completed tasks"
+  );
+
   const actions = {
     create: (vars) => createM.mutate(vars),
     toggle: (task) => toggleM.mutate(task),
@@ -91,6 +100,7 @@ export function useTasks() {
     remove: (task) => deleteM.mutate(task),
     defer: (task) => deferM.mutate(task),
     toggleToday: (task) => todayM.mutate(task),
+    clearCompleted: () => clearCompletedM.mutate(),
   };
 
   return { tasks, isLoading, refetch, actions };
