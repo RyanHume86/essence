@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, Star } from "lucide-react";
+import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, Star, MoreVertical, Pencil } from "lucide-react";
 import CategoryBadge, { CATEGORY_BAR } from "./CategoryBadge";
 import SubtaskTree from "./SubtaskTree";
+import TaskEditDrawer from "./TaskEditDrawer";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
 
 const SWIPE_THRESHOLD = 80; // px to trigger a swipe action
@@ -29,6 +31,8 @@ function DueDateChip({ due_date, completed }) {
 export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, onToggleToday, index = 0 }) {
   const hasExtras = task.comment || (task.subtasks && task.subtasks.length > 0);
   const [expanded, setExpanded] = useState(hasExtras);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   // Staggered entrance, gated behind reduced-motion. Items are keyed by id and
   // persist, so this only runs on mount, not when a task is toggled.
@@ -144,11 +148,13 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
           <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
         </button>
 
+        {/* Actions menu (edit, defer, delete) — reachable on touch and desktop */}
         <button
-          onClick={() => onDelete(task)}
-          className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-muted-foreground/0 group-hover:text-muted-foreground hover:!text-destructive hover:bg-destructive/10 active:bg-destructive/20 transition-all duration-200"
+          onClick={() => setActionsOpen(true)}
+          aria-label={`Actions for "${task.title}"`}
+          className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground/60 hover:text-foreground hover:bg-muted/50 transition-all duration-200"
         >
-          <Trash2 className="w-4 h-4" />
+          <MoreVertical className="w-4 h-4" />
         </button>
       </div>
 
@@ -176,6 +182,45 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
         )}
       </AnimatePresence>
       </motion.div>
+
+      {/* Actions menu */}
+      <Drawer open={actionsOpen} onOpenChange={setActionsOpen}>
+        <DrawerContent>
+          <DrawerHeader className="pb-2">
+            <DrawerTitle className="text-base truncate">{task.title}</DrawerTitle>
+          </DrawerHeader>
+          <div className="px-4 space-y-1" style={{ paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}>
+            <button
+              onClick={() => { setActionsOpen(false); setEditOpen(true); }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground hover:bg-muted/50 transition-colors text-left"
+            >
+              <Pencil className="w-4 h-4" /> Edit
+            </button>
+            {onDefer && !task.completed && (
+              <button
+                onClick={() => { onDefer(task); setActionsOpen(false); }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground hover:bg-muted/50 transition-colors text-left"
+              >
+                <CalendarPlus className="w-4 h-4" /> Defer to tomorrow
+              </button>
+            )}
+            <button
+              onClick={() => { onDelete(task); setActionsOpen(false); }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors text-left"
+            >
+              <Trash2 className="w-4 h-4" /> Delete
+            </button>
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      {/* Edit drawer */}
+      <TaskEditDrawer
+        task={task}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+        onSave={(patch) => onUpdate(task, patch)}
+      />
     </motion.div>
   );
 }

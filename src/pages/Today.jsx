@@ -1,13 +1,14 @@
 import React from "react";
 import { format } from "date-fns";
-import { PartyPopper, Coffee } from "lucide-react";
+import { PartyPopper, Coffee, Search } from "lucide-react";
 import TaskInput from "../components/tasks/TaskInput";
 import TaskGroup from "../components/tasks/TaskGroup";
 import ProgressRing from "../components/tasks/ProgressRing";
 import PullToRefresh from "../components/PullToRefresh";
 import EmptyState from "../components/EmptyState";
 import { useTasks } from "@/hooks/useTasks";
-import { inToday, isOverdue, isDueToday } from "@/lib/taskUtils";
+import { useSearch } from "@/lib/SearchContext";
+import { inToday, isOverdue, isDueToday, matchesQuery } from "@/lib/taskUtils";
 
 function greetingForHour(hour) {
   if (hour < 12) return "Good morning";
@@ -33,11 +34,16 @@ function LoadingRows() {
 
 export default function Today() {
   const { tasks, isLoading, refetch, actions } = useTasks();
+  const { query } = useSearch();
+  const q = query.trim().toLowerCase();
 
-  const todayActive = tasks.filter(inToday);
-  const overdue = todayActive.filter(isOverdue);
-  const dueNow = todayActive.filter((t) => !isOverdue(t)); // due today or flagged
-  const doneToday = tasks.filter((t) => t.completed && (isDueToday(t) || t.today));
+  // Full Today set (drives the ring) and the search-filtered view (drives lists).
+  const todayActiveAll = tasks.filter(inToday);
+  const doneTodayAll = tasks.filter((t) => t.completed && (isDueToday(t) || t.today));
+
+  const overdue = todayActiveAll.filter((t) => isOverdue(t) && matchesQuery(t, q));
+  const dueNow = todayActiveAll.filter((t) => !isOverdue(t) && matchesQuery(t, q));
+  const doneToday = doneTodayAll.filter((t) => matchesQuery(t, q));
 
   return (
     <PullToRefresh onRefresh={refetch}>
@@ -51,7 +57,7 @@ export default function Today() {
             {format(new Date(), "EEEE, d MMMM")}
           </p>
         </div>
-        <ProgressRing completed={doneToday.length} total={todayActive.length + doneToday.length} />
+        <ProgressRing completed={doneTodayAll.length} total={todayActiveAll.length + doneTodayAll.length} />
       </div>
 
       {/* Capture: the single create path */}
@@ -59,7 +65,11 @@ export default function Today() {
 
       {isLoading && <LoadingRows />}
 
-      {!isLoading && (
+      {!isLoading && q && overdue.length === 0 && dueNow.length === 0 && doneToday.length === 0 && (
+        <EmptyState icon={Search} title="No matches" subtitle={`Nothing for today matches "${query}".`} />
+      )}
+
+      {!isLoading && !(q && overdue.length === 0 && dueNow.length === 0 && doneToday.length === 0) && (
         <>
           <TaskGroup label="Overdue" labelClass="text-destructive" tasks={overdue} actions={actions} />
           <TaskGroup label="Today" labelClass="text-highlight" tasks={dueNow} actions={actions} />
@@ -68,19 +78,11 @@ export default function Today() {
             <TaskGroup label="Completed" labelClass="text-muted-foreground" tasks={doneToday} actions={actions} />
           )}
 
-          {todayActive.length === 0 && (
-            doneToday.length > 0 ? (
-              <EmptyState
-                icon={PartyPopper}
-                title="All clear for today"
-                subtitle="Every task for today is done. Nice work."
-              />
+          {!q && todayActiveAll.length === 0 && (
+            doneTodayAll.length > 0 ? (
+              <EmptyState icon={PartyPopper} title="All clear for today" subtitle="Every task for today is done. Nice work." />
             ) : (
-              <EmptyState
-                icon={Coffee}
-                title="Nothing for today"
-                subtitle="Capture something above, or check Upcoming."
-              />
+              <EmptyState icon={Coffee} title="Nothing for today" subtitle="Capture something above, or check Upcoming." />
             )
           )}
         </>
