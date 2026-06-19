@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, Star, MoreVertical, Pencil, Flag } from "lucide-react";
+import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, Star, MoreVertical, Pencil, Flag, Repeat } from "lucide-react";
 import CategoryBadge, { CATEGORY_BAR } from "./CategoryBadge";
 import SubtaskTree from "./SubtaskTree";
 import TaskEditDrawer from "./TaskEditDrawer";
@@ -124,6 +124,13 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
             {subtaskCount > 0 && (
               <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground border border-border">
                 {completedSubtasks}/{subtaskCount}
+              </span>
+            )}
+            {/* Recurrence indicator */}
+            {task.recurrence && task.recurrence !== "none" && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground">
+                <Repeat className="w-2.5 h-2.5" />
+                {task.recurrence === "weekdays" ? "Weekdays" : task.recurrence === "weekly" ? "Weekly" : "Daily"}
               </span>
             )}
             {/* Comment indicator */}

@@ -2,6 +2,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { format, addDays } from "date-fns";
+import { buildNextRecurringTask } from "@/lib/recurrence";
 
 const KEY = ["tasks"];
 const tomorrowISO = () => format(addDays(new Date(), 1), "yyyy-MM-dd");
@@ -45,6 +46,7 @@ export function useTasks() {
     comment: v.comment ?? null,
     today: !!v.today,
     priority: v.priority || "normal",
+    recurrence: v.recurrence || "none",
     subtasks: [],
   });
 
@@ -54,11 +56,37 @@ export function useTasks() {
     "Could not add task"
   );
 
-  const toggleM = useOptimisticMutation(
-    (task) => base44.entities.Task.update(task.id, { completed: !task.completed }),
-    (old, task) => old.map((t) => (t.id === task.id ? { ...t, completed: !t.completed } : t)),
-    "Could not update task"
-  );
+  // Toggle is recurrence-aware: completing a recurring task also spawns its next
+  // instance. Written out (not via the factory) because of that extra write.
+  const toggleM = useMutation({
+    mutationFn: async (task) => {
+      const completing = !task.completed;
+      await base44.entities.Task.update(task.id, { completed: completing });
+      if (completing) {
+        const next = buildNextRecurringTask(task);
+        if (next) await base44.entities.Task.create(next);
+      }
+    },
+    onMutate: async (task) => {
+      await queryClient.cancelQueries({ queryKey: KEY });
+      const previous = queryClient.getQueryData(KEY);
+      const completing = !task.completed;
+      queryClient.setQueryData(KEY, (old = []) => {
+        let list = old.map((t) => (t.id === task.id ? { ...t, completed: completing } : t));
+        if (completing) {
+          const next = buildNextRecurringTask(task);
+          if (next) list = [{ id: crypto.randomUUID(), created_date: new Date().toISOString(), ...next }, ...list];
+        }
+        return list;
+      });
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(KEY, ctx.previous);
+      toast({ variant: "destructive", title: "Could not update task", description: "Please try again." });
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: KEY }),
+  });
 
   const patchM = useOptimisticMutation(
     ({ task, patch }) => base44.entities.Task.update(task.id, patch),

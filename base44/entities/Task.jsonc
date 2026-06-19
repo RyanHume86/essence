@@ -22,6 +22,12 @@
       "default": "normal",
       "description": "Task priority; high tasks sort first"
     },
+    "recurrence": {
+      "type": "string",
+      "enum": ["none", "daily", "weekdays", "weekly"],
+      "default": "none",
+      "description": "Recurrence; on completion the next instance is created"
+    },
     "category": {
       "type": "string",
       "enum": [
