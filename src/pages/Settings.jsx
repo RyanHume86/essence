@@ -103,7 +103,7 @@ export default function Settings() {
 
         {/* App info */}
         <p className="text-center text-xs text-muted-foreground/50 pb-4">
-          Essence · Version 1.0.0
+          Akha · Version 1.0.0
         </p>
       </div>
 

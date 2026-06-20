@@ -6,14 +6,14 @@ const TIMED_DURATION_MIN = 30; // default block length for a task with a time
 
 // Google treats an all-day event's end.date as exclusive, so a single-day event
 // must end on the following day.
-function nextDay(isoDate: string): string {
+function nextDay(isoDate) {
   const d = new Date(`${isoDate}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() + 1);
   return d.toISOString().slice(0, 10);
 }
 
 // Add minutes to a wall-clock date+time, returning "YYYY-MM-DDTHH:MM:SS".
-function addMinutes(date: string, time: string, mins: number): string {
+function addMinutes(date, time, mins) {
   const d = new Date(`${date}T${time}:00Z`);
   d.setUTCMinutes(d.getUTCMinutes() + mins);
   return d.toISOString().slice(0, 19);
@@ -21,11 +21,11 @@ function addMinutes(date: string, time: string, mins: number): string {
 
 // Build the event body: a timed event when the task has a due_time (using the
 // caller's IANA timeZone), otherwise an all-day event.
-function buildEventBody(task: Record<string, unknown>, timeZone: string) {
-  const base = { summary: task.title, description: task.comment || "Task from Essence" };
+function buildEventBody(task, timeZone) {
+  const base = { summary: task.title, description: task.comment || "Task from Akha" };
   if (task.due_time) {
-    const date = task.due_date as string;
-    const time = task.due_time as string;
+    const date = task.due_date;
+    const time = task.due_time;
     return {
       ...base,
       start: { dateTime: `${date}T${time}:00`, timeZone },
@@ -35,7 +35,7 @@ function buildEventBody(task: Record<string, unknown>, timeZone: string) {
   return {
     ...base,
     start: { date: task.due_date },
-    end: { date: nextDay(task.due_date as string) },
+    end: { date: nextDay(task.due_date) },
   };
 }
 
