@@ -130,11 +130,11 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
                 {completedSubtasks}/{subtaskCount}
               </span>
             )}
-            {/* Recurrence indicator */}
-            {task.recurrence && task.recurrence !== "none" && (
+            {/* Recurrence indicator (recurrence is now a rule object) */}
+            {task.recurrence && (
               <span className="inline-flex items-center gap-1 text-[10px] font-medium text-muted-foreground">
                 <Repeat className="w-2.5 h-2.5" />
-                {task.recurrence === "weekdays" ? "Weekdays" : task.recurrence === "weekly" ? "Weekly" : "Daily"}
+                Repeats
               </span>
             )}
             {/* Comment indicator */}

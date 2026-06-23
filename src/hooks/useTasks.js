@@ -2,7 +2,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { format, addDays } from "date-fns";
-import { buildNextRecurringTask } from "@/lib/recurrence";
+import { completeRecurringTask } from "@/lib/recurrence";
 
 const KEY = ["tasks"];
 const tomorrowISO = () => format(addDays(new Date(), 1), "yyyy-MM-dd");
@@ -66,7 +66,8 @@ export function useTasks() {
     comment: v.comment ?? null,
     today: !!v.today,
     priority: v.priority || "normal",
-    recurrence: v.recurrence || "none",
+    recurrence: v.recurrence ?? null,
+    occurrence_count: v.occurrence_count ?? 0,
     subtasks: [],
   });
 
@@ -76,29 +77,26 @@ export function useTasks() {
     "Could not add task"
   );
 
-  // Toggle is recurrence-aware: completing a recurring task also spawns its next
-  // instance. Written out (not via the factory) because of that extra write.
+  // Toggle is recurrence-aware: completing a recurring task is routed through the
+  // engine, which rolls the due date forward (or ends the series); every other
+  // case is the simple completed flip. `fields` is computed in each callback
+  // because they do not share scope.
   const toggleM = useMutation({
-    mutationFn: async (task) => {
-      const completing = !task.completed;
-      await base44.entities.Task.update(task.id, { completed: completing });
-      if (completing) {
-        const next = buildNextRecurringTask(task);
-        if (next) await base44.entities.Task.create(next);
-      }
+    mutationFn: (task) => {
+      const fields = (!task.completed && task.recurrence)
+        ? completeRecurringTask(task)
+        : { completed: !task.completed };
+      return base44.entities.Task.update(task.id, fields);
     },
     onMutate: async (task) => {
       await queryClient.cancelQueries({ queryKey: KEY });
       const previous = queryClient.getQueryData(KEY);
-      const completing = !task.completed;
-      queryClient.setQueryData(KEY, (old = []) => {
-        let list = old.map((t) => (t.id === task.id ? { ...t, completed: completing } : t));
-        if (completing) {
-          const next = buildNextRecurringTask(task);
-          if (next) list = [{ id: crypto.randomUUID(), created_date: new Date().toISOString(), ...next }, ...list];
-        }
-        return list;
-      });
+      const fields = (!task.completed && task.recurrence)
+        ? completeRecurringTask(task)
+        : { completed: !task.completed };
+      queryClient.setQueryData(KEY, (old = []) =>
+        old.map((t) => (t.id === task.id ? { ...t, ...fields } : t))
+      );
       return { previous };
     },
     onError: (_err, _vars, ctx) => {

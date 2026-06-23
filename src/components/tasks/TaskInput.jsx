@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, CalendarClock, X, ChevronDown, MessageSquare, Flag, Repeat } from "lucide-react";
+import { Plus, CalendarClock, X, ChevronDown, MessageSquare, Flag } from "lucide-react";
 import { format, addDays, nextSaturday, parseISO } from "date-fns";
 import { CATEGORY_ICONS } from "./CategoryBadge";
 
@@ -35,7 +35,6 @@ export default function TaskInput({ onAdd }) {
   const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
   const [dueTime, setDueTime] = useState("");
   const [priority, setPriority] = useState("normal");
-  const [recurrence, setRecurrence] = useState("none");
   const [showDetails, setShowDetails] = useState(false);
 
   const handleSubmit = (e) => {
@@ -48,7 +47,6 @@ export default function TaskInput({ onAdd }) {
       due_time: dueDate ? (dueTime || null) : null,
       comment: comment.trim() || null,
       priority,
-      recurrence,
     });
     setTitle("");
     setDueDate("");
@@ -56,7 +54,6 @@ export default function TaskInput({ onAdd }) {
     setComment("");
     setShowComment(false);
     setPriority("normal");
-    setRecurrence("none");
     setShowDetails(false);
   };
 
@@ -78,7 +75,6 @@ export default function TaskInput({ onAdd }) {
     category,
     dueDate ? (dueTime ? `${format(parseISO(dueDate), "d MMM")} ${dueTime}` : format(parseISO(dueDate), "d MMM")) : null,
     priority === "high" ? "High" : null,
-    recurrence !== "none" ? (recurrence === "weekdays" ? "Weekdays" : recurrence[0].toUpperCase() + recurrence.slice(1)) : null,
     comment ? "Note" : null,
   ].filter(Boolean);
 
@@ -215,24 +211,6 @@ export default function TaskInput({ onAdd }) {
             }`}
           />
         )}
-
-        {/* Recurrence */}
-        <div className="relative flex items-center">
-          <Repeat className={`absolute left-2.5 w-3.5 h-3.5 pointer-events-none ${recurrence !== "none" ? "text-highlight" : "text-muted-foreground"}`} />
-          <select
-            value={recurrence}
-            onChange={(e) => setRecurrence(e.target.value)}
-            aria-label="Repeat"
-            className={`pl-7 pr-2 py-1 rounded-full text-xs font-medium border bg-card focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all duration-200 [color-scheme:dark] ${
-              recurrence !== "none" ? "text-highlight border-primary/30" : "text-muted-foreground border-border"
-            }`}
-          >
-            <option value="none">No repeat</option>
-            <option value="daily">Daily</option>
-            <option value="weekdays">Weekdays</option>
-            <option value="weekly">Weekly</option>
-          </select>
-        </div>
       </div>
 
           {/* Optional note */}
