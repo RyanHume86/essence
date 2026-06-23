@@ -29,6 +29,3 @@ dist-ssr
 
 .env
 .vite
-
-# BMAD generated artifacts
-_bmad-output/
