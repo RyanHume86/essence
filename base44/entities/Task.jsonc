@@ -11,31 +11,6 @@
       "default": false,
       "description": "Whether the task is completed"
     },
-    "today": {
-      "type": "boolean",
-      "default": false,
-      "description": "Whether the task is flagged for the Today view"
-    },
-    "priority": {
-      "type": "string",
-      "enum": [
-        "normal",
-        "high"
-      ],
-      "default": "normal",
-      "description": "Task priority; high tasks sort first"
-    },
-    "recurrence": {
-      "type": "string",
-      "enum": [
-        "none",
-        "daily",
-        "weekdays",
-        "weekly"
-      ],
-      "default": "none",
-      "description": "Recurrence; on completion the next instance is created"
-    },
     "category": {
       "type": "string",
       "enum": [
@@ -51,19 +26,11 @@
     "due_date": {
       "type": "string",
       "format": "date",
-      "description": "Optional due date for the task (YYYY-MM-DD)"
-    },
-    "due_time": {
-      "type": "string",
-      "description": "Optional time of day (HH:MM, 24h); makes the calendar event timed"
+      "description": "Optional due date for the task (YYYY-MM-DD). For a recurring task this is the date of the current occurrence."
     },
     "comment": {
       "type": "string",
       "description": "Optional comment or note for the task"
-    },
-    "gcal_event_id": {
-      "type": "string",
-      "description": "ID of the synced Google Calendar event, if any"
     },
     "subtasks": {
       "type": "array",
@@ -102,21 +69,63 @@
           }
         }
       }
+    },
+    "recurrence": {
+      "type": "object",
+      "description": "Recurrence rule. Null or absent for a one-off task. Built only via createRecurrenceRule() in src/lib/recurrence.js. Keys are camelCase by design (opaque JSON owned by the engine).",
+      "properties": {
+        "anchor": {
+          "type": "string",
+          "enum": ["fixed", "completion"],
+          "description": "fixed = calendar-anchored (every Monday). completion = a set time after each completion (4 weeks after each haircut)."
+        },
+        "unit": {
+          "type": "string",
+          "enum": ["day", "week", "month", "year"]
+        },
+        "interval": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Every N units"
+        },
+        "weekdays": {
+          "type": "array",
+          "description": "0 (Sun) to 6 (Sat). Fixed weekly only. interval must be 1 when set (v1).",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "monthAnchorDay": {
+          "type": "integer",
+          "description": "1 to 31. Fixed monthly only. Preserves 'the 31st' across short months."
+        },
+        "end": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["never", "onDate", "afterCount"]
+            },
+            "date": {
+              "type": "string",
+              "format": "date",
+              "description": "YYYY-MM-DD, when type is onDate"
+            },
+            "count": {
+              "type": "integer",
+              "description": "Total occurrences in the series, when type is afterCount"
+            }
+          }
+        }
+      }
+    },
+    "occurrence_count": {
+      "type": "integer",
+      "default": 0,
+      "description": "Number of occurrences of a recurring task completed so far. Used to honour an afterCount end condition."
     }
   },
   "required": [
     "title"
-  ],
-  "rls": {
-    "create": true,
-    "read": {
-      "created_by_id": "{{user.id}}"
-    },
-    "update": {
-      "created_by_id": "{{user.id}}"
-    },
-    "delete": {
-      "created_by_id": "{{user.id}}"
-    }
-  }
+  ]
 }
