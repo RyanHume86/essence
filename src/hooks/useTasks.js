@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { format, addDays } from "date-fns";
 import { completeRecurringTask } from "@/lib/recurrence";
+import { recordCompletion, undoCompletion } from "@/lib/winMoment";
 
 const KEY = ["tasks"];
 const tomorrowISO = () => format(addDays(new Date(), 1), "yyyy-MM-dd");
@@ -94,13 +95,19 @@ export function useTasks() {
       const fields = (!task.completed && task.recurrence)
         ? completeRecurringTask(task)
         : { completed: !task.completed };
+      // Win-moment: a genuine not-completed -> completed transition. Recorded
+      // optimistically here so the companion reacts within the same interaction,
+      // with no network wait. Un-completing fires nothing; a failed save undoes it.
+      const didRecord = !task.completed;
+      if (didRecord) recordCompletion();
       queryClient.setQueryData(KEY, (old = []) =>
         old.map((t) => (t.id === task.id ? { ...t, ...fields } : t))
       );
-      return { previous };
+      return { previous, didRecord };
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) queryClient.setQueryData(KEY, ctx.previous);
+      if (ctx?.didRecord) undoCompletion();
       toast({ variant: "destructive", title: "Could not update task", description: "Please try again." });
     },
     onSettled: () => {

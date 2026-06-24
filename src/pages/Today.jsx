@@ -4,6 +4,7 @@ import { PartyPopper, Coffee, Search } from "lucide-react";
 import TaskInput from "../components/tasks/TaskInput";
 import TaskGroup from "../components/tasks/TaskGroup";
 import ProgressRing from "../components/tasks/ProgressRing";
+import Companion from "../components/companion/Companion";
 import PullToRefresh from "../components/PullToRefresh";
 import EmptyState from "../components/EmptyState";
 import { useTasks } from "@/hooks/useTasks";
@@ -59,6 +60,9 @@ export default function Today() {
         </div>
         <ProgressRing completed={doneTodayAll.length} total={todayActiveAll.length + doneTodayAll.length} />
       </div>
+
+      {/* Win-moment companion: reacts as tasks are completed */}
+      <Companion />
 
       {/* Capture: the single create path */}
       <TaskInput onAdd={(vals) => actions.create(vals)} />
