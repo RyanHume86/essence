@@ -2,37 +2,33 @@ import React, { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { getTodayCount, subscribe } from "@/lib/winMoment";
 
-// Win-moment companion: a small, *alive* creature framed by a growth ring that
-// fills with today's completions. It breathes and blinks at rest, and on a
-// completion it gives a brief, warm reaction (a soft hop, happy eyes, a glow)
-// plus one short true line that self-dismisses (~1.5s). Pleased, not hyped —
-// no confetti, no streaks, never shows remaining work.
+// Win-moment companion: a soft little creature (a "sprout-ling") framed by a
+// growth ring that fills with today's completions. It breathes and blinks at
+// rest; on a completion it hops, its eyes curve happy, cheeks blush, and a glow
+// blooms — then it settles back to breathing. One short true line accompanies
+// the reaction and self-dismisses (~1.5s). Pleased, not hyped — no confetti,
+// no streaks, never shows remaining work.
 //
-// Aliveness is the point: a static face reads as dead. Idle breathing + blinking
-// are what make it feel present. All motion is gated on useReducedMotion —
-// reduced motion holds a calm static pose and only swaps expression on a win.
+// Design language: Calm's "Calmlings" — rounded, plush, gentle; an actual
+// creature with a body, belly, stubby limbs and a growth-sprout (which nods at
+// the "watch it grow" motif). Aliveness is the point: idle breathing + blinking
+// are what stop it reading as a flat glyph. All motion gates on useReducedMotion.
 
-// Ring + creature geometry. Larger than a glyph so the creature has presence.
-const RING_TARGET = 8;
-const R = 38;
+const VB = 100; // SVG viewBox (square)
+const C = 50; // center
+const R = 42; // ring radius
 const STROKE = 5;
 const CIRC = 2 * Math.PI * R;
-const SIZE = (R + STROKE) * 2 + 10;
-const C = SIZE / 2;
-const BODY = 27;
+const RING_TARGET = 8;
 
-// Feature colors (dark on the teal body for contrast). Hardcoded hex is the
-// character art, allowed by spec.
-const INK = "#05303d";
+const EYE_Y = 50;
+const EYE_DX = 9;
+const INK = "#06323f"; // dark teal-navy for facial features (contrast on the body)
 
-// One short, true line per reaction. No numbers, no "what's left", no streaks.
 const LINES = ["Nice.", "That's one done.", "Good move.", "Onward.", "Mm — well done.", "There you go."];
 
 /** @param {number} count @returns {number} 0..1 ring fill */
 const fillFor = (count) => Math.min(count / RING_TARGET, 1);
-
-const EYE_DX = 8;
-const EYE_Y = C - 4;
 
 export default function Companion() {
   const reduce = useReducedMotion();
@@ -42,7 +38,7 @@ export default function Companion() {
   const [blink, setBlink] = useState(false);
   const hideTimer = useRef(null);
 
-  // Subscribe to win events: react + surface a line that lingers, then fades.
+  // React to completions: surface a line that lingers, then fades.
   useEffect(() => {
     const unsubscribe = subscribe((newCount) => {
       setCount(newCount);
@@ -60,8 +56,7 @@ export default function Companion() {
     };
   }, []);
 
-  // Blink loop — the single biggest "alive" tell. Randomized cadence, paused
-  // under reduced motion (eyes simply stay open).
+  // Blink loop on a randomized cadence — paused under reduced motion.
   useEffect(() => {
     if (reduce) return;
     let cancelled = false;
@@ -81,20 +76,19 @@ export default function Companion() {
     };
   }, [reduce]);
 
-  const fill = fillFor(count);
-  const offset = CIRC - fill * CIRC;
+  const offset = CIRC - fillFor(count) * CIRC;
   const eyesClosed = blink && !reacting;
 
   return (
     <div className="surface-raised rounded-2xl px-4 py-3 flex items-center gap-4">
-      {/* Reaction hop + pop live on the outer wrapper; breathing lives inside. */}
+      {/* Outer wrapper: the reaction hop + pop. */}
       <motion.div
         className="relative flex-shrink-0"
-        style={{ width: SIZE, height: SIZE }}
-        animate={reduce ? false : { scale: reacting ? 1.08 : 1, y: reacting ? -3 : 0 }}
-        transition={{ type: "spring", stiffness: 480, damping: 15 }}
+        style={{ width: 96, height: 96 }}
+        animate={reduce ? false : { scale: reacting ? 1.07 : 1, y: reacting ? -3 : 0 }}
+        transition={{ type: "spring", stiffness: 460, damping: 15 }}
       >
-        {/* Soft glow behind the creature on a reaction */}
+        {/* Glow behind the creature on a reaction */}
         {reacting && !reduce && (
           <motion.div
             className="absolute inset-0 rounded-full bg-highlight/30 blur-md"
@@ -105,85 +99,109 @@ export default function Companion() {
           />
         )}
 
-        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label="Your companion">
-          <defs>
-            <radialGradient id="companionBody" cx="36%" cy="28%" r="78%">
-              <stop offset="0%" stopColor="#39c2c6" />
-              <stop offset="100%" stopColor="#0a6b73" />
-            </radialGradient>
-          </defs>
+        {/* Inner wrapper: continuous breathing, scaling up from the feet so the
+            body visibly swells and settles. Independent of the reaction above. */}
+        <motion.div
+          style={{ width: "100%", height: "100%", transformOrigin: "50% 86%" }}
+          animate={reduce ? undefined : { scale: [1, 1.05, 1], y: [0, -1.5, 0] }}
+          transition={reduce ? undefined : { duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <svg width="96" height="96" viewBox={`0 0 ${VB} ${VB}`} role="img" aria-label="Your companion">
+            <defs>
+              <radialGradient id="cBody" cx="36%" cy="28%" r="80%">
+                <stop offset="0%" stopColor="#46cdd0" />
+                <stop offset="100%" stopColor="#0b727a" />
+              </radialGradient>
+              <radialGradient id="cLeaf" cx="40%" cy="25%" r="85%">
+                <stop offset="0%" stopColor="#7ed79a" />
+                <stop offset="100%" stopColor="#3fa86b" />
+              </radialGradient>
+            </defs>
 
-          {/* Growth ring — track + progress, filling from the top (static) */}
-          <g transform={`rotate(-90 ${C} ${C})`}>
-            <circle cx={C} cy={C} r={R} fill="none" stroke="#0a3a52" strokeWidth={STROKE} />
-            <circle
-              cx={C}
-              cy={C}
-              r={R}
-              fill="none"
-              stroke="#69c4d2"
-              strokeWidth={STROKE}
-              strokeLinecap="round"
-              strokeDasharray={CIRC}
-              strokeDashoffset={offset}
-              style={reduce ? undefined : { transition: "stroke-dashoffset .6s ease" }}
-            />
-          </g>
+            {/* Ground shadow */}
+            <ellipse cx={C} cy={87} rx={19} ry={3.6} fill="#001a24" opacity="0.18" />
 
-          {/* The living creature — breathes continuously (gentle rise/fall). */}
-          <motion.g
-            animate={reduce ? undefined : { y: [0, -2, 0] }}
-            transition={reduce ? undefined : { duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
-            style={{ originX: "0px", originY: "0px" }}
-          >
-            {/* Body + gloss highlight */}
-            <circle cx={C} cy={C} r={BODY} fill="url(#companionBody)" />
-            <ellipse cx={C - 7} cy={C - 10} rx="7" ry="4.5" fill="#ffffff" opacity="0.18" />
+            {/* Growth ring (static), filling from the top */}
+            <g transform={`rotate(-90 ${C} ${C})`}>
+              <circle cx={C} cy={C} r={R} fill="none" stroke="#0a3a52" strokeWidth={STROKE} />
+              <circle
+                cx={C}
+                cy={C}
+                r={R}
+                fill="none"
+                stroke="#69c4d2"
+                strokeWidth={STROKE}
+                strokeLinecap="round"
+                strokeDasharray={CIRC}
+                strokeDashoffset={offset}
+                style={reduce ? undefined : { transition: "stroke-dashoffset .6s ease" }}
+              />
+            </g>
+
+            {/* Feet (behind body) */}
+            <ellipse cx={C - 9} cy={79} rx={6} ry={4} fill="#0a6b73" />
+            <ellipse cx={C + 9} cy={79} rx={6} ry={4} fill="#0a6b73" />
+
+            {/* Growth sprout on top — stem + two leaves */}
+            <path d={`M ${C} 30 Q ${C - 1} 22 ${C + 0.5} 16`} fill="none" stroke="#2f9e6a" strokeWidth="2.4" strokeLinecap="round" />
+            <ellipse cx={C - 4.5} cy={16} rx={5} ry={3} transform={`rotate(-35 ${C - 4.5} 16)`} fill="url(#cLeaf)" />
+            <ellipse cx={C + 4} cy={13.5} rx={4.2} ry={2.6} transform={`rotate(30 ${C + 4} 13.5)`} fill="url(#cLeaf)" />
+
+            {/* Arms (behind body so they read as attached) */}
+            <ellipse cx={C - 23} cy={58} rx={4} ry={7.5} transform={`rotate(24 ${C - 23} 58)`} fill="#179098" />
+            <ellipse cx={C + 23} cy={58} rx={4} ry={7.5} transform={`rotate(-24 ${C + 23} 58)`} fill="#179098" />
+
+            {/* Body */}
+            <ellipse cx={C} cy={54} rx={24} ry={25} fill="url(#cBody)" />
+            {/* Gloss highlight */}
+            <ellipse cx={C - 8} cy={42} rx={8} ry={5} fill="#ffffff" opacity="0.20" />
+            {/* Belly patch */}
+            <ellipse cx={C} cy={61} rx={14} ry={15} fill="#d8f3f1" opacity="0.85" />
 
             {/* Cheeks — fade in on a reaction */}
             <g style={{ transition: "opacity .3s ease", opacity: reacting ? 1 : 0 }} aria-hidden="true">
-              <circle cx={C - 14} cy={C + 5} r="3.2" fill="#ff9aa2" opacity="0.55" />
-              <circle cx={C + 14} cy={C + 5} r="3.2" fill="#ff9aa2" opacity="0.55" />
+              <circle cx={C - 15} cy={56} r="3.4" fill="#ff9aa2" opacity="0.6" />
+              <circle cx={C + 15} cy={56} r="3.4" fill="#ff9aa2" opacity="0.6" />
             </g>
 
-            {/* Eyes — happy arcs on a win, a thin closed line on a blink, else
-                round eyes with a living highlight. */}
+            {/* Eyes — happy arcs on a win, a thin line on a blink, else round
+                with a living catch-light. */}
             {reacting ? (
               <>
-                <path d={`M ${C - EYE_DX - 3.5} ${EYE_Y + 1.5} Q ${C - EYE_DX} ${EYE_Y - 3} ${C - EYE_DX + 3.5} ${EYE_Y + 1.5}`} fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" />
-                <path d={`M ${C + EYE_DX - 3.5} ${EYE_Y + 1.5} Q ${C + EYE_DX} ${EYE_Y - 3} ${C + EYE_DX + 3.5} ${EYE_Y + 1.5}`} fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" />
+                <path d={`M ${C - EYE_DX - 4} ${EYE_Y + 1.5} Q ${C - EYE_DX} ${EYE_Y - 3.5} ${C - EYE_DX + 4} ${EYE_Y + 1.5}`} fill="none" stroke={INK} strokeWidth="2.6" strokeLinecap="round" />
+                <path d={`M ${C + EYE_DX - 4} ${EYE_Y + 1.5} Q ${C + EYE_DX} ${EYE_Y - 3.5} ${C + EYE_DX + 4} ${EYE_Y + 1.5}`} fill="none" stroke={INK} strokeWidth="2.6" strokeLinecap="round" />
               </>
             ) : eyesClosed ? (
               <>
-                <line x1={C - EYE_DX - 3} y1={EYE_Y} x2={C - EYE_DX + 3} y2={EYE_Y} stroke={INK} strokeWidth="2.2" strokeLinecap="round" />
-                <line x1={C + EYE_DX - 3} y1={EYE_Y} x2={C + EYE_DX + 3} y2={EYE_Y} stroke={INK} strokeWidth="2.2" strokeLinecap="round" />
+                <line x1={C - EYE_DX - 3.5} y1={EYE_Y} x2={C - EYE_DX + 3.5} y2={EYE_Y} stroke={INK} strokeWidth="2.4" strokeLinecap="round" />
+                <line x1={C + EYE_DX - 3.5} y1={EYE_Y} x2={C + EYE_DX + 3.5} y2={EYE_Y} stroke={INK} strokeWidth="2.4" strokeLinecap="round" />
               </>
             ) : (
               <>
-                <circle cx={C - EYE_DX} cy={EYE_Y} r="3.4" fill={INK} />
-                <circle cx={C + EYE_DX} cy={EYE_Y} r="3.4" fill={INK} />
-                <circle cx={C - EYE_DX - 1} cy={EYE_Y - 1.3} r="1.1" fill="#ffffff" opacity="0.9" />
-                <circle cx={C + EYE_DX - 1} cy={EYE_Y - 1.3} r="1.1" fill="#ffffff" opacity="0.9" />
+                <circle cx={C - EYE_DX} cy={EYE_Y} r="4" fill={INK} />
+                <circle cx={C + EYE_DX} cy={EYE_Y} r="4" fill={INK} />
+                <circle cx={C - EYE_DX - 1.3} cy={EYE_Y - 1.5} r="1.3" fill="#ffffff" opacity="0.92" />
+                <circle cx={C + EYE_DX - 1.3} cy={EYE_Y - 1.5} r="1.3" fill="#ffffff" opacity="0.92" />
               </>
             )}
 
-            {/* Mouth — a fuller, warmer smile on a reaction; a soft one at rest. */}
+            {/* Mouth — fuller, warmer on a reaction; a small content one at rest. */}
             <path
               d={
                 reacting
-                  ? `M ${C - 6.5} ${C + 7} Q ${C} ${C + 15} ${C + 6.5} ${C + 7}`
-                  : `M ${C - 4.5} ${C + 8} Q ${C} ${C + 11} ${C + 4.5} ${C + 8}`
+                  ? `M ${C - 6} 62 Q ${C} 70 ${C + 6} 62`
+                  : `M ${C - 4} 63 Q ${C} 66 ${C + 4} 63`
               }
               fill="none"
               stroke={INK}
-              strokeWidth="2.2"
+              strokeWidth="2.4"
               strokeLinecap="round"
             />
-          </motion.g>
-        </svg>
+          </svg>
+        </motion.div>
       </motion.div>
 
-      {/* One short, restrained line — only present during a reaction. */}
+      {/* One short, restrained line — present during a reaction, idle text else. */}
       <div className="min-w-0 flex-1">
         <motion.p
           key={line ? line + count : "idle"}
