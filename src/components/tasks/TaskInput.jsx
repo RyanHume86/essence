@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Plus, CalendarClock, X, ChevronDown, MessageSquare, Flag } from "lucide-react";
 import { format, addDays, nextSaturday, parseISO } from "date-fns";
 import { CATEGORY_ICONS } from "./CategoryBadge";
+import RecurrenceEditor from "./RecurrenceEditor";
+import { firstOccurrenceOnOrAfter, todayISO } from "@/lib/recurrence";
 
 const iso = (d) => format(d, "yyyy-MM-dd");
 import {
@@ -36,17 +38,30 @@ export default function TaskInput({ onAdd }) {
   const [dueTime, setDueTime] = useState("");
   const [priority, setPriority] = useState("normal");
   const [showDetails, setShowDetails] = useState(false);
+  const [recurrence, setRecurrence] = useState(null);
+  const [recurrenceReset, setRecurrenceReset] = useState(0);
+
+  // Enabling recurrence needs a seed date; default to today when none is set.
+  const handleRecurrenceChange = (rule) => {
+    setRecurrence(rule);
+    if (rule && !dueDate) setDueDate(todayISO());
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) return;
+    // For a recurring task, the stored due_date is the first valid occurrence.
+    const seed = dueDate || (recurrence ? todayISO() : null);
+    const due_date = recurrence ? firstOccurrenceOnOrAfter(recurrence, seed) : seed;
     onAdd({
       title: title.trim(),
       category,
-      due_date: dueDate || null,
-      due_time: dueDate ? (dueTime || null) : null,
+      due_date,
+      due_time: due_date ? (dueTime || null) : null,
       comment: comment.trim() || null,
       priority,
+      recurrence,
+      occurrence_count: 0,
     });
     setTitle("");
     setDueDate("");
@@ -55,6 +70,8 @@ export default function TaskInput({ onAdd }) {
     setShowComment(false);
     setPriority("normal");
     setShowDetails(false);
+    setRecurrence(null);
+    setRecurrenceReset((n) => n + 1);
   };
 
   const selectCategory = (cat) => {
@@ -212,6 +229,16 @@ export default function TaskInput({ onAdd }) {
           />
         )}
       </div>
+
+          {/* Recurrence */}
+          <div className="px-1">
+            <RecurrenceEditor
+              value={recurrence}
+              seedDate={dueDate}
+              resetToken={recurrenceReset}
+              onChange={handleRecurrenceChange}
+            />
+          </div>
 
           {/* Optional note */}
           {showComment && (

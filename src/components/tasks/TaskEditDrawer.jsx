@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/drawer";
 import { CATEGORIES, CATEGORY_STYLES } from "./TaskInput";
 import { CATEGORY_ICONS } from "./CategoryBadge";
+import RecurrenceEditor from "./RecurrenceEditor";
+import { firstOccurrenceOnOrAfter } from "@/lib/recurrence";
 
 const iso = (d) => format(d, "yyyy-MM-dd");
 
@@ -23,6 +25,8 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
   const [dueTime, setDueTime] = useState("");
   const [comment, setComment] = useState("");
   const [priority, setPriority] = useState("normal");
+  const [recurrence, setRecurrence] = useState(null);
+  const [recurrenceReset, setRecurrenceReset] = useState(0);
 
   // Re-seed the fields whenever a task is opened for editing.
   useEffect(() => {
@@ -33,8 +37,16 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
       setDueTime(task.due_time || "");
       setComment(task.comment || "");
       setPriority(task.priority || "normal");
+      setRecurrence(task.recurrence ?? null);
+      setRecurrenceReset((n) => n + 1);
     }
   }, [open, task]);
+
+  // Enabling recurrence needs a seed date; default to today when none is set.
+  const handleRecurrenceChange = (rule) => {
+    setRecurrence(rule);
+    if (rule && !dueDate) setDueDate(iso(new Date()));
+  };
 
   const quickDates = [
     { label: "Today", value: iso(new Date()) },
@@ -45,14 +57,25 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
   const save = () => {
     const t = title.trim();
     if (!t) return;
-    onSave({
+    // RecurrenceEditor leaves this reference untouched unless the user actually
+    // changes the rule, so reference equality is a reliable "did it change?".
+    const ruleChanged = recurrence !== (task.recurrence ?? null);
+    const due_date = recurrence
+      ? firstOccurrenceOnOrAfter(recurrence, dueDate || iso(new Date()))
+      : dueDate || null;
+    const patch = {
       title: t,
       category,
-      due_date: dueDate || null,
-      due_time: dueDate ? (dueTime || null) : null,
+      due_date,
+      due_time: due_date ? (dueTime || null) : null,
       comment: comment.trim() || null,
       priority,
-    });
+      recurrence,
+    };
+    // Only reset progress when the rule genuinely changed, so an unrelated edit
+    // never wipes a partially-completed afterCount series.
+    if (recurrence && ruleChanged) patch.occurrence_count = 0;
+    onSave(patch);
     onOpenChange(false);
   };
 
@@ -143,6 +166,14 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
             <Flag className="w-3.5 h-3.5" />
             High priority
           </button>
+
+          {/* Recurrence */}
+          <RecurrenceEditor
+            value={recurrence}
+            seedDate={dueDate}
+            resetToken={recurrenceReset}
+            onChange={handleRecurrenceChange}
+          />
 
           {/* Note */}
           <textarea
