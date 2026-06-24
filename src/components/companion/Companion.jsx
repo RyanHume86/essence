@@ -140,8 +140,8 @@ export default function Companion() {
         >
           <motion.div
             style={{ width: "100%", height: "100%", transformOrigin: "50% 90%" }}
-            animate={reduce ? undefined : { scaleX: [1, 1.015, 1], scaleY: [1, 1.05, 1], y: [0, -0.5, 0] }}
-            transition={reduce ? undefined : { duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            animate={reduce ? undefined : { scaleX: [1, 1.007, 1], scaleY: [1, 1.02, 1], y: [0, -0.4, 0] }}
+            transition={reduce ? undefined : { duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
           >
             <svg width="96" height="96" viewBox={`0 0 ${VB} ${VB}`} role="img" aria-label="Your companion">
               <defs>
