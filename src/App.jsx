@@ -16,6 +16,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import CompanionPreview from './pages/CompanionPreview';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -62,6 +63,11 @@ const AuthenticatedApp = () => {
 };
 
 function App() {
+  // DEV-ONLY: feel the win-moment without Base44 auth. Uncommitted scaffolding.
+  if (typeof window !== 'undefined' && window.location.pathname === '/preview') {
+    return <CompanionPreview />;
+  }
+
   return (
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
