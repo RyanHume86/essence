@@ -123,7 +123,7 @@ export default function Companion() {
         {/* Glow behind the creature on a reaction */}
         {reacting && !reduce && (
           <motion.div
-            className="absolute inset-0 rounded-full bg-highlight/30 blur-md"
+            className="absolute inset-0 rounded-full bg-highlight/20 blur-md"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.4 }}
@@ -135,8 +135,8 @@ export default function Companion() {
             Breathing is mostly vertical, anchored near the feet — a chest-rise. */}
         <motion.div
           className="absolute inset-0"
-          animate={reduce ? false : { scale: reacting ? 1.07 : 1, y: reacting ? -3 : 0 }}
-          transition={{ type: "spring", stiffness: 460, damping: 15 }}
+          animate={reduce ? false : { scale: reacting ? 1.035 : 1, y: reacting ? -1.5 : 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 22 }}
         >
           <motion.div
             style={{ width: "100%", height: "100%", transformOrigin: "50% 90%" }}
@@ -186,8 +186,8 @@ export default function Companion() {
 
               {/* Cheeks — fade in on a reaction */}
               <g style={{ transition: "opacity .3s ease", opacity: reacting ? 1 : 0 }} aria-hidden="true">
-                <circle cx={C - 13} cy={57} r="3.2" fill="#ff9aa2" opacity="0.6" />
-                <circle cx={C + 13} cy={57} r="3.2" fill="#ff9aa2" opacity="0.6" />
+                <circle cx={C - 13} cy={57} r="3.2" fill="#ff9aa2" opacity="0.4" />
+                <circle cx={C + 13} cy={57} r="3.2" fill="#ff9aa2" opacity="0.4" />
               </g>
 
               {/* Eyes */}
