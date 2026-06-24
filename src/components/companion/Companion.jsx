@@ -1,46 +1,54 @@
 import React, { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { getTodayCount, subscribe } from "@/lib/winMoment";
 
-// Win-moment companion: a small, warm character framed by a growth ring that
-// fills with today's completions. On a completion it gives a brief, gentle
-// reaction (a soft scale + glow) and surfaces one short, true line that
-// self-dismisses (~1.5s). Pleased, not hyped — no confetti, no streaks, and it
-// never shows remaining work.
+// Win-moment companion: a small, *alive* creature framed by a growth ring that
+// fills with today's completions. It breathes and blinks at rest, and on a
+// completion it gives a brief, warm reaction (a soft hop, happy eyes, a glow)
+// plus one short true line that self-dismisses (~1.5s). Pleased, not hyped —
+// no confetti, no streaks, never shows remaining work.
 //
-// Source of truth is @/lib/winMoment: useTasks emits on a real completion, this
-// component subscribes. All motion is gated on useReducedMotion — reduced motion
-// shows the new state with no animation.
+// Aliveness is the point: a static face reads as dead. Idle breathing + blinking
+// are what make it feel present. All motion is gated on useReducedMotion —
+// reduced motion holds a calm static pose and only swaps expression on a win.
 
-// Ring geometry. The ring reads "full" around RING_TARGET completions, but the
-// count keeps counting beyond that (the ring simply stays full).
+// Ring + creature geometry. Larger than a glyph so the creature has presence.
 const RING_TARGET = 8;
-const R = 30;
-const STROKE = 4;
+const R = 38;
+const STROKE = 5;
 const CIRC = 2 * Math.PI * R;
-const SIZE = (R + STROKE) * 2 + 8;
-const CENTER = SIZE / 2;
+const SIZE = (R + STROKE) * 2 + 10;
+const C = SIZE / 2;
+const BODY = 27;
+
+// Feature colors (dark on the teal body for contrast). Hardcoded hex is the
+// character art, allowed by spec.
+const INK = "#05303d";
 
 // One short, true line per reaction. No numbers, no "what's left", no streaks.
-const LINES = ["Nice.", "That's one done.", "Good move.", "Onward.", "Well done."];
+const LINES = ["Nice.", "That's one done.", "Good move.", "Onward.", "Mm — well done.", "There you go."];
 
 /** @param {number} count @returns {number} 0..1 ring fill */
 const fillFor = (count) => Math.min(count / RING_TARGET, 1);
+
+const EYE_DX = 8;
+const EYE_Y = C - 4;
 
 export default function Companion() {
   const reduce = useReducedMotion();
   const [count, setCount] = useState(() => getTodayCount());
   const [line, setLine] = useState(null);
   const [reacting, setReacting] = useState(false);
+  const [blink, setBlink] = useState(false);
   const hideTimer = useRef(null);
 
+  // Subscribe to win events: react + surface a line that lingers, then fades.
   useEffect(() => {
     const unsubscribe = subscribe((newCount) => {
       setCount(newCount);
       setLine(LINES[(newCount - 1) % LINES.length]);
       setReacting(true);
       clearTimeout(hideTimer.current);
-      // Let the line linger briefly, then fade. The ring state itself persists.
       hideTimer.current = setTimeout(() => {
         setReacting(false);
         setLine(null);
@@ -52,46 +60,65 @@ export default function Companion() {
     };
   }, []);
 
+  // Blink loop — the single biggest "alive" tell. Randomized cadence, paused
+  // under reduced motion (eyes simply stay open).
+  useEffect(() => {
+    if (reduce) return;
+    let cancelled = false;
+    let t;
+    const loop = () => {
+      t = setTimeout(() => {
+        if (cancelled) return;
+        setBlink(true);
+        setTimeout(() => !cancelled && setBlink(false), 130);
+        loop();
+      }, 2600 + Math.random() * 3200);
+    };
+    loop();
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
+  }, [reduce]);
+
   const fill = fillFor(count);
   const offset = CIRC - fill * CIRC;
+  const eyesClosed = blink && !reacting;
 
   return (
     <div className="surface-raised rounded-2xl px-4 py-3 flex items-center gap-4">
-      {/* Character + growth ring */}
+      {/* Reaction hop + pop live on the outer wrapper; breathing lives inside. */}
       <motion.div
         className="relative flex-shrink-0"
         style={{ width: SIZE, height: SIZE }}
-        animate={reduce ? false : { scale: reacting ? 1.06 : 1 }}
-        transition={{ type: "spring", stiffness: 400, damping: 18 }}
+        animate={reduce ? false : { scale: reacting ? 1.08 : 1, y: reacting ? -3 : 0 }}
+        transition={{ type: "spring", stiffness: 480, damping: 15 }}
       >
-        {/* Soft glow behind the character on a reaction */}
-        <AnimatePresence>
-          {reacting && !reduce && (
-            <motion.div
-              key="glow"
-              className="absolute inset-0 rounded-full bg-highlight/30 blur-md"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              aria-hidden="true"
-            />
-          )}
-        </AnimatePresence>
+        {/* Soft glow behind the creature on a reaction */}
+        {reacting && !reduce && (
+          <motion.div
+            className="absolute inset-0 rounded-full bg-highlight/30 blur-md"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            aria-hidden="true"
+          />
+        )}
 
-        <svg
-          width={SIZE}
-          height={SIZE}
-          viewBox={`0 0 ${SIZE} ${SIZE}`}
-          role="img"
-          aria-label="Your companion"
-        >
-          {/* Growth ring — track + progress, rotated so it fills from the top */}
-          <g transform={`rotate(-90 ${CENTER} ${CENTER})`}>
-            <circle cx={CENTER} cy={CENTER} r={R} fill="none" stroke="#0a3a52" strokeWidth={STROKE} />
+        <svg width={SIZE} height={SIZE} viewBox={`0 0 ${SIZE} ${SIZE}`} role="img" aria-label="Your companion">
+          <defs>
+            <radialGradient id="companionBody" cx="36%" cy="28%" r="78%">
+              <stop offset="0%" stopColor="#39c2c6" />
+              <stop offset="100%" stopColor="#0a6b73" />
+            </radialGradient>
+          </defs>
+
+          {/* Growth ring — track + progress, filling from the top (static) */}
+          <g transform={`rotate(-90 ${C} ${C})`}>
+            <circle cx={C} cy={C} r={R} fill="none" stroke="#0a3a52" strokeWidth={STROKE} />
             <circle
-              cx={CENTER}
-              cy={CENTER}
+              cx={C}
+              cy={C}
               r={R}
               fill="none"
               stroke="#69c4d2"
@@ -103,44 +130,70 @@ export default function Companion() {
             />
           </g>
 
-          {/* Inline-SVG character: a small, warm face. Hardcoded hex is allowed
-              here (character art only). It gives a tiny smile on a reaction. */}
-          <circle cx={CENTER} cy={CENTER} r={R - 9} fill="#0e3d5e" stroke="#1a5077" strokeWidth="1.5" />
-          <circle cx={CENTER - 7} cy={CENTER - 3} r="2.4" fill="#69c4d2" />
-          <circle cx={CENTER + 7} cy={CENTER - 3} r="2.4" fill="#69c4d2" />
-          <path
-            d={
-              reacting
-                ? `M ${CENTER - 8} ${CENTER + 5} Q ${CENTER} ${CENTER + 12} ${CENTER + 8} ${CENTER + 5}`
-                : `M ${CENTER - 7} ${CENTER + 6} Q ${CENTER} ${CENTER + 9} ${CENTER + 7} ${CENTER + 6}`
-            }
-            fill="none"
-            stroke="#69c4d2"
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
+          {/* The living creature — breathes continuously (gentle rise/fall). */}
+          <motion.g
+            animate={reduce ? undefined : { y: [0, -2, 0] }}
+            transition={reduce ? undefined : { duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+            style={{ originX: "0px", originY: "0px" }}
+          >
+            {/* Body + gloss highlight */}
+            <circle cx={C} cy={C} r={BODY} fill="url(#companionBody)" />
+            <ellipse cx={C - 7} cy={C - 10} rx="7" ry="4.5" fill="#ffffff" opacity="0.18" />
+
+            {/* Cheeks — fade in on a reaction */}
+            <g style={{ transition: "opacity .3s ease", opacity: reacting ? 1 : 0 }} aria-hidden="true">
+              <circle cx={C - 14} cy={C + 5} r="3.2" fill="#ff9aa2" opacity="0.55" />
+              <circle cx={C + 14} cy={C + 5} r="3.2" fill="#ff9aa2" opacity="0.55" />
+            </g>
+
+            {/* Eyes — happy arcs on a win, a thin closed line on a blink, else
+                round eyes with a living highlight. */}
+            {reacting ? (
+              <>
+                <path d={`M ${C - EYE_DX - 3.5} ${EYE_Y + 1.5} Q ${C - EYE_DX} ${EYE_Y - 3} ${C - EYE_DX + 3.5} ${EYE_Y + 1.5}`} fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" />
+                <path d={`M ${C + EYE_DX - 3.5} ${EYE_Y + 1.5} Q ${C + EYE_DX} ${EYE_Y - 3} ${C + EYE_DX + 3.5} ${EYE_Y + 1.5}`} fill="none" stroke={INK} strokeWidth="2.4" strokeLinecap="round" />
+              </>
+            ) : eyesClosed ? (
+              <>
+                <line x1={C - EYE_DX - 3} y1={EYE_Y} x2={C - EYE_DX + 3} y2={EYE_Y} stroke={INK} strokeWidth="2.2" strokeLinecap="round" />
+                <line x1={C + EYE_DX - 3} y1={EYE_Y} x2={C + EYE_DX + 3} y2={EYE_Y} stroke={INK} strokeWidth="2.2" strokeLinecap="round" />
+              </>
+            ) : (
+              <>
+                <circle cx={C - EYE_DX} cy={EYE_Y} r="3.4" fill={INK} />
+                <circle cx={C + EYE_DX} cy={EYE_Y} r="3.4" fill={INK} />
+                <circle cx={C - EYE_DX - 1} cy={EYE_Y - 1.3} r="1.1" fill="#ffffff" opacity="0.9" />
+                <circle cx={C + EYE_DX - 1} cy={EYE_Y - 1.3} r="1.1" fill="#ffffff" opacity="0.9" />
+              </>
+            )}
+
+            {/* Mouth — a fuller, warmer smile on a reaction; a soft one at rest. */}
+            <path
+              d={
+                reacting
+                  ? `M ${C - 6.5} ${C + 7} Q ${C} ${C + 15} ${C + 6.5} ${C + 7}`
+                  : `M ${C - 4.5} ${C + 8} Q ${C} ${C + 11} ${C + 4.5} ${C + 8}`
+              }
+              fill="none"
+              stroke={INK}
+              strokeWidth="2.2"
+              strokeLinecap="round"
+            />
+          </motion.g>
         </svg>
       </motion.div>
 
-      {/* One short, restrained line — only present during a reaction */}
+      {/* One short, restrained line — only present during a reaction. */}
       <div className="min-w-0 flex-1">
-        <AnimatePresence mode="wait">
-          {line && (
-            <motion.p
-              key={line + count}
-              className="text-sm font-medium text-highlight"
-              initial={reduce ? false : { opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={reduce ? { opacity: 0 } : { opacity: 0, y: -4 }}
-              transition={{ duration: 0.25 }}
-            >
-              {line}
-            </motion.p>
-          )}
-        </AnimatePresence>
-        {!line && (
-          <p className="text-sm text-muted-foreground">Here with you today.</p>
-        )}
+        <motion.p
+          key={line ? line + count : "idle"}
+          className={line ? "text-sm font-medium text-highlight" : "text-sm text-muted-foreground"}
+          initial={reduce ? false : { opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          {line || "Here with you today."}
+        </motion.p>
       </div>
     </div>
   );
