@@ -13,7 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@base44/sdk": "^0.8.32",
+    "@base44/sdk": "^0.8.34",
     "@base44/vite-plugin": "^1.0.23",
     "@radix-ui/react-label": "^2.1.2",
     "@radix-ui/react-slot": "^1.1.2",
