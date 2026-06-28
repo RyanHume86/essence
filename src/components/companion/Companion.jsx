@@ -48,7 +48,7 @@ export default function Companion() {
       {/* Reaction hop + pop (outer) wraps the slow breath (inner). */}
       <motion.div
         className="relative flex-shrink-0"
-        style={{ width: 80, height: 84 }}
+        style={{ width: 84, height: 90 }}
         animate={reduce ? false : { scale: reacting ? 1.04 : 1, y: reacting ? -2 : 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 22 }}
       >
@@ -72,14 +72,14 @@ export default function Companion() {
         >
           {/* Idle + grin stacked; the win cross-fades to the grin. */}
           <img
-            src="/companion/companion.png"
+            src="/companion/monkey_sit_smile.svg"
             alt="Your companion"
             draggable={false}
             className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
             style={{ opacity: reacting ? 0 : 1, transition: reduce ? undefined : "opacity .18s ease" }}
           />
           <img
-            src="/companion/companion-grin.png"
+            src="/companion/monkey_clasp_laugh2.svg"
             alt=""
             aria-hidden="true"
             draggable={false}
