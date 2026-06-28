@@ -66,7 +66,10 @@ export default function Companion() {
         {/* Slow, subtle breath — a gentle vertical swell anchored at the feet. */}
         <motion.div
           className="relative w-full h-full"
-          style={{ transformOrigin: "50% 92%" }}
+          style={{
+            transformOrigin: "50% 92%",
+            filter: "drop-shadow(0 6px 8px rgba(0,0,0,0.6)) drop-shadow(0 0 8px rgba(105,196,210,0.3))",
+          }}
           animate={reduce ? undefined : { scaleX: [1, 1.012, 1], scaleY: [1, 1.03, 1], y: [0, -1, 0] }}
           transition={reduce ? undefined : { duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
         >
