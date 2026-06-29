@@ -81,21 +81,12 @@ export default function Companion() {
           animate={reduce ? undefined : { scaleX: [1, 1.012, 1], scaleY: [1, 1.03, 1], y: [0, -1, 0] }}
           transition={reduce ? undefined : { duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          {/* Idle + grin stacked; the win cross-fades to the grin. */}
+          {/* Single creature image. */}
           <img
             src="/companion/monkey_sit_smile.svg"
             alt="Your companion"
             draggable={false}
             className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
-            style={{ opacity: reacting ? 0 : 1, transition: reduce ? undefined : "opacity .18s ease" }}
-          />
-          <img
-            src="/companion/monkey_clasp_laugh2.svg"
-            alt=""
-            aria-hidden="true"
-            draggable={false}
-            className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
-            style={{ opacity: reacting ? 1 : 0, transition: reduce ? undefined : "opacity .18s ease" }}
           />
         </motion.div>
       </motion.div>
