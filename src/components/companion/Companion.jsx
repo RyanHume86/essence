@@ -68,7 +68,7 @@ export default function Companion() {
         <div
           aria-hidden="true"
           className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
-          style={{ bottom: -2, width: 58, height: 14, borderRadius: "50%", background: "rgba(0,0,0,0.72)", filter: "blur(5px)" }}
+          style={{ bottom: -2, width: 58, height: 14, borderRadius: "50%", background: "rgba(1,13,22,0.82)", filter: "blur(5px)" }}
         />
 
         {/* Slow, subtle breath — a gentle vertical swell anchored at the feet. */}
@@ -76,7 +76,7 @@ export default function Companion() {
           className="relative w-full h-full"
           style={{
             transformOrigin: "50% 92%",
-            filter: "drop-shadow(0 0 14px rgba(105,196,210,0.28))",
+            filter: "drop-shadow(0 0 16px rgba(105,196,210,0.18))",
           }}
           animate={reduce ? undefined : { scaleX: [1, 1.012, 1], scaleY: [1, 1.03, 1], y: [0, -1, 0] }}
           transition={reduce ? undefined : { duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
