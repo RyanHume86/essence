@@ -83,7 +83,7 @@ export default function Companion() {
         >
           {/* Single creature image. */}
           <img
-            src="/companion/monkey_sit_smile.svg"
+            src="/companion/monkey_sit_laugh.svg"
             alt="Your companion"
             draggable={false}
             className="absolute inset-0 w-full h-full object-contain select-none pointer-events-none"
