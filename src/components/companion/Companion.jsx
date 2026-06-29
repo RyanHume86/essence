@@ -68,7 +68,7 @@ export default function Companion() {
         <div
           aria-hidden="true"
           className="absolute left-1/2 -translate-x-1/2 pointer-events-none"
-          style={{ bottom: -8, width: 60, height: 10, borderRadius: "50%", background: "rgba(0,5,12,0.9)", filter: "blur(5px)" }}
+          style={{ bottom: -2, width: 58, height: 14, borderRadius: "50%", background: "rgba(0,5,12,0.9)", filter: "blur(5px)" }}
         />
 
         {/* Slow, subtle breath — a gentle vertical swell anchored at the feet. */}
