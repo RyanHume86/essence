@@ -1,7 +1,6 @@
 import React from "react";
 import { format } from "date-fns";
 import { PartyPopper, Coffee, Search } from "lucide-react";
-import TaskInput from "../components/tasks/TaskInput";
 import TaskGroup from "../components/tasks/TaskGroup";
 import ProgressRing from "../components/tasks/ProgressRing";
 import Companion from "../components/companion/Companion";
@@ -64,8 +63,7 @@ export default function Today() {
       {/* Win-moment companion: reacts as tasks are completed */}
       <Companion />
 
-      {/* Capture: the single create path */}
-      <TaskInput onAdd={(vals) => actions.create(vals)} />
+      {/* Capture now lives on the Plan surface (via the +FAB), not here. */}
 
       {isLoading && <LoadingRows />}
 
@@ -86,7 +84,7 @@ export default function Today() {
             doneTodayAll.length > 0 ? (
               <EmptyState icon={PartyPopper} title="All clear for today" subtitle="Every task for today is done. Nice work." />
             ) : (
-              <EmptyState icon={Coffee} title="Nothing for today" subtitle="Capture something above, or check Upcoming." />
+              <EmptyState icon={Coffee} title="Nothing for today" subtitle="Tap + to add a task, or check Plan." />
             )
           )}
         </>

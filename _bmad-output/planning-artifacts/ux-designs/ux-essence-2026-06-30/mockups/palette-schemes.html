@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Essence — final palette set (7)</title>
+<style>
+/*
+  ESSENCE — FINAL PALETTE SET (7). Concrete hex per variant:
+
+  1. DEEP SEA (default / dark)
+     bg #04141f · surface #0a3450 · border #0a3a52 · text #ffffff
+     text-muted rgba(255,255,255,.7) · accent #008080 · accent-hover #00a1a1
+     highlight #69c4d2 · success #2D6D54 · creature-tint #03243A
+
+  2. FOREST / SAGE (dark)
+     bg #10180f · surface #1b2618 · border #2a3a26 · text #eef2e9
+     text-muted rgba(238,242,233,.66) · accent #8aa98a · accent-hover #a3c0a3
+     highlight #b6d0a8 · success #3f6d4e · creature-tint #243029
+
+  3. TWILIGHT (dark)
+     bg #14101f · surface #221b33 · border #322a47 · text #efeaf7
+     text-muted rgba(239,234,247,.66) · accent #a99cd6 · accent-hover #c2b6ec
+     highlight #c7bdf0 · success #4a6a72 · creature-tint #2a2440
+
+  4. SOFT PAPER (light)
+     bg #f4f0e8 · surface #fbf8f1 · border #e4ddcf · text #2f2a24
+     text-muted rgba(47,42,36,.62) · accent #3f8f8a · accent-hover #357a76
+     highlight #2f7d78 · success #3f7a5c · creature-tint #cbb89a
+
+  5. ACCESSIBLE (colourblind-safe — blue/orange, lightness-differentiated)
+     bg #0f1c28 · surface #1a2c3c · border #2a4054 · text #f2f6fa
+     text-muted rgba(242,246,250,.7) · accent #e89c4a · accent-hover #f4ad60
+     highlight #6db6e8 · success #4a8fb0 · creature-tint #2c3e52
+
+  6. SOFT PINK (NEW — dusty-rose, soft-light register)
+     bg #f3eaea · surface #fbf4f3 · border #e6d4d3 · text #34282a
+     text-muted rgba(52,40,42,.62) · accent #a86b72 · accent-hover #95595f
+     highlight #8f5159 · success #4d7a63 · creature-tint #c7a3a0
+
+  7. SKY BLUE (NEW — airy daytime, soft-light register)
+     bg #eef4fa · surface #f8fbfe · border #d6e3ef · text #28333d
+     text-muted rgba(40,51,61,.6) · accent #3f86c4 · accent-hover #336fa6
+     highlight #2f74b3 · success #3f7a64 · creature-tint #aac4dc
+*/
+
+:root{
+  --serif: "Playfair Display", "Iowan Old Style", "Apple Garamond", Georgia, "Times New Roman", serif;
+  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+body{
+  font-family:var(--sans);
+  background:#1c2127;
+  color:#e9ecf1;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.55;
+  padding:32px 20px 64px;
+}
+.page-head{ max-width:1180px; margin:0 auto 28px; }
+.page-head h1{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:30px;
+  letter-spacing:.2px;
+  margin:0 0 8px;
+}
+.page-head p{
+  margin:0;
+  font-size:15px;
+  color:#aab2bd;
+  max-width:640px;
+}
+.grid{
+  max-width:1180px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:24px;
+}
+@media (max-width:840px){ .grid{ grid-template-columns:1fr; } }
+
+.card{
+  border-radius:16px;
+  padding:22px 22px 26px;
+  border:1px solid rgba(255,255,255,.07);
+  background:#23282f;
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset, 0 10px 30px rgba(0,0,0,.28);
+}
+.card-head{
+  display:flex;
+  align-items:baseline;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:4px;
+}
+.card-head h2{
+  font-family:var(--serif);
+  font-weight:600;
+  font-size:21px;
+  margin:0;
+}
+.tag{
+  font-size:11px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  color:#9aa3ad;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:999px;
+  padding:2px 9px;
+}
+.badge-new{
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+  color:#0d141a;
+  background:#c8d6a8;
+  border-radius:999px;
+  padding:3px 10px;
+}
+.register{
+  font-size:13.5px;
+  color:#aab2bd;
+  margin:2px 0 18px;
+  line-height:1.5;
+}
+.note{ display:block; color:#878f99; font-size:12.5px; margin-top:4px; }
+
+.chips{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+  margin-bottom:20px;
+}
+.chip{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:11.5px;
+  background:#1c2127;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:9px;
+  padding:6px 8px;
+}
+.sw{
+  width:22px; height:22px;
+  border-radius:6px;
+  flex:0 0 auto;
+  border:1px solid rgba(255,255,255,.18);
+}
+.chip .role{ color:#cfd5dc; line-height:1.15; }
+.chip .hex{ color:#828b95; font-size:10.5px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+
+/* ---- mobile snippet ---- */
+.phone{
+  border-radius:22px;
+  padding:18px 16px 18px;
+  position:relative;
+  overflow:hidden;
+}
+.phone-top{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:16px;
+}
+.creature{
+  width:50px; height:50px;
+  border-radius:14px;
+  display:flex; align-items:center; justify-content:center;
+  flex:0 0 auto;
+  box-shadow:0 2px 8px rgba(0,0,0,.18) inset, 0 1px 2px rgba(0,0,0,.2);
+}
+.hello{
+  font-family:var(--serif);
+  font-size:16px;
+  line-height:1.3;
+}
+.hello small{ display:block; font-size:12px; margin-top:2px; }
+
+.focus-row{ display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.wheel{ flex:0 0 auto; }
+
+.taskcard{
+  border-radius:13px;
+  padding:13px 14px;
+  margin-bottom:12px;
+  box-shadow:0 1px 0 rgba(255,255,255,.05) inset, 0 4px 14px rgba(0,0,0,.16);
+}
+.task-title{ font-size:14.5px; font-weight:600; margin-bottom:11px; }
+.sub{
+  display:flex; align-items:flex-start; gap:9px;
+  font-size:13px;
+  padding:7px 0;
+}
+.box{
+  width:17px; height:17px; border-radius:5px;
+  flex:0 0 auto; margin-top:1px;
+  border:1.5px solid currentColor;
+}
+.sub.recessed{ opacity:.55; }
+.sub.active{
+  border-radius:9px;
+  padding:9px 10px;
+  margin:2px -4px;
+}
+.sub.active .sub-meta{ font-size:11.5px; margin-top:3px; opacity:.85; }
+
+.done{
+  display:flex; align-items:center; gap:9px;
+  font-size:13px;
+  padding:9px 2px;
+  opacity:.5;
+}
+.done .txt{ text-decoration:line-through; }
+.check{
+  width:17px; height:17px; border-radius:5px;
+  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center;
+}
+.check svg{ width:11px; height:11px; }
+
+.cta{
+  display:block; width:100%;
+  text-align:center;
+  border:none;
+  border-radius:12px;
+  padding:13px;
+  font-family:var(--sans);
+  font-size:14.5px;
+  font-weight:600;
+  margin-top:6px;
+  cursor:default;
+  box-shadow:0 4px 14px rgba(0,0,0,.18);
+}
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <h1>Essence — final palette set (7)</h1>
+  <p>Deep Sea is the default. #6 Soft Pink and #7 Sky Blue are the new additions to judge.</p>
+</header>
+
+<main class="grid">
+
+  <!-- ============ 1. DEEP SEA ============ -->
+  <section class="card">
+    <div class="card-head">
+      <h2>Deep Sea</h2>
+      <span class="tag">default / current</span>
+    </div>
+    <p class="register">Calm, submerged, nocturnal focus.</p>
+
+    <div class="chips">
+      <div class="chip"><span class="sw" style="background:#04141f"></span><span class="role">background<span class="hex">#04141f</span></span></div>
+      <div class="chip"><span class="sw" style="background:#0a3450"></span><span class="role">surface<span class="hex">#0a3450</span></span></div>
+      <div class="chip"><span class="sw" style="background:#0a3a52"></span><span class="role">border<span class="hex">#0a3a52</span></span></div>
+      <div class="chip"><span class="sw" style="background:#ffffff"></span><span class="role">text<span class="hex">#ffffff</span></span></div>
+      <div class="chip"><span class="sw" style="background:rgba(255,255,255,.7)"></span><span class="role">text-muted<span class="hex">#fff b3</span></span></div>
+      <div class="chip"><span class="sw" style="background:#008080"></span><span class="role">accent<span class="hex">#008080</span></span></div>
+      <div class="chip"><span class="sw" style="background:#00a1a1"></span><span class="role">accent-hover<span class="hex">#00a1a1</span></span></div>
+      <div class="chip"><span class="sw" style="background:#69c4d2"></span><span class="role">highlight<span class="hex">#69c4d2</span></span></div>
+      <div class="chip"><span class="sw" style="background:#2D6D54"></span><span class="role">success<span class="hex">#2D6D54</span></span></div>
+      <div class="chip"><span class="sw" style="background:#03243A"></span><span class="role">creature-tint<span class="hex">#03243A</span></span></div>
+    </div>
+
+    <div class="phone" style="background:#04141f;color:#ffffff;">
+      <div class="phone-top">
+        <div class="creature" style="background:#03243A;">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><ellipse cx="15" cy="17" rx="9" ry="8.5" fill="#69c4d2" opacity=".9"/><circle cx="7.5" cy="12" r="3.4" fill="#03243A" stroke="#69c4d2" stroke-width="1.4"/><circle cx="22.5" cy="12" r="3.4" fill="#03243A" stroke="#69c4d2" stroke-width="1.4"/><ellipse cx="15" cy="19" rx="5.4" ry="5" fill="#04141f" opacity=".55"/><circle cx="12" cy="16" r="1.1" fill="#04141f"/><circle cx="18" cy="16" r="1.1" fill="#04141f"/></svg>
+        </div>
+        <div class="hello">Here with you today.<small style="color:rgba(255,255,255,.7)">A quiet start.</small></div>
+      </div>
+      <div class="focus-row">
+        <svg class="wheel" width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="18" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="5"/><circle cx="23" cy="23" r="18" fill="none" stroke="#008080" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="45" transform="rotate(-90 23 23)"/></svg>
+        <span style="font-size:12.5px;color:rgba(255,255,255,.7)">Some of today is already behind you.</span>
+      </div>
+      <div class="taskcard" style="background:#0a3450;border:1px solid #0a3a52;">
+        <div class="task-title">Draft chapter 3 outline</div>
+        <div class="sub recessed"><span class="box"></span><span>Gather the loose notes</span></div>
+        <div class="sub active" style="background:rgba(105,196,210,.1);color:#69c4d2;">
+          <span class="box" style="border-color:#69c4d2;"></span>
+          <span style="color:#ffffff;">Sketch the opening scene<span class="sub-meta" style="color:#69c4d2;">In progress — just this one.</span></span>
+        </div>
+      </div>
+      <div class="done"><span class="check" style="background:#2D6D54;"><svg viewBox="0 0 11 11" fill="none"><path d="M2 5.7 4.3 8 9 3" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Reply to editor</span></div>
+      <button class="cta" style="background:#008080;color:#ffffff;">I'm done for today</button>
+    </div>
+  </section>
+
+  <!-- ============ 2. FOREST / SAGE ============ -->
+  <section class="card">
+    <div class="card-head"><h2>Forest / Sage</h2><span class="tag">dark</span></div>
+    <p class="register">Quiet woods at dusk.</p>
+
+    <div class="chips">
+      <div class="chip"><span class="sw" style="background:#10180f"></span><span class="role">background<span class="hex">#10180f</span></span></div>
+      <div class="chip"><span class="sw" style="background:#1b2618"></span><span class="role">surface<span class="hex">#1b2618</span></span></div>
+      <div class="chip"><span class="sw" style="background:#2a3a26"></span><span class="role">border<span class="hex">#2a3a26</span></span></div>
+      <div class="chip"><span class="sw" style="background:#eef2e9"></span><span class="role">text<span class="hex">#eef2e9</span></span></div>
+      <div class="chip"><span class="sw" style="background:rgba(238,242,233,.66)"></span><span class="role">text-muted<span class="hex">#eef2e9 a8</span></span></div>
+      <div class="chip"><span class="sw" style="background:#8aa98a"></span><span class="role">accent<span class="hex">#8aa98a</span></span></div>
+      <div class="chip"><span class="sw" style="background:#a3c0a3"></span><span class="role">accent-hover<span class="hex">#a3c0a3</span></span></div>
+      <div class="chip"><span class="sw" style="background:#b6d0a8"></span><span class="role">highlight<span class="hex">#b6d0a8</span></span></div>
+      <div class="chip"><span class="sw" style="background:#3f6d4e"></span><span class="role">success<span class="hex">#3f6d4e</span></span></div>
+      <div class="chip"><span class="sw" style="background:#243029"></span><span class="role">creature-tint<span class="hex">#243029</span></span></div>
+    </div>
+
+    <div class="phone" style="background:#10180f;color:#eef2e9;">
+      <div class="phone-top">
+        <div class="creature" style="background:#243029;">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><ellipse cx="15" cy="17" rx="9" ry="8.5" fill="#b6d0a8" opacity=".9"/><circle cx="7.5" cy="12" r="3.4" fill="#243029" stroke="#b6d0a8" stroke-width="1.4"/><circle cx="22.5" cy="12" r="3.4" fill="#243029" stroke="#b6d0a8" stroke-width="1.4"/><ellipse cx="15" cy="19" rx="5.4" ry="5" fill="#10180f" opacity=".5"/><circle cx="12" cy="16" r="1.1" fill="#10180f"/><circle cx="18" cy="16" r="1.1" fill="#10180f"/></svg>
+        </div>
+        <div class="hello">Here with you today.<small style="color:rgba(238,242,233,.66)">A quiet start.</small></div>
+      </div>
+      <div class="focus-row">
+        <svg class="wheel" width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="18" fill="none" stroke="rgba(238,242,233,.12)" stroke-width="5"/><circle cx="23" cy="23" r="18" fill="none" stroke="#8aa98a" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="45" transform="rotate(-90 23 23)"/></svg>
+        <span style="font-size:12.5px;color:rgba(238,242,233,.66)">Some of today is already behind you.</span>
+      </div>
+      <div class="taskcard" style="background:#1b2618;border:1px solid #2a3a26;">
+        <div class="task-title">Draft chapter 3 outline</div>
+        <div class="sub recessed"><span class="box"></span><span>Gather the loose notes</span></div>
+        <div class="sub active" style="background:rgba(182,208,168,.1);color:#b6d0a8;">
+          <span class="box" style="border-color:#b6d0a8;"></span>
+          <span style="color:#eef2e9;">Sketch the opening scene<span class="sub-meta" style="color:#b6d0a8;">In progress — just this one.</span></span>
+        </div>
+      </div>
+      <div class="done"><span class="check" style="background:#3f6d4e;"><svg viewBox="0 0 11 11" fill="none"><path d="M2 5.7 4.3 8 9 3" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Reply to editor</span></div>
+      <button class="cta" style="background:#8aa98a;color:#10180f;">I'm done for today</button>
+    </div>
+  </section>
+
+  <!-- ============ 3. TWILIGHT ============ -->
+  <section class="card">
+    <div class="card-head"><h2>Twilight</h2><span class="tag">dark</span></div>
+    <p class="register">Still, late twilight.</p>
+
+    <div class="chips">
+      <div class="chip"><span class="sw" style="background:#14101f"></span><span class="role">background<span class="hex">#14101f</span></span></div>
+      <div class="chip"><span class="sw" style="background:#221b33"></span><span class="role">surface<span class="hex">#221b33</span></span></div>
+      <div class="chip"><span class="sw" style="background:#322a47"></span><span class="role">border<span class="hex">#322a47</span></span></div>
+      <div class="chip"><span class="sw" style="background:#efeaf7"></span><span class="role">text<span class="hex">#efeaf7</span></span></div>
+      <div class="chip"><span class="sw" style="background:rgba(239,234,247,.66)"></span><span class="role">text-muted<span class="hex">#efeaf7 a8</span></span></div>
+      <div class="chip"><span class="sw" style="background:#a99cd6"></span><span class="role">accent<span class="hex">#a99cd6</span></span></div>
+      <div class="chip"><span class="sw" style="background:#c2b6ec"></span><span class="role">accent-hover<span class="hex">#c2b6ec</span></span></div>
+      <div class="chip"><span class="sw" style="background:#c7bdf0"></span><span class="role">highlight<span class="hex">#c7bdf0</span></span></div>
+      <div class="chip"><span class="sw" style="background:#4a6a72"></span><span class="role">success<span class="hex">#4a6a72</span></span></div>
+      <div class="chip"><span class="sw" style="background:#2a2440"></span><span class="role">creature-tint<span class="hex">#2a2440</span></span></div>
+    </div>
+
+    <div class="phone" style="background:#14101f;color:#efeaf7;">
+      <div class="phone-top">
+        <div class="creature" style="background:#2a2440;">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><ellipse cx="15" cy="17" rx="9" ry="8.5" fill="#c7bdf0" opacity=".9"/><circle cx="7.5" cy="12" r="3.4" fill="#2a2440" stroke="#c7bdf0" stroke-width="1.4"/><circle cx="22.5" cy="12" r="3.4" fill="#2a2440" stroke="#c7bdf0" stroke-width="1.4"/><ellipse cx="15" cy="19" rx="5.4" ry="5" fill="#14101f" opacity=".5"/><circle cx="12" cy="16" r="1.1" fill="#14101f"/><circle cx="18" cy="16" r="1.1" fill="#14101f"/></svg>
+        </div>
+        <div class="hello">Here with you today.<small style="color:rgba(239,234,247,.66)">A quiet start.</small></div>
+      </div>
+      <div class="focus-row">
+        <svg class="wheel" width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="18" fill="none" stroke="rgba(239,234,247,.12)" stroke-width="5"/><circle cx="23" cy="23" r="18" fill="none" stroke="#a99cd6" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="45" transform="rotate(-90 23 23)"/></svg>
+        <span style="font-size:12.5px;color:rgba(239,234,247,.66)">Some of today is already behind you.</span>
+      </div>
+      <div class="taskcard" style="background:#221b33;border:1px solid #322a47;">
+        <div class="task-title">Draft chapter 3 outline</div>
+        <div class="sub recessed"><span class="box"></span><span>Gather the loose notes</span></div>
+        <div class="sub active" style="background:rgba(199,189,240,.1);color:#c7bdf0;">
+          <span class="box" style="border-color:#c7bdf0;"></span>
+          <span style="color:#efeaf7;">Sketch the opening scene<span class="sub-meta" style="color:#c7bdf0;">In progress — just this one.</span></span>
+        </div>
+      </div>
+      <div class="done"><span class="check" style="background:#4a6a72;"><svg viewBox="0 0 11 11" fill="none"><path d="M2 5.7 4.3 8 9 3" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Reply to editor</span></div>
+      <button class="cta" style="background:#a99cd6;color:#14101f;">I'm done for today</button>
+    </div>
+  </section>
+
+  <!-- ============ 4. SOFT PAPER ============ -->
+  <section class="card">
+    <div class="card-head"><h2>Soft Paper</h2><span class="tag">light / white</span></div>
+    <p class="register">Soft paper daylight.<span class="note">Calm, gentle, low-glare — a warm off-white, not clinical white.</span></p>
+
+    <div class="chips">
+      <div class="chip"><span class="sw" style="background:#f4f0e8"></span><span class="role">background<span class="hex">#f4f0e8</span></span></div>
+      <div class="chip"><span class="sw" style="background:#fbf8f1"></span><span class="role">surface<span class="hex">#fbf8f1</span></span></div>
+      <div class="chip"><span class="sw" style="background:#e4ddcf"></span><span class="role">border<span class="hex">#e4ddcf</span></span></div>
+      <div class="chip"><span class="sw" style="background:#2f2a24"></span><span class="role">text<span class="hex">#2f2a24</span></span></div>
+      <div class="chip"><span class="sw" style="background:rgba(47,42,36,.62)"></span><span class="role">text-muted<span class="hex">#2f2a24 9e</span></span></div>
+      <div class="chip"><span class="sw" style="background:#3f8f8a"></span><span class="role">accent<span class="hex">#3f8f8a</span></span></div>
+      <div class="chip"><span class="sw" style="background:#357a76"></span><span class="role">accent-hover<span class="hex">#357a76</span></span></div>
+      <div class="chip"><span class="sw" style="background:#2f7d78"></span><span class="role">highlight<span class="hex">#2f7d78</span></span></div>
+      <div class="chip"><span class="sw" style="background:#3f7a5c"></span><span class="role">success<span class="hex">#3f7a5c</span></span></div>
+      <div class="chip"><span class="sw" style="background:#cbb89a"></span><span class="role">creature-tint<span class="hex">#cbb89a</span></span></div>
+    </div>
+
+    <div class="phone" style="background:#f4f0e8;color:#2f2a24;">
+      <div class="phone-top">
+        <div class="creature" style="background:#cbb89a;">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><ellipse cx="15" cy="17" rx="9" ry="8.5" fill="#fbf8f1" opacity=".85"/><circle cx="7.5" cy="12" r="3.4" fill="#cbb89a" stroke="#fbf8f1" stroke-width="1.4"/><circle cx="22.5" cy="12" r="3.4" fill="#cbb89a" stroke="#fbf8f1" stroke-width="1.4"/><ellipse cx="15" cy="19" rx="5.4" ry="5" fill="#a98f6a" opacity=".5"/><circle cx="12" cy="16" r="1.1" fill="#5e4d34"/><circle cx="18" cy="16" r="1.1" fill="#5e4d34"/></svg>
+        </div>
+        <div class="hello">Here with you today.<small style="color:rgba(47,42,36,.62)">A quiet start.</small></div>
+      </div>
+      <div class="focus-row">
+        <svg class="wheel" width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="18" fill="none" stroke="rgba(47,42,36,.12)" stroke-width="5"/><circle cx="23" cy="23" r="18" fill="none" stroke="#3f8f8a" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="45" transform="rotate(-90 23 23)"/></svg>
+        <span style="font-size:12.5px;color:rgba(47,42,36,.62)">Some of today is already behind you.</span>
+      </div>
+      <div class="taskcard" style="background:#fbf8f1;border:1px solid #e4ddcf;">
+        <div class="task-title">Draft chapter 3 outline</div>
+        <div class="sub recessed"><span class="box"></span><span>Gather the loose notes</span></div>
+        <div class="sub active" style="background:rgba(63,143,138,.1);color:#2f7d78;">
+          <span class="box" style="border-color:#2f7d78;"></span>
+          <span style="color:#2f2a24;">Sketch the opening scene<span class="sub-meta" style="color:#2f7d78;">In progress — just this one.</span></span>
+        </div>
+      </div>
+      <div class="done"><span class="check" style="background:#3f7a5c;"><svg viewBox="0 0 11 11" fill="none"><path d="M2 5.7 4.3 8 9 3" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Reply to editor</span></div>
+      <button class="cta" style="background:#3f8f8a;color:#fbf8f1;">I'm done for today</button>
+    </div>
+  </section>
+
+  <!-- ============ 5. ACCESSIBLE ============ -->
+  <section class="card">
+    <div class="card-head"><h2>Accessible</h2><span class="tag">colourblind-safe</span></div>
+    <p class="register">Daylight-dim, dependable focus — a blue/orange pairing.<span class="note">Accent (warm orange) and success (cooler blue) differ in lightness as well as hue, and never lean on red/green, so they stay distinct under deuteranopia and protanopia.</span></p>
+
+    <div class="chips">
+      <div class="chip"><span class="sw" style="background:#0f1c28"></span><span class="role">background<span class="hex">#0f1c28</span></span></div>
+      <div class="chip"><span class="sw" style="background:#1a2c3c"></span><span class="role">surface<span class="hex">#1a2c3c</span></span></div>
+      <div class="chip"><span class="sw" style="background:#2a4054"></span><span class="role">border<span class="hex">#2a4054</span></span></div>
+      <div class="chip"><span class="sw" style="background:#f2f6fa"></span><span class="role">text<span class="hex">#f2f6fa</span></span></div>
+      <div class="chip"><span class="sw" style="background:rgba(242,246,250,.7)"></span><span class="role">text-muted<span class="hex">#f2f6fa b3</span></span></div>
+      <div class="chip"><span class="sw" style="background:#e89c4a"></span><span class="role">accent<span class="hex">#e89c4a</span></span></div>
+      <div class="chip"><span class="sw" style="background:#f4ad60"></span><span class="role">accent-hover<span class="hex">#f4ad60</span></span></div>
+      <div class="chip"><span class="sw" style="background:#6db6e8"></span><span class="role">highlight<span class="hex">#6db6e8</span></span></div>
+      <div class="chip"><span class="sw" style="background:#4a8fb0"></span><span class="role">success<span class="hex">#4a8fb0</span></span></div>
+      <div class="chip"><span class="sw" style="background:#2c3e52"></span><span class="role">creature-tint<span class="hex">#2c3e52</span></span></div>
+    </div>
+
+    <div class="phone" style="background:#0f1c28;color:#f2f6fa;">
+      <div class="phone-top">
+        <div class="creature" style="background:#2c3e52;">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><ellipse cx="15" cy="17" rx="9" ry="8.5" fill="#6db6e8" opacity=".9"/><circle cx="7.5" cy="12" r="3.4" fill="#2c3e52" stroke="#6db6e8" stroke-width="1.4"/><circle cx="22.5" cy="12" r="3.4" fill="#2c3e52" stroke="#6db6e8" stroke-width="1.4"/><ellipse cx="15" cy="19" rx="5.4" ry="5" fill="#0f1c28" opacity=".5"/><circle cx="12" cy="16" r="1.1" fill="#0f1c28"/><circle cx="18" cy="16" r="1.1" fill="#0f1c28"/></svg>
+        </div>
+        <div class="hello">Here with you today.<small style="color:rgba(242,246,250,.7)">A quiet start.</small></div>
+      </div>
+      <div class="focus-row">
+        <svg class="wheel" width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="18" fill="none" stroke="rgba(242,246,250,.14)" stroke-width="5"/><circle cx="23" cy="23" r="18" fill="none" stroke="#e89c4a" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="45" transform="rotate(-90 23 23)"/></svg>
+        <span style="font-size:12.5px;color:rgba(242,246,250,.7)">Some of today is already behind you.</span>
+      </div>
+      <div class="taskcard" style="background:#1a2c3c;border:1px solid #2a4054;">
+        <div class="task-title">Draft chapter 3 outline</div>
+        <div class="sub recessed"><span class="box"></span><span>Gather the loose notes</span></div>
+        <div class="sub active" style="background:rgba(109,182,232,.12);color:#6db6e8;">
+          <span class="box" style="border-color:#6db6e8;"></span>
+          <span style="color:#f2f6fa;">Sketch the opening scene<span class="sub-meta" style="color:#6db6e8;">In progress — just this one.</span></span>
+        </div>
+      </div>
+      <div class="done"><span class="check" style="background:#4a8fb0;"><svg viewBox="0 0 11 11" fill="none"><path d="M2 5.7 4.3 8 9 3" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Reply to editor</span></div>
+      <button class="cta" style="background:#e89c4a;color:#0f1c28;">I'm done for today</button>
+    </div>
+  </section>
+
+  <!-- ============ 6. SOFT PINK (NEW) ============ -->
+  <section class="card">
+    <div class="card-head"><h2>Soft Pink</h2><span class="tag">light</span><span class="badge-new">New</span></div>
+    <p class="register">Dusty rose, soft daylight — grown-up and unhurried.<span class="note">Reads best as a soft-light register: a warm clay-rose on a pale rose-neutral ground keeps it serene and adult. Muted mauve-rose accent, never bubblegum or baby-pink.</span></p>
+
+    <div class="chips">
+      <div class="chip"><span class="sw" style="background:#f3eaea"></span><span class="role">background<span class="hex">#f3eaea</span></span></div>
+      <div class="chip"><span class="sw" style="background:#fbf4f3"></span><span class="role">surface<span class="hex">#fbf4f3</span></span></div>
+      <div class="chip"><span class="sw" style="background:#e6d4d3"></span><span class="role">border<span class="hex">#e6d4d3</span></span></div>
+      <div class="chip"><span class="sw" style="background:#34282a"></span><span class="role">text<span class="hex">#34282a</span></span></div>
+      <div class="chip"><span class="sw" style="background:rgba(52,40,42,.62)"></span><span class="role">text-muted<span class="hex">#34282a 9e</span></span></div>
+      <div class="chip"><span class="sw" style="background:#a86b72"></span><span class="role">accent<span class="hex">#a86b72</span></span></div>
+      <div class="chip"><span class="sw" style="background:#95595f"></span><span class="role">accent-hover<span class="hex">#95595f</span></span></div>
+      <div class="chip"><span class="sw" style="background:#8f5159"></span><span class="role">highlight<span class="hex">#8f5159</span></span></div>
+      <div class="chip"><span class="sw" style="background:#4d7a63"></span><span class="role">success<span class="hex">#4d7a63</span></span></div>
+      <div class="chip"><span class="sw" style="background:#c7a3a0"></span><span class="role">creature-tint<span class="hex">#c7a3a0</span></span></div>
+    </div>
+
+    <div class="phone" style="background:#f3eaea;color:#34282a;">
+      <div class="phone-top">
+        <div class="creature" style="background:#c7a3a0;">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><ellipse cx="15" cy="17" rx="9" ry="8.5" fill="#fbf4f3" opacity=".88"/><circle cx="7.5" cy="12" r="3.4" fill="#c7a3a0" stroke="#fbf4f3" stroke-width="1.4"/><circle cx="22.5" cy="12" r="3.4" fill="#c7a3a0" stroke="#fbf4f3" stroke-width="1.4"/><ellipse cx="15" cy="19" rx="5.4" ry="5" fill="#a87f7c" opacity=".5"/><circle cx="12" cy="16" r="1.1" fill="#5e3f42"/><circle cx="18" cy="16" r="1.1" fill="#5e3f42"/></svg>
+        </div>
+        <div class="hello">Here with you today.<small style="color:rgba(52,40,42,.62)">A quiet start.</small></div>
+      </div>
+      <div class="focus-row">
+        <svg class="wheel" width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="18" fill="none" stroke="rgba(52,40,42,.12)" stroke-width="5"/><circle cx="23" cy="23" r="18" fill="none" stroke="#a86b72" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="45" transform="rotate(-90 23 23)"/></svg>
+        <span style="font-size:12.5px;color:rgba(52,40,42,.62)">Some of today is already behind you.</span>
+      </div>
+      <div class="taskcard" style="background:#fbf4f3;border:1px solid #e6d4d3;">
+        <div class="task-title">Draft chapter 3 outline</div>
+        <div class="sub recessed"><span class="box"></span><span>Gather the loose notes</span></div>
+        <div class="sub active" style="background:rgba(168,107,114,.1);color:#8f5159;">
+          <span class="box" style="border-color:#8f5159;"></span>
+          <span style="color:#34282a;">Sketch the opening scene<span class="sub-meta" style="color:#8f5159;">In progress — just this one.</span></span>
+        </div>
+      </div>
+      <div class="done"><span class="check" style="background:#4d7a63;"><svg viewBox="0 0 11 11" fill="none"><path d="M2 5.7 4.3 8 9 3" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Reply to editor</span></div>
+      <button class="cta" style="background:#a86b72;color:#fbf4f3;">I'm done for today</button>
+    </div>
+  </section>
+
+  <!-- ============ 7. SKY BLUE (NEW) ============ -->
+  <section class="card">
+    <div class="card-head"><h2>Sky Blue</h2><span class="tag">light</span><span class="badge-new">New</span></div>
+    <p class="register">Airy daytime sky — open and unclouded.<span class="note">A soft-light register, deliberately distinct from Deep Sea's nocturnal depth: a powder-blue ground with a clear, calm blue accent. Open, not cold or clinical.</span></p>
+
+    <div class="chips">
+      <div class="chip"><span class="sw" style="background:#eef4fa"></span><span class="role">background<span class="hex">#eef4fa</span></span></div>
+      <div class="chip"><span class="sw" style="background:#f8fbfe"></span><span class="role">surface<span class="hex">#f8fbfe</span></span></div>
+      <div class="chip"><span class="sw" style="background:#d6e3ef"></span><span class="role">border<span class="hex">#d6e3ef</span></span></div>
+      <div class="chip"><span class="sw" style="background:#28333d"></span><span class="role">text<span class="hex">#28333d</span></span></div>
+      <div class="chip"><span class="sw" style="background:rgba(40,51,61,.6)"></span><span class="role">text-muted<span class="hex">#28333d 99</span></span></div>
+      <div class="chip"><span class="sw" style="background:#3f86c4"></span><span class="role">accent<span class="hex">#3f86c4</span></span></div>
+      <div class="chip"><span class="sw" style="background:#336fa6"></span><span class="role">accent-hover<span class="hex">#336fa6</span></span></div>
+      <div class="chip"><span class="sw" style="background:#2f74b3"></span><span class="role">highlight<span class="hex">#2f74b3</span></span></div>
+      <div class="chip"><span class="sw" style="background:#3f7a64"></span><span class="role">success<span class="hex">#3f7a64</span></span></div>
+      <div class="chip"><span class="sw" style="background:#aac4dc"></span><span class="role">creature-tint<span class="hex">#aac4dc</span></span></div>
+    </div>
+
+    <div class="phone" style="background:#eef4fa;color:#28333d;">
+      <div class="phone-top">
+        <div class="creature" style="background:#aac4dc;">
+          <svg width="30" height="30" viewBox="0 0 30 30" fill="none"><ellipse cx="15" cy="17" rx="9" ry="8.5" fill="#f8fbfe" opacity=".88"/><circle cx="7.5" cy="12" r="3.4" fill="#aac4dc" stroke="#f8fbfe" stroke-width="1.4"/><circle cx="22.5" cy="12" r="3.4" fill="#aac4dc" stroke="#f8fbfe" stroke-width="1.4"/><ellipse cx="15" cy="19" rx="5.4" ry="5" fill="#7fa2c0" opacity=".5"/><circle cx="12" cy="16" r="1.1" fill="#34495e"/><circle cx="18" cy="16" r="1.1" fill="#34495e"/></svg>
+        </div>
+        <div class="hello">Here with you today.<small style="color:rgba(40,51,61,.6)">A quiet start.</small></div>
+      </div>
+      <div class="focus-row">
+        <svg class="wheel" width="46" height="46" viewBox="0 0 46 46"><circle cx="23" cy="23" r="18" fill="none" stroke="rgba(40,51,61,.12)" stroke-width="5"/><circle cx="23" cy="23" r="18" fill="none" stroke="#3f86c4" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="45" transform="rotate(-90 23 23)"/></svg>
+        <span style="font-size:12.5px;color:rgba(40,51,61,.6)">Some of today is already behind you.</span>
+      </div>
+      <div class="taskcard" style="background:#f8fbfe;border:1px solid #d6e3ef;">
+        <div class="task-title">Draft chapter 3 outline</div>
+        <div class="sub recessed"><span class="box"></span><span>Gather the loose notes</span></div>
+        <div class="sub active" style="background:rgba(63,134,196,.1);color:#2f74b3;">
+          <span class="box" style="border-color:#2f74b3;"></span>
+          <span style="color:#28333d;">Sketch the opening scene<span class="sub-meta" style="color:#2f74b3;">In progress — just this one.</span></span>
+        </div>
+      </div>
+      <div class="done"><span class="check" style="background:#3f7a64;"><svg viewBox="0 0 11 11" fill="none"><path d="M2 5.7 4.3 8 9 3" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt">Reply to editor</span></div>
+      <button class="cta" style="background:#3f86c4;color:#f8fbfe;">I'm done for today</button>
+    </div>
+  </section>
+
+</main>
+</body>
+</html>

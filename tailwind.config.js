@@ -20,33 +20,35 @@ module.exports = {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		colors: {
-  			// ── Structure scale — backgrounds, surfaces, borders. Recedes. ──
+  			// ── Structure scale — Deep-Sea raw values, kept FIXED (not per-scheme). ──
+  			// Barely used directly; prefer the semantic tokens below, which theme.
   			seablue: {
   				50: '#014c75', 100: '#014368', 200: '#013b5b', 300: '#01324e', 400: '#012a41',
   				500: '#002234', 600: '#001927', 700: '#00111a', 800: '#00080d', 900: '#000000',
   			},
-  			// ── Accent scale — the single accent. Advances. Keep to ~10% of a screen. ──
+  			// ── Accent scale — Deep-Sea raw values, FIXED. Prefer `primary`/`highlight`. ──
   			teal: {
   				50: '#69c4d2', 100: '#3cb0b0', 200: '#00a1a1', 300: '#008080', 400: '#005757', 500: '#003636',
   			},
-  			// ── Success — semantic only. DEFAULT (bg-success) === success-200. ──
+  			// ── Success — DEFAULT is scheme-reactive (completion green per scheme);
+  			//    numeric shades stay fixed Deep-Sea values. `text-success` → DEFAULT. ──
   			success: {
-  				DEFAULT: '#2D6D54',
+  				DEFAULT: 'rgb(var(--success) / <alpha-value>)',
   				50: '#7EB5A1', 100: '#4B8C7A', 200: '#2D6D54', 300: '#1E4B3A', 400: '#0F3A28',
   			},
 
-  			// ── Semantic aliases (use these in markup) ──
-  			// Structural values are lifted off the raw seablue scale to give
-  			// cards real elevation against the background (lightness, not hue).
-  			background: '#04141f',            // page background (lifted from seablue-700)
-  			'background-deep': '#00080d',     // seablue-800
-  			foreground: '#ffffff',            // near-white text on dark surfaces
-  			surface: '#0a3450',               // elevated surface (lifted)
-  			'surface-hover': '#114660',       // surface hover (lifted)
-  			highlight: '#69c4d2',             // teal-50 — links / active / focus / key numeric data
-  			'primary-hover': '#00a1a1',       // teal-200
+  			// ── Semantic aliases (use these in markup) — all scheme-reactive via
+  			//    CSS custom properties swapped by the root `data-scheme` attribute.
+  			//    Channel form `rgb(var(--x) / <alpha-value>)` keeps /opacity utilities working.
+  			background: 'rgb(var(--background) / <alpha-value>)',
+  			'background-deep': 'rgb(var(--background-deep) / <alpha-value>)',
+  			foreground: 'rgb(var(--foreground) / <alpha-value>)',
+  			surface: 'rgb(var(--surface) / <alpha-value>)',
+  			'surface-hover': 'rgb(var(--surface-hover) / <alpha-value>)',
+  			highlight: 'rgb(var(--highlight) / <alpha-value>)',      // links / active / focus (per-scheme)
+  			'primary-hover': 'rgb(var(--accent-hover) / <alpha-value>)',
 
-  			// ── Low-saturation category tints (decorative, kept quiet) ──
+  			// ── Low-saturation category tints (decorative + dormant, no v1 UI) — FIXED. ──
   			category: {
   				work: '#9fb6d0',     // slate-blue
   				personal: '#6cc0c0', // teal
@@ -55,17 +57,17 @@ module.exports = {
   				other: '#c4a8c2',    // mauve
   			},
 
-  			// ── shadcn semantic tokens, mapped onto the palette ──
-  			card:      { DEFAULT: '#0a3450', foreground: '#ffffff' }, // surface (lifted)
-  			popover:   { DEFAULT: '#0a3450', foreground: '#ffffff' }, // surface (lifted)
-  			primary:   { DEFAULT: '#008080', foreground: '#ffffff' }, // teal-300 (single accent)
-  			secondary: { DEFAULT: '#014c75', foreground: '#ffffff' }, // seablue-50 — demoted old accent, now a secondary surface
-  			muted:     { DEFAULT: '#001927', foreground: 'rgb(255 255 255 / 0.7)' }, // seablue-600 + muted text = white @70%
-  			accent:    { DEFAULT: '#114660', foreground: '#ffffff' }, // surface-hover — hover via lightness, not hue
-  			destructive: { DEFAULT: '#e85d6e', foreground: '#ffffff' }, // brighter red so the small Delete Account label reads on the card
-  			border: '#0a3a52',                // lifted so card edges read against background
-  			input: '#0a3a52',
-  			ring: '#69c4d2',                  // highlight — focus rings
+  			// ── shadcn semantic tokens, mapped onto the per-scheme CSS vars ──
+  			card:      { DEFAULT: 'rgb(var(--surface) / <alpha-value>)', foreground: 'rgb(var(--foreground) / <alpha-value>)' },
+  			popover:   { DEFAULT: 'rgb(var(--surface) / <alpha-value>)', foreground: 'rgb(var(--foreground) / <alpha-value>)' },
+  			primary:   { DEFAULT: 'rgb(var(--accent) / <alpha-value>)', foreground: 'rgb(var(--accent-fg) / <alpha-value>)' }, // single accent
+  			secondary: { DEFAULT: 'rgb(var(--surface-hover) / <alpha-value>)', foreground: 'rgb(var(--foreground) / <alpha-value>)' }, // secondary surface
+  			muted:     { DEFAULT: 'rgb(var(--muted) / <alpha-value>)', foreground: 'rgb(var(--foreground) / 0.7)' }, // quiet recessed fill; muted text = fg @70%
+  			accent:    { DEFAULT: 'rgb(var(--surface-hover) / <alpha-value>)', foreground: 'rgb(var(--foreground) / <alpha-value>)' }, // shadcn hover-surface (NOT brand accent)
+  			destructive: { DEFAULT: '#e85d6e', foreground: '#ffffff' }, // FIXED — single exception (Delete-Account label; never in the task loop)
+  			border: 'rgb(var(--border) / <alpha-value>)',
+  			input: 'rgb(var(--border) / <alpha-value>)',
+  			ring: 'rgb(var(--highlight) / <alpha-value>)',           // highlight — focus rings
   			chart: {
   				'1': '#008080', // teal-300
   				'2': '#69c4d2', // teal-50

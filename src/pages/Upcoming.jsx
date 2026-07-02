@@ -1,6 +1,7 @@
 import React from "react";
 import { parseISO, isTomorrow, format } from "date-fns";
 import { CalendarDays, Search } from "lucide-react";
+import TaskInput from "../components/tasks/TaskInput";
 import TaskGroup from "../components/tasks/TaskGroup";
 import PullToRefresh from "../components/PullToRefresh";
 import EmptyState from "../components/EmptyState";
@@ -36,9 +37,12 @@ export default function Upcoming() {
   return (
     <PullToRefresh onRefresh={refetch}>
       <div className="pt-2">
-        <h1 className="font-heading text-2xl font-semibold text-foreground tracking-tight">Upcoming</h1>
+        <h1 className="font-heading text-2xl font-semibold text-foreground tracking-tight">Plan</h1>
         <p className="text-sm text-muted-foreground mt-0.5">What is coming up, by date</p>
       </div>
+
+      {/* Capture: the single create path (the +FAB focuses this input). */}
+      <TaskInput onAdd={(vals) => actions.create(vals)} />
 
       {isLoading && <p className="text-center text-muted-foreground text-sm py-12">Loading…</p>}
 
