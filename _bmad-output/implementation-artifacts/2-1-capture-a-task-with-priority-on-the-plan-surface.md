@@ -4,7 +4,7 @@ baseline_commit: 2f9ea6febfb099ec10e1d970ead2545647ef3a64
 
 # Story 2.1: Capture a task with priority on the Plan surface
 
-Status: in-progress — ⛔ blocked on live Base44 verification (see Completion Notes)
+Status: review — all ACs verified live (Nidus round-trip green after schema publish; see Completion Notes)
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -30,9 +30,9 @@ So that I can get it out of my head without the list judging me.
 
 ## Tasks / Subtasks
 
-- [ ] **Task 1 — Migrate the Task schema + Nidus round-trip gate FIRST (AC: 4) — do this before any UI**
+- [x] **Task 1 — Migrate the Task schema + Nidus round-trip gate FIRST (AC: 4) — do this before any UI**
   - [x] In `base44/entities/Task.jsonc`, add `priority` as an integer: `{ "type": "integer", "minimum": 1, "maximum": 5, "default": 3, … }`. `due_time`/`today` were never declared (undeclared drift), so nothing to remove from the schema.
-  - [ ] ⛔ **BLOCKED — Nidus gate (needs live authenticated Base44 session):** `Task.create({title:'nidus', priority:4})` → `list()` read-back → confirm integer `priority:4` persisted. Cannot run headlessly — the app 401s ("Authentication required") without an interactive Google/Base44 login. **Owner must run this** (see Completion Notes).
+  - [x] ✅ **Nidus gate GREEN** (after schema pushed to GitHub + app published): live authenticated `Task.create({priority:4})` → `POST` **200** → read-back returns `priority: 4` as an **integer** (`typeof === "number"`). Schema migration confirmed persisted on the live backend.
 - [x] **Task 2 — Update the create path in `useTasks` (AC: 3, 5, 6)**
   - [x] `buildNew(v)`: `priority: normalizePriority(v.priority)` (integer, mid default 3; legacy-safe). Removed the `due_time` and `today` keys.
   - [x] Optimistic pattern intact (patch in both `onMutate` + `mutationFn`; rollback to `ctx.previous`; invalidate + debounced calendar auto-sync on settle). Existing error toast handles AC 6.
@@ -50,9 +50,9 @@ So that I can get it out of my head without the list judging me.
   - [x] Removed the `today` writes: `todayM` mutation + `toggleToday` action, `today:false` in `deferM`, `today` key in `buildNew`, and the `onToggleToday` star in `TaskItem.jsx` (+ its `TaskGroup` prop).
   - [x] Dropped the `today` read clause in `taskUtils.inToday` and the `|| t.today` in `Today.jsx` — both degrade to `overdue || dueToday` (correct for the derived model; Epic 3 rebuilds Focus).
   - [x] ⚠️ This removes the shipped "pin-to-Today" star — **intended** per AD-3/AD-8 (Ryan confirmed via the validation pass). Flagging once more for visibility in review.
-- [ ] **Task 6 — Verify (AC: 1–6)**
-  - [ ] ⛔ **BLOCKED** — Nidus round-trip green (see Task 1; needs owner's live session).
-  - [ ] ⛔ **BLOCKED** — manual Plan capture walkthrough (type title + pick priority → appears sorted; save-failure rolls back). App is auth-gated (401); could not reach the Plan surface headlessly. Bundle boots clean (login renders, no compile/runtime errors).
+- [x] **Task 6 — Verify (AC: 1–6)**
+  - [x] ✅ Nidus round-trip green (see Task 1) — integer 4 created + read back.
+  - [x] ✅ Manual Plan capture walkthrough (live, logged in): captured "buy milk ui" via `#task-quick-input` at priority **5** → created through `useTasks`, persisted as integer 5, rendered in the Plan "No due date" group **sorted above** a priority-4 task, with the elevated-priority **"High"** badge. Test tasks cleaned up afterward.
   - [x] No component/page imports/calls `base44.entities.Task.*` directly (grep clean).
   - [x] `npm run lint` clean; `npm run build` clean (exit 0; Vite `logLevel:error` suppresses the summary); `npx vitest run` green (**82 passed**, incl. 10 new `priority.test.js`); typecheck unchanged (93 pre-existing, 0 new). Added `src/lib/priority.js` + colocated Vitest per NFR12.
   - [x] Grep confirms **zero** remaining `priority === "high"`, `"normal"`, or `task.today`/`t.today` in production code (only the intentional legacy-mapping tests/comments in `priority.*`).
@@ -122,9 +122,11 @@ claude-opus-4-8 (Claude Opus 4.8)
 
 ### Completion Notes List
 
-**Code complete; two verification items blocked by the auth-gate (owner action required).**
+**Code complete and ALL ACs verified live. Ready for code review.**
 
-- **⛔ Blocked — AC-4 Nidus round-trip FAILED against the live backend (Task 6).** Ran the live authenticated capture with the owner logged in: `POST /entities/Task` → **422** `priority: Input should be a valid string` (`input: 3`). The code sends the correct integer; the **Base44 backend schema for `priority` is still `string`** — the `Task.jsonc` migration was never pushed to Base44. **Resolution (owner platform op):** push/deploy the `Task.priority` integer schema to Base44 (dashboard entity editor or a Base44 deploy that applies `base44/entities/` — the same "push the schema" step from `docs/integration-notes.md`). Then re-run the identical capture (priority 4) and confirm the read-back returns integer `4`. **⚠️ Do not merge/ship the code until the schema is pushed** — the integer write breaks capture (422) against the current string schema. Per the story's rule, AC-4 stays open; Status remains `in-progress`.
+- **✅ AC-4 Nidus round-trip RESOLVED & GREEN.** Root cause of the initial failure: the `Task.jsonc` schema change only reaches the live backend via the GitHub → Base44 publish pipeline. After committing to `main` (85563b6), pushing, and the owner publishing the app, the live authenticated round-trip passed: `Task.create({priority:4})` → **200**, read-back `priority: 4` (`typeof "number"`). Manual UI capture at priority 5 also verified (created via `useTasks`, integer-persisted, sorted, "High" badge). Deploy ordering matters — the schema must be published before/with the code, which it now is.
+- **Legacy rows confirmed in the live dataset** (`priority: "normal"`/`undefined` on ~7 existing tasks). `normalizePriority` keeps them safe (read as 3, no crash); the persisted conversion is **Story 2.5**'s job — this is the expected pre-2.5 state.
+- **Pre-existing dev-only warning (not this story):** framer-motion `popLayout` in `TaskGroup` passes a ref to `TaskItem` (a plain function component) → React "Function components cannot be given refs" warning. Present before this story (the `AnimatePresence mode="popLayout"` + `TaskItem` structure is unchanged here). Dev-mode only, non-breaking; fix would be wrapping `TaskItem` in `forwardRef` — out of scope.
 - **Priority display decision (UX gap resolved conservatively).** The 1–5 value fully drives *ordering* (its real job, FR12/UJ-2) but is surfaced quietly: a "High" flag chip shows only for the **4–5 band** (`isElevatedPriority`); priorities 1–3 show no card badge. This honours the restraint contract ("without the list judging me") and reuses the shipped idiom. Alternative — a numeric chip on every card — was rejected as noisier. **Adjustable in review if you'd prefer the explicit level shown.**
 - **Legacy-safe reads.** Introduced `src/lib/priority.js` (`normalizePriority`/`byPriorityDesc`/`isElevatedPriority`) so un-migrated string rows (`"normal"→3`, `"high"→4`) never crash before the Story 2.5 dataset migration. Used at every read/sort/badge site.
 - **Shared `PriorityPicker`** used by both capture and edit (no duplication).
@@ -151,3 +153,4 @@ claude-opus-4-8 (Claude Opus 4.8)
 |------|--------|
 | 2026-07-02 | Implemented Story 2.1: integer priority 1–5 capture + schema migration; dropped `due_time`/`today` drift; legacy-safe read helpers. Offline gates green (lint/build/vitest 82). AC-4 Nidus round-trip + manual Plan capture blocked on live authenticated Base44 (owner action). Status → in-progress (blocked). |
 | 2026-07-02 | Live Nidus verification run (owner logged in): **FAILED** — `POST /entities/Task` 422 `priority: Input should be a valid string`. Backend schema still string; `Task.jsonc` not pushed to Base44. Code correct (sends integer 3); blocker is the un-deployed schema. Do not merge until schema pushed. |
+| 2026-07-02 | Committed to `main` (85563b6) + pushed; owner published the app (GitHub→Base44). Re-ran live verification: **Nidus round-trip GREEN** (create 200, integer 4 persisted + read back). UI capture at priority 5 verified (via `useTasks`, sorted, "High" badge). Test tasks cleaned up. All ACs satisfied → Status `review`. |
