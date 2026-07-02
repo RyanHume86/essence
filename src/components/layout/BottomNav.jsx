@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { CheckSquare, CalendarDays, LayoutGrid, Settings, Plus } from "lucide-react";
+import { CheckSquare, CalendarDays, Archive, Settings, Plus } from "lucide-react";
 
-// Two side slots either side of the centre FAB.
+// The four surfaces, two either side of the centre +FAB.
 const LEFT_ITEMS = [
-  { label: "Today", path: "/", icon: CheckSquare },
-  { label: "Upcoming", path: "/upcoming", icon: CalendarDays },
+  { label: "Focus", path: "/", icon: CheckSquare },
+  { label: "Plan", path: "/plan", icon: CalendarDays },
 ];
 const RIGHT_ITEMS = [
-  { label: "Browse", path: "/browse", icon: LayoutGrid },
+  { label: "Archive", path: "/archive", icon: Archive },
   { label: "Settings", path: "/settings", icon: Settings },
 ];
 
@@ -16,20 +16,58 @@ export default function BottomNav() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
+  // Track the current focus-session so repeated FAB taps never stack listeners.
+  const keydownCleanup = useRef(null);
+  const rafId = useRef(0);
+  useEffect(
+    () => () => {
+      keydownCleanup.current?.();
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+    },
+    [],
+  );
+
   const isActive = (path) =>
     path === "/" ? pathname === "/" : pathname.startsWith(path);
 
-  // The centre FAB never creates a task. It returns to Today (if needed) and
-  // focuses the existing rich input, which stays the single create path.
+  // The centre +FAB never creates a task. It goes to Plan (if needed) and
+  // focuses the quick-input there, which stays the single create path. On
+  // dismiss (Escape) focus returns to the FAB.
   const focusQuickInput = () => {
-    if (pathname !== "/") navigate("/");
-    setTimeout(() => {
+    // Tear down any previous focus-session (no stacked keydown listeners) and
+    // cancel an in-flight poll before starting a new one.
+    keydownCleanup.current?.();
+    keydownCleanup.current = null;
+    if (rafId.current) cancelAnimationFrame(rafId.current);
+
+    const settle = (el) => {
+      el.focus();
+      el.scrollIntoView({ block: "center", behavior: "smooth" });
+      const onKey = (e) => {
+        if (e.key !== "Escape") return;
+        keydownCleanup.current?.();
+        keydownCleanup.current = null;
+        el.blur();
+        document.getElementById("create-fab")?.focus();
+      };
+      el.addEventListener("keydown", onKey);
+      keydownCleanup.current = () => el.removeEventListener("keydown", onKey);
+    };
+
+    // Poll across frames rather than a single fixed timeout, so the focus still
+    // lands if the Plan route mounts slowly (bounded to ~0.5s).
+    let tries = 0;
+    const poll = () => {
       const el = document.getElementById("task-quick-input");
       if (el) {
-        el.focus();
-        el.scrollIntoView({ block: "center", behavior: "smooth" });
+        settle(el);
+        return;
       }
-    }, 60);
+      if (tries++ < 30) rafId.current = requestAnimationFrame(poll);
+    };
+
+    if (pathname !== "/plan") navigate("/plan");
+    poll();
   };
 
   const renderSlot = ({ label, path, icon: Icon }) => {
@@ -66,6 +104,7 @@ export default function BottomNav() {
         {/* Centre FAB: focuses the rich input, lifted to overlap the nav edge */}
         <div className="flex-1 flex items-start justify-center">
           <button
+            id="create-fab"
             type="button"
             onClick={focusQuickInput}
             aria-label="Add a task"

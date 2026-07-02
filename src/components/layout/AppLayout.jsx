@@ -25,7 +25,7 @@ export default function AppLayout() {
       className="flex flex-col min-h-screen bg-background"
       style={{
         background:
-          "radial-gradient(120% 70% at 50% -8%, #0c2c44 0%, rgba(12,44,68,0) 52%), #04141f",
+          "radial-gradient(120% 70% at 50% -8%, rgb(var(--bg-glow)) 0%, rgb(var(--bg-glow) / 0) 52%), rgb(var(--background))",
       }}
     >
       <TopHeader />

@@ -7,6 +7,8 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AppLayout from './components/layout/AppLayout';
+import { usePrefs } from '@/hooks/usePrefs';
+import Onboarding from './pages/Onboarding';
 import Today from './pages/Today';
 import Upcoming from './pages/Upcoming';
 import Browse from './pages/Browse';
@@ -19,7 +21,8 @@ import ResetPassword from './pages/ResetPassword';
 import CompanionPreview from './pages/CompanionPreview';
 
 const AuthenticatedApp = () => {
-  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
+  const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin, isAuthenticated } = useAuth();
+  const { onboarded } = usePrefs();
 
   if (isLoadingPublicSettings || isLoadingAuth) {
     return (
@@ -38,6 +41,12 @@ const AuthenticatedApp = () => {
     }
   }
 
+  // First-run gate: authenticated but not yet onboarded → full-screen setup
+  // (outside AppLayout, so no nav chrome). Setting `onboarded` drops the gate.
+  if (isAuthenticated && !onboarded) {
+    return <Onboarding />;
+  }
+
   return (
     <Routes>
       {/* Public auth routes */}
@@ -49,11 +58,17 @@ const AuthenticatedApp = () => {
       {/* Protected app routes — wrapped in AppLayout (header + bottom nav) */}
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<AppLayout />}>
-          <Route path="/" element={<Today />} />
-          <Route path="/upcoming" element={<Upcoming />} />
-          <Route path="/browse" element={<Browse />} />
-          <Route path="/completed" element={<Completed />} />
+          {/* 4 surfaces. Page bodies are shipped placeholders that later epics
+              replace in-place (Focus→Epic 3, Plan→Epic 2, Archive→Epic 4). */}
+          <Route path="/" element={<Today />} />                {/* Focus */}
+          <Route path="/plan" element={<Upcoming />} />         {/* Plan (Upcoming + capture) */}
+          <Route path="/archive" element={<Completed />} />     {/* Archive */}
           <Route path="/settings" element={<Settings />} />
+          {/* Browse kept reachable (secondary plane); Epic 2 merges it into Plan. */}
+          <Route path="/browse" element={<Browse />} />
+          {/* Back-compat redirects for the renamed routes. */}
+          <Route path="/upcoming" element={<Navigate to="/plan" replace />} />
+          <Route path="/completed" element={<Navigate to="/archive" replace />} />
         </Route>
       </Route>
 

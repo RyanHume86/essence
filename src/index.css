@@ -6,26 +6,25 @@
 
 /*
   ╔══════════════════════════════════════════════════════════════╗
-  ║  Dark-only deep-sea-blue theme.                              ║
+  ║  7-scheme token system.                                      ║
   ║                                                              ║
-  ║  All colours live as named tokens in tailwind.config.js      ║
-  ║  (seablue / teal / success scales + semantic aliases).       ║
-  ║  This file holds only non-colour design tokens (radius,      ║
-  ║  fonts). There is no light theme and no `.dark` switching —  ║
-  ║  the whole app renders one dark palette.                     ║
+  ║  Colours are CSS custom properties (space-separated RGB      ║
+  ║  channels) swapped by the root `data-scheme` attribute.      ║
+  ║  The Tailwind tokens resolve them via                        ║
+  ║  `rgb(var(--x) / <alpha-value>)`, so `/opacity` utilities    ║
+  ║  (bg-primary/10, text-highlight, …) keep working AND become  ║
+  ║  scheme-reactive with no component-markup changes.           ║
   ║                                                              ║
-  ║  White-text contrast on structural surfaces:                 ║
-  ║  seablue-50  #014c75  ~4.6:1  AA (UI/large; borderline body) ║
-  ║  seablue-400 #012a41  ~13:1   AAA all text                   ║
-  ║  seablue-700 #00111a  ~18:1   AAA all text                   ║
-  ║  teal-300    #008080  ~4.8:1  AA normal text                 ║
+  ║  Only token VALUES change per scheme; the primitives below   ║
+  ║  (.surface-raised / .btn-accent-3d / .input-glow / .checkbox ║
+  ║  / .subtask-card / .skeleton) are shared. No hardcoded hex.  ║
+  ║  Default (no attribute) = Deep Sea. 4 dark + 3 light.        ║
   ╚══════════════════════════════════════════════════════════════╝
 */
 
 @layer base {
   :root {
-    /* Non-colour design tokens only. Colours are named tokens in the
-       Tailwind config (dark-only palette). */
+    /* Non-colour design tokens (scheme-independent). */
     --radius:                   0.75rem;
     --font-heading:             'Playfair Display', serif;
     --font-body:                'Inter', sans-serif;
@@ -33,14 +32,183 @@
     --font-mono:                ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
                                 "Liberation Mono", "Courier New", monospace;
   }
+
+  /* ── Deep Sea (default / dark) — values are the shipped palette exactly ── */
+  :root,
+  [data-scheme="deep-sea"] {
+    color-scheme: dark;
+    --background:       4 20 31;      /* #04141f */
+    --background-deep:  0 8 13;       /* #00080d */
+    --muted:           0 25 39;       /* #001927 — quiet recessed fill (chips/empty) */
+    --bg-glow:         12 44 68;      /* #0c2c44 */
+    --surface:        10 52 80;       /* #0a3450 */
+    --surface-top:    14 61 94;       /* #0e3d5e — top-lit gradient / subtask / skeleton */
+    --surface-hover:  17 70 96;       /* #114660 — hover / secondary */
+    --border:         10 58 82;       /* #0a3a52 */
+    --line-1:         26 80 119;      /* #1a5077 — subtask border */
+    --line-1-hover:   36 96 136;      /* #246088 */
+    --checkbox-border: 63 111 140;    /* #3f6f8c */
+    --foreground:    255 255 255;     /* #ffffff */
+    --accent:          0 128 128;     /* #008080 */
+    --accent-hover:    0 161 161;     /* #00a1a1 */
+    --accent-lip:      0 72 74;       /* #00484a — 3D button lip */
+    --accent-fg:     255 255 255;     /* button label on accent */
+    --highlight:     105 196 210;     /* #69c4d2 — links / focus / active text */
+    --success:        45 109 84;      /* #2D6D54 — completion only */
+    --creature-tint:   3 36 58;       /* #03243A */
+  }
+
+  /* ── Forest / Sage (dark) ── */
+  [data-scheme="forest-sage"] {
+    color-scheme: dark;
+    --background:      16 24 15;       /* #10180f */
+    --background-deep:  8 12 7;
+    --muted:          20 30 18;
+    --bg-glow:         26 40 22;
+    --surface:        27 38 24;        /* #1b2618 */
+    --surface-top:    38 51 33;
+    --surface-hover:  44 60 40;
+    --border:         42 58 38;        /* #2a3a26 */
+    --line-1:         58 78 52;
+    --line-1-hover:   74 96 66;
+    --checkbox-border: 90 112 84;
+    --foreground:    238 242 233;      /* #eef2e9 */
+    --accent:        138 169 138;      /* #8aa98a */
+    --accent-hover:  163 192 163;      /* #a3c0a3 */
+    --accent-lip:     79 109 79;
+    --accent-fg:      16 24 15;        /* dark label on light sage */
+    --highlight:     182 208 168;      /* #b6d0a8 */
+    --success:        63 109 78;       /* #3f6d4e */
+    --creature-tint:  36 48 41;        /* #243029 */
+  }
+
+  /* ── Twilight (dark) ── */
+  [data-scheme="twilight"] {
+    color-scheme: dark;
+    --background:      20 16 31;       /* #14101f */
+    --background-deep: 12 9 18;
+    --muted:          26 21 40;
+    --bg-glow:         30 24 46;
+    --surface:        34 27 51;        /* #221b33 */
+    --surface-top:    48 40 68;
+    --surface-hover:  56 47 78;
+    --border:         50 42 71;        /* #322a47 */
+    --line-1:         66 56 92;
+    --line-1-hover:   86 74 116;
+    --checkbox-border: 108 96 148;
+    --foreground:    239 234 247;      /* #efeaf7 */
+    --accent:        169 156 214;      /* #a99cd6 */
+    --accent-hover:  194 182 236;      /* #c2b6ec */
+    --accent-lip:    107 95 156;
+    --accent-fg:      20 16 31;        /* dark label on lavender */
+    --highlight:     199 189 240;      /* #c7bdf0 */
+    --success:        74 106 114;      /* #4a6a72 */
+    --creature-tint:  42 36 64;        /* #2a2440 */
+  }
+
+  /* ── Soft Paper (light / white) ── */
+  [data-scheme="soft-paper"] {
+    color-scheme: light;
+    --background:    244 240 232;      /* #f4f0e8 */
+    --background-deep: 228 221 207;
+    --muted:         236 231 220;
+    --bg-glow:       255 253 246;
+    --surface:       251 248 241;      /* #fbf8f1 */
+    --surface-top:   255 255 255;      /* white lift */
+    --surface-hover: 240 235 224;
+    --border:        228 221 207;      /* #e4ddcf */
+    --line-1:        208 197 178;
+    --line-1-hover:  180 168 148;
+    --checkbox-border: 122 112 96;
+    --foreground:     47 42 36;        /* #2f2a24 */
+    --accent:         63 143 138;      /* #3f8f8a */
+    --accent-hover:   53 122 118;      /* #357a76 */
+    --accent-lip:     46 107 103;
+    --accent-fg:     251 248 241;      /* near-white label on teal */
+    --highlight:      47 125 120;      /* #2f7d78 — darkened accent for small text/links */
+    --success:        63 122 92;       /* #3f7a5c */
+    --creature-tint: 203 184 154;      /* #cbb89a */
+  }
+
+  /* ── Accessible (colourblind-safe blue/orange, dark) ── */
+  [data-scheme="accessible"] {
+    color-scheme: dark;
+    --background:     15 28 40;        /* #0f1c28 */
+    --background-deep: 7 14 20;
+    --muted:         20 35 48;
+    --bg-glow:        24 44 62;
+    --surface:       26 44 60;         /* #1a2c3c */
+    --surface-top:   36 56 76;
+    --surface-hover: 42 66 88;
+    --border:        42 64 84;         /* #2a4054 */
+    --line-1:        52 78 100;
+    --line-1-hover:  70 100 128;
+    --checkbox-border: 96 126 156;
+    --foreground:   242 246 250;       /* #f2f6fa */
+    --accent:       232 156 74;        /* #e89c4a */
+    --accent-hover: 244 173 96;        /* #f4ad60 */
+    --accent-lip:   176 111 40;
+    --accent-fg:     15 28 40;         /* dark label on orange */
+    --highlight:    109 182 232;       /* #6db6e8 */
+    --success:       74 143 176;       /* #4a8fb0 */
+    --creature-tint: 44 62 82;         /* #2c3e52 */
+  }
+
+  /* ── Soft Pink (light) ── */
+  [data-scheme="soft-pink"] {
+    color-scheme: light;
+    --background:    243 234 234;      /* #f3eaea */
+    --background-deep: 230 212 211;
+    --muted:         236 224 224;
+    --bg-glow:       255 250 249;
+    --surface:       251 244 243;      /* #fbf4f3 */
+    --surface-top:   255 253 252;
+    --surface-hover: 244 232 231;
+    --border:        230 212 211;      /* #e6d4d3 */
+    --line-1:        214 194 193;
+    --line-1-hover:  190 168 167;
+    --checkbox-border: 150 122 122;
+    --foreground:     52 40 42;        /* #34282a */
+    --accent:        168 107 114;      /* #a86b72 */
+    --accent-hover:  149 89 95;        /* #95595f */
+    --accent-lip:    111 66 71;
+    --accent-fg:     251 244 243;      /* near-white label on rose */
+    --highlight:     143 81 89;        /* #8f5159 — darkened accent */
+    --success:        77 122 99;       /* #4d7a63 */
+    --creature-tint: 199 163 160;      /* #c7a3a0 */
+  }
+
+  /* ── Sky Blue (light) ── */
+  [data-scheme="sky-blue"] {
+    color-scheme: light;
+    --background:    238 244 250;      /* #eef4fa */
+    --background-deep: 214 227 239;
+    --muted:         228 236 245;
+    --bg-glow:       255 255 255;
+    --surface:       248 251 254;      /* #f8fbfe */
+    --surface-top:   255 255 255;
+    --surface-hover: 236 242 249;
+    --border:        214 227 239;      /* #d6e3ef */
+    --line-1:        198 214 230;
+    --line-1-hover:  168 190 214;
+    --checkbox-border: 120 150 180;
+    --foreground:     40 51 61;        /* #28333d */
+    --accent:         63 134 196;      /* #3f86c4 */
+    --accent-hover:   51 111 166;      /* #336fa6 */
+    --accent-lip:     44 95 140;
+    --accent-fg:     248 251 254;      /* near-white label on blue */
+    --highlight:      47 116 179;      /* #2f74b3 — darkened accent */
+    --success:        63 122 100;      /* #3f7a64 */
+    --creature-tint: 170 196 220;      /* #aac4dc */
+  }
 }
 
 @layer components {
   /* Raised card: a soft top-lit gradient, a light-catching top edge, and a
      tinted drop shadow so cards separate from the canvas. */
   .surface-raised {
-    background: linear-gradient(180deg, #0e3d5e 0%, #0a3450 100%);
-    border: 1px solid #0a3a52;
+    background: linear-gradient(180deg, rgb(var(--surface-top)) 0%, rgb(var(--surface)) 100%);
+    border: 1px solid rgb(var(--border));
     border-top-color: rgba(255, 255, 255, 0.08);
     box-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.6);
   }
@@ -48,56 +216,56 @@
   /* Tactile 3D accent button: top-lit gradient, inner highlight, a solid lip
      that compresses on press. */
   .btn-accent-3d {
-    background: linear-gradient(180deg, #00a1a1 0%, #008080 100%);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 0 #00484a, 0 7px 12px -5px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(180deg, rgb(var(--accent-hover)) 0%, rgb(var(--accent)) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), 0 3px 0 rgb(var(--accent-lip)), 0 7px 12px -5px rgba(0, 0, 0, 0.5);
     transition: transform .13s ease, box-shadow .13s ease, filter .13s ease;
   }
   .btn-accent-3d:hover  { filter: brightness(1.06); }
   .btn-accent-3d:active {
     transform: translateY(3px);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 #00484a, 0 2px 6px -4px rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 0 rgb(var(--accent-lip)), 0 2px 6px -4px rgba(0, 0, 0, 0.5);
   }
 
   /* Focused input: a highlight ring plus a soft outer glow. */
   .input-glow:focus {
-    border-color: rgba(105, 196, 210, 0.45);
-    box-shadow: 0 0 0 3px rgba(105, 196, 210, 0.14), 0 0 22px -6px rgba(105, 196, 210, 0.40);
+    border-color: rgb(var(--highlight) / 0.45);
+    box-shadow: 0 0 0 3px rgb(var(--highlight) / 0.14), 0 0 22px -6px rgb(var(--highlight) / 0.40);
     outline: none;
   }
 
   /* Subtask mini-card: a flatter, slightly lighter tone than the parent's
      raised gradient, with a clear border so each subtask reads as its own card. */
   .subtask-card {
-    background: #0f3c5b;
-    border: 1px solid #1a5077;
+    background: rgb(var(--surface-top));
+    border: 1px solid rgb(var(--line-1));
     border-radius: 10px;
     transition: border-color .2s ease, background .2s ease;
   }
-  .subtask-card:hover { border-color: #246088; }
+  .subtask-card:hover { border-color: rgb(var(--line-1-hover)); }
 
-  /* Tappable checkbox: a visible, slightly recessed unchecked box with a teal
-     hover and focus ring; the done state is the existing success green. */
+  /* Tappable checkbox: a visible, slightly recessed unchecked box with a
+     highlight hover and focus ring; the done state is the scheme success green. */
   .checkbox {
-    border: 2px solid #3f6f8c;
+    border: 2px solid rgb(var(--checkbox-border));
     background: rgba(0, 0, 0, 0.18);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.30);
     transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
   }
-  .checkbox:hover { border-color: #69c4d2; }
+  .checkbox:hover { border-color: rgb(var(--highlight)); }
   .checkbox:focus-visible {
     outline: none;
-    border-color: #69c4d2;
-    box-shadow: 0 0 0 3px rgba(105, 196, 210, 0.20);
+    border-color: rgb(var(--highlight));
+    box-shadow: 0 0 0 3px rgb(var(--highlight) / 0.20);
   }
   .checkbox.done {
-    background: #2D6D54;
-    border-color: #2D6D54;
+    background: rgb(var(--success));
+    border-color: rgb(var(--success));
     box-shadow: none;
   }
 
   /* Loading placeholder shimmer. */
   .skeleton {
-    background: linear-gradient(90deg, #0d3a58 25%, #16486a 50%, #0d3a58 75%);
+    background: linear-gradient(90deg, rgb(var(--surface-top)) 25%, rgb(var(--surface-hover)) 50%, rgb(var(--surface-top)) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.3s infinite;
   }
@@ -110,7 +278,7 @@
   .title-strike { position: relative; }
   .title-strike::after {
     content: ""; position: absolute; left: 0; top: 50%; height: 1.5px; width: 100%;
-    background: rgba(255, 255, 255, 0.40); transform: scaleX(0); transform-origin: left;
+    background: rgb(var(--foreground) / 0.40); transform: scaleX(0); transform-origin: left;
     transition: transform .4s ease;
   }
   .title-strike.done::after { transform: scaleX(1); }

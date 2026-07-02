@@ -1,0 +1,14 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Deep Sea app icon. Full-bleed background + a centred accumulation-ring
+       motif kept inside the maskable safe zone (~40% radius from centre). -->
+  <rect width="512" height="512" fill="#04141f"/>
+  <!-- faint track -->
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#0a3450" stroke-width="30"/>
+  <!-- accent arc (grows clockwise from the top), round caps -->
+  <circle cx="256" cy="256" r="150"
+          fill="none" stroke="#69c4d2" stroke-width="30" stroke-linecap="round"
+          stroke-dasharray="707" stroke-dashoffset="270"
+          transform="rotate(-90 256 256)"/>
+  <!-- soft centre dot -->
+  <circle cx="256" cy="256" r="34" fill="#008080"/>
+</svg>

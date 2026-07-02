@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { useAuth } from "@/lib/AuthContext";
-import { User, LogOut, Trash2, ChevronRight, ShieldAlert, CheckCircle2 } from "lucide-react";
+import { usePrefs } from "@/hooks/usePrefs";
+import { User, LogOut, Trash2, ChevronRight, ShieldAlert, CheckCircle2, Bell } from "lucide-react";
 import { motion } from "framer-motion";
+import { Input } from "@/components/ui/input";
+import SchemePicker from "@/components/settings/SchemePicker";
+import CreaturePicker from "@/components/settings/CreaturePicker";
 import {
   Drawer,
   DrawerContent,
@@ -21,6 +25,16 @@ export default function Settings() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { user } = useAuth();
+  const { name, scheme, creature, notifications, setName, setScheme, setCreature, setNotifications } = usePrefs();
+  const [nameInput, setNameInput] = useState(name);
+  const latestName = useRef(nameInput);
+  useEffect(() => { latestName.current = nameInput; }, [nameInput]);
+  // Re-sync if the stored name changes elsewhere, and snap to the trimmed value
+  // the store persisted after a commit.
+  useEffect(() => { setNameInput(name); }, [name]);
+  // Commit any pending edit if Settings unmounts before the field blurs
+  // (e.g. tapping a nav link while still focused).
+  useEffect(() => () => setName(latestName.current), []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleLogout = () => {
     base44.auth.logout();
@@ -56,17 +70,81 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* Personalization — change the three onboarding choices later; scheme
+            re-skins every surface live via usePrefs. */}
+        <div className="space-y-3">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest px-1">
+            Personalization
+          </p>
+          <div className="surface-raised rounded-2xl p-5 space-y-5">
+            <div className="space-y-2">
+              <label htmlFor="settings-name" className="text-sm font-medium text-foreground">
+                Name
+              </label>
+              <Input
+                id="settings-name"
+                value={nameInput}
+                onChange={(e) => setNameInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") setName(nameInput); }}
+                onBlur={() => setName(nameInput)}
+                placeholder="Your name"
+                className="input-glow surface-raised h-11 rounded-xl border-border px-4 text-base"
+              />
+            </div>
+            <div className="space-y-2.5">
+              <p className="text-sm font-medium text-foreground">Colour scheme</p>
+              <SchemePicker value={scheme} onSelect={setScheme} />
+            </div>
+            <div className="space-y-2.5">
+              <p className="text-sm font-medium text-foreground">Companion</p>
+              <CreaturePicker value={creature} onSelect={setCreature} />
+            </div>
+          </div>
+        </div>
+
+        {/* Notifications — off by construction (AD-12 / NFR7). Persisted opt-in
+            only; v1 registers no push and never requests permission. */}
+        <div className="surface-raised rounded-2xl overflow-hidden">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={notifications}
+            onClick={() => setNotifications(!notifications)}
+            className="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-muted/50 transition-colors duration-200 select-none"
+          >
+            <Bell className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground">Notifications</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {notifications ? "On" : "Off — Essence never notifies you by default"}
+              </p>
+            </div>
+            <span
+              aria-hidden="true"
+              className={`relative inline-flex h-7 w-12 flex-shrink-0 items-center rounded-full transition-colors duration-200 motion-reduce:transition-none ${
+                notifications ? "bg-primary" : "bg-muted"
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-primary-foreground transition-transform duration-200 motion-reduce:transition-none ${
+                  notifications ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </span>
+          </button>
+        </div>
+
         {/* Integrations */}
         <CalendarSync />
 
         {/* Navigation + account actions */}
         <div className="surface-raised rounded-2xl overflow-hidden divide-y divide-border">
           <Link
-            to="/completed"
+            to="/archive"
             className="w-full flex items-center gap-3 px-5 py-4 hover:bg-muted/50 transition-colors duration-200 text-left"
           >
             <CheckCircle2 className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-            <span className="flex-1 text-sm font-medium text-foreground">Completed tasks</span>
+            <span className="flex-1 text-sm font-medium text-foreground">Archive</span>
             <ChevronRight className="w-4 h-4 text-muted-foreground/50" />
           </Link>
           <button

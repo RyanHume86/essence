@@ -3,8 +3,9 @@ import { ListChecks, ChevronLeft, Search, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useSearch } from "@/lib/SearchContext";
 
-// Top-level tabs: none of these should show a back button.
-const ROOT_PATHS = ["/", "/upcoming", "/browse", "/settings"];
+// Top-level surfaces: none of these show a back button. `/browse` stays a
+// secondary route (shows back), matching how `/completed` behaved before.
+const ROOT_PATHS = ["/", "/plan", "/archive", "/settings"];
 
 export default function TopHeader() {
   const navigate = useNavigate();
