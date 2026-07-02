@@ -1,6 +1,6 @@
 # generated: 2026-07-01
-# last_updated: 2026-07-01
-# project: essence
+# last_updated: 2026-07-02
+# project: akha
 # project_key: NOKEY
 # tracking_system: file-system
 # story_location: _bmad-output/implementation-artifacts
@@ -41,8 +41,8 @@
 # - Retrospective appends its action items to action_items; sprint-status surfaces open ones
 
 generated: 2026-07-01
-last_updated: 2026-07-01
-project: essence
+last_updated: 2026-07-02
+project: akha
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
@@ -58,8 +58,8 @@ development_status:
   epic-1-retrospective: optional
 
   # Epic 2: Get it out of my head — capture & planning
-  epic-2: backlog
-  2-1-capture-a-task-with-priority-on-the-plan-surface: backlog
+  epic-2: in-progress
+  2-1-capture-a-task-with-priority-on-the-plan-surface: in-progress
   2-2-break-a-task-into-subtasks-with-a-gentle-nudge: backlog
   2-3-set-a-due-date-and-edit-or-delete-tasks-and-subtasks: backlog
   2-4-order-the-backlog-and-rearrange-it-by-hand: backlog

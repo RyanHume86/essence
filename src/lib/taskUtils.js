@@ -17,10 +17,11 @@ export function isDueToday(task) {
   return !!task.due_date && isToday(parseISO(task.due_date));
 }
 
-// The Today surface: anything overdue, due today, or flagged for today, and
-// not yet complete. The `today` flag is set by the user (see Step 2).
+// The Today surface: anything overdue or due today, and not yet complete. The
+// old manual "pin to Today" flag is dropped — "what's next" is derived from
+// effective order (AD-3/AD-8), rebuilt as the Focus surface in Epic 3.
 export function inToday(task) {
-  return !task.completed && (isOverdue(task) || isDueToday(task) || !!task.today);
+  return !task.completed && (isOverdue(task) || isDueToday(task));
 }
 
 // A task belongs to Upcoming when it is active and not already pulled into Today.

@@ -4,6 +4,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { format, addDays } from "date-fns";
 import { completeRecurringTask } from "@/lib/recurrence";
 import { recordCompletion, undoCompletion } from "@/lib/winMoment";
+import { normalizePriority } from "@/lib/priority";
 
 const KEY = ["tasks"];
 const tomorrowISO = () => format(addDays(new Date(), 1), "yyyy-MM-dd");
@@ -63,10 +64,8 @@ export function useTasks() {
     completed: false,
     category: v.category,
     due_date: v.due_date ?? null,
-    due_time: v.due_date ? (v.due_time ?? null) : null,
     comment: v.comment ?? null,
-    today: !!v.today,
-    priority: v.priority || "normal",
+    priority: normalizePriority(v.priority),
     recurrence: v.recurrence ?? null,
     occurrence_count: v.occurrence_count ?? 0,
     subtasks: [],
@@ -140,15 +139,9 @@ export function useTasks() {
   );
 
   const deferM = useOptimisticMutation(
-    (task) => base44.entities.Task.update(task.id, { due_date: tomorrowISO(), today: false }),
-    (old, task) => old.map((t) => (t.id === task.id ? { ...t, due_date: tomorrowISO(), today: false } : t)),
+    (task) => base44.entities.Task.update(task.id, { due_date: tomorrowISO() }),
+    (old, task) => old.map((t) => (t.id === task.id ? { ...t, due_date: tomorrowISO() } : t)),
     "Could not defer task"
-  );
-
-  const todayM = useOptimisticMutation(
-    (task) => base44.entities.Task.update(task.id, { today: !task.today }),
-    (old, task) => old.map((t) => (t.id === task.id ? { ...t, today: !t.today } : t)),
-    "Could not update task"
   );
 
   const clearCompletedM = useOptimisticMutation(
@@ -166,7 +159,6 @@ export function useTasks() {
     patch: (task, patch) => patchM.mutate({ task, patch }),
     remove: (task) => deleteM.mutate(task),
     defer: (task) => deferM.mutate(task),
-    toggleToday: (task) => todayM.mutate(task),
     clearCompleted: () => clearCompletedM.mutate(),
   };
 

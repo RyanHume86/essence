@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, Star, MoreVertical, Pencil, Flag, Repeat } from "lucide-react";
+import { Check, Trash2, CalendarClock, CalendarPlus, ChevronDown, MessageSquare, MoreVertical, Pencil, Flag, Repeat } from "lucide-react";
 import CategoryBadge, { CATEGORY_BAR } from "./CategoryBadge";
 import SubtaskTree from "./SubtaskTree";
 import TaskEditDrawer from "./TaskEditDrawer";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { format, isToday, isTomorrow, isPast, parseISO } from "date-fns";
+import { isElevatedPriority } from "@/lib/priority";
 
 const SWIPE_THRESHOLD = 80; // px to trigger a swipe action
 
@@ -32,7 +33,7 @@ function DueDateChip({ due_date, due_time, completed }) {
   );
 }
 
-export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, onToggleToday, index = 0 }) {
+export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, index = 0 }) {
   const hasExtras = task.comment || (task.subtasks && task.subtasks.length > 0);
   const [expanded, setExpanded] = useState(hasExtras);
   const [actionsOpen, setActionsOpen] = useState(false);
@@ -116,7 +117,7 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
             {task.title}
           </span>
           <div className="flex items-center gap-1.5 flex-wrap">
-            {task.priority === "high" && !task.completed && (
+            {isElevatedPriority(task.priority) && !task.completed && (
               <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-highlight/15 text-highlight border border-highlight/40">
                 <Flag className="w-2.5 h-2.5" />
                 High
@@ -145,17 +146,6 @@ export default function TaskItem({ task, onToggle, onDelete, onUpdate, onDefer, 
             )}
           </div>
         </div>
-
-        {/* Today flag */}
-        {onToggleToday && (
-          <button
-            onClick={() => onToggleToday(task)}
-            aria-label={task.today ? `Remove "${task.title}" from Today` : `Add "${task.title}" to Today`}
-            className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors duration-200"
-          >
-            <Star className={`w-4 h-4 transition-colors duration-200 ${task.today ? "text-highlight fill-highlight" : "text-muted-foreground/40 hover:text-muted-foreground"}`} />
-          </button>
-        )}
 
         {/* Expand/collapse toggle */}
         <button

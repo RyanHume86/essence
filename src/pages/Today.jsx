@@ -39,7 +39,7 @@ export default function Today() {
 
   // Full Today set (drives the ring) and the search-filtered view (drives lists).
   const todayActiveAll = tasks.filter(inToday);
-  const doneTodayAll = tasks.filter((t) => t.completed && (isDueToday(t) || t.today));
+  const doneTodayAll = tasks.filter((t) => t.completed && isDueToday(t));
 
   const overdue = todayActiveAll.filter((t) => isOverdue(t) && matchesQuery(t, q));
   const dueNow = todayActiveAll.filter((t) => !isOverdue(t) && matchesQuery(t, q));

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { format, addDays, nextSaturday } from "date-fns";
-import { Flag } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -12,7 +11,9 @@ import {
 import { CATEGORIES, CATEGORY_STYLES } from "./TaskInput";
 import { CATEGORY_ICONS } from "./CategoryBadge";
 import RecurrenceEditor from "./RecurrenceEditor";
+import PriorityPicker from "./PriorityPicker";
 import { firstOccurrenceOnOrAfter } from "@/lib/recurrence";
+import { PRIORITY_DEFAULT, normalizePriority } from "@/lib/priority";
 
 const iso = (d) => format(d, "yyyy-MM-dd");
 
@@ -22,9 +23,8 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Personal");
   const [dueDate, setDueDate] = useState("");
-  const [dueTime, setDueTime] = useState("");
   const [comment, setComment] = useState("");
-  const [priority, setPriority] = useState("normal");
+  const [priority, setPriority] = useState(PRIORITY_DEFAULT);
   const [recurrence, setRecurrence] = useState(null);
   const [recurrenceReset, setRecurrenceReset] = useState(0);
 
@@ -34,9 +34,8 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
       setTitle(task.title || "");
       setCategory(task.category || "Personal");
       setDueDate(task.due_date || "");
-      setDueTime(task.due_time || "");
       setComment(task.comment || "");
-      setPriority(task.priority || "normal");
+      setPriority(normalizePriority(task.priority));
       setRecurrence(task.recurrence ?? null);
       setRecurrenceReset((n) => n + 1);
     }
@@ -67,7 +66,6 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
       title: t,
       category,
       due_date,
-      due_time: due_date ? (dueTime || null) : null,
       comment: comment.trim() || null,
       priority,
       recurrence,
@@ -136,36 +134,13 @@ export default function TaskEditDrawer({ task, open, onOpenChange, onSave }) {
             <input
               type="date"
               value={dueDate || ""}
-              onChange={(e) => { setDueDate(e.target.value); if (!e.target.value) setDueTime(""); }}
+              onChange={(e) => setDueDate(e.target.value)}
               className="ml-auto px-2 py-1 rounded-full text-xs font-medium border border-border bg-card text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/40 [color-scheme:dark]"
             />
-            {dueDate && (
-              <input
-                type="time"
-                value={dueTime}
-                onChange={(e) => setDueTime(e.target.value)}
-                aria-label="Time of day"
-                className={`px-2 py-1 rounded-full text-xs font-medium border bg-card focus:outline-none focus:ring-1 focus:ring-primary/40 [color-scheme:dark] ${
-                  dueTime ? "text-highlight border-primary/30" : "text-muted-foreground border-border"
-                }`}
-              />
-            )}
           </div>
 
-          {/* Priority */}
-          <button
-            type="button"
-            onClick={() => setPriority((p) => (p === "high" ? "normal" : "high"))}
-            aria-pressed={priority === "high"}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
-              priority === "high"
-                ? "bg-primary/10 text-highlight border-primary/30"
-                : "border-border text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Flag className="w-3.5 h-3.5" />
-            High priority
-          </button>
+          {/* Priority 1–5 (planning aid; hidden on Focus) */}
+          <PriorityPicker value={priority} onChange={setPriority} />
 
           {/* Recurrence */}
           <RecurrenceEditor

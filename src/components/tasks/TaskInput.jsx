@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { Plus, CalendarClock, X, ChevronDown, MessageSquare, Flag } from "lucide-react";
+import { Plus, CalendarClock, X, ChevronDown, MessageSquare } from "lucide-react";
 import { format, addDays, nextSaturday, parseISO } from "date-fns";
 import { CATEGORY_ICONS } from "./CategoryBadge";
 import RecurrenceEditor from "./RecurrenceEditor";
+import PriorityPicker from "./PriorityPicker";
 import { firstOccurrenceOnOrAfter, todayISO } from "@/lib/recurrence";
+import { PRIORITY_DEFAULT, isElevatedPriority } from "@/lib/priority";
 
 const iso = (d) => format(d, "yyyy-MM-dd");
 import {
@@ -35,8 +37,7 @@ export default function TaskInput({ onAdd }) {
   const [comment, setComment] = useState("");
   const [showComment, setShowComment] = useState(false);
   const [categoryDrawerOpen, setCategoryDrawerOpen] = useState(false);
-  const [dueTime, setDueTime] = useState("");
-  const [priority, setPriority] = useState("normal");
+  const [priority, setPriority] = useState(PRIORITY_DEFAULT);
   const [showDetails, setShowDetails] = useState(false);
   const [recurrence, setRecurrence] = useState(null);
   const [recurrenceReset, setRecurrenceReset] = useState(0);
@@ -57,7 +58,6 @@ export default function TaskInput({ onAdd }) {
       title: title.trim(),
       category,
       due_date,
-      due_time: due_date ? (dueTime || null) : null,
       comment: comment.trim() || null,
       priority,
       recurrence,
@@ -65,10 +65,9 @@ export default function TaskInput({ onAdd }) {
     });
     setTitle("");
     setDueDate("");
-    setDueTime("");
     setComment("");
     setShowComment(false);
-    setPriority("normal");
+    setPriority(PRIORITY_DEFAULT);
     setShowDetails(false);
     setRecurrence(null);
     setRecurrenceReset((n) => n + 1);
@@ -90,8 +89,8 @@ export default function TaskInput({ onAdd }) {
   // Compact summary of chosen facets, shown when details are collapsed.
   const summaryParts = [
     category,
-    dueDate ? (dueTime ? `${format(parseISO(dueDate), "d MMM")} ${dueTime}` : format(parseISO(dueDate), "d MMM")) : null,
-    priority === "high" ? "High" : null,
+    dueDate ? format(parseISO(dueDate), "d MMM") : null,
+    isElevatedPriority(priority) ? "High" : null,
     comment ? "Note" : null,
   ].filter(Boolean);
 
@@ -180,22 +179,6 @@ export default function TaskInput({ onAdd }) {
           Note
         </button>
 
-        {/* Priority toggle */}
-        <button
-          type="button"
-          onClick={() => setPriority((p) => (p === "high" ? "normal" : "high"))}
-          aria-pressed={priority === "high"}
-          aria-label="Toggle high priority"
-          className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-xs font-medium border transition-all duration-200 select-none ${
-            priority === "high"
-              ? "bg-primary/10 text-highlight border-primary/30"
-              : "border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground/40"
-          }`}
-        >
-          <Flag className="w-3 h-3" />
-          High
-        </button>
-
         {/* Due date */}
         <div className="relative flex items-center">
           <CalendarClock className="absolute left-2.5 w-3.5 h-3.5 text-muted-foreground pointer-events-none" />
@@ -208,27 +191,17 @@ export default function TaskInput({ onAdd }) {
           {dueDate && (
             <button
               type="button"
-              onClick={() => { setDueDate(""); setDueTime(""); }}
+              onClick={() => setDueDate("")}
               className="absolute right-2 text-muted-foreground/60 hover:text-muted-foreground"
             >
               <X className="w-3 h-3" />
             </button>
           )}
         </div>
-
-        {/* Time of day (only meaningful with a date) */}
-        {dueDate && (
-          <input
-            type="time"
-            value={dueTime}
-            onChange={(e) => setDueTime(e.target.value)}
-            aria-label="Time of day"
-            className={`px-2 py-1 rounded-full text-xs font-medium border bg-card focus:outline-none focus:ring-1 focus:ring-primary/40 transition-all duration-200 [color-scheme:dark] ${
-              dueTime ? "text-highlight border-primary/30" : "text-muted-foreground border-border"
-            }`}
-          />
-        )}
       </div>
+
+      {/* Priority 1–5 (planning aid; hidden on Focus) */}
+      <PriorityPicker value={priority} onChange={setPriority} />
 
           {/* Recurrence */}
           <div className="px-1">

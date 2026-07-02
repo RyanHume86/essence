@@ -28,6 +28,13 @@
       "format": "date",
       "description": "Optional due date for the task (YYYY-MM-DD). For a recurring task this is the date of the current occurrence."
     },
+    "priority": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5,
+      "default": 3,
+      "description": "1–5, 5 = most important. Set during planning, drives task order, hidden on Focus. (Legacy 'normal'/'high' string rows are converted by the Story 2.5 dataset migration.)"
+    },
     "comment": {
       "type": "string",
       "description": "Optional comment or note for the task"
