@@ -1,5 +1,5 @@
 ---
-project_name: 'essence'
+project_name: 'akha'
 user_name: 'Ryanr'
 date: '2026-06-23'
 sections_completed:

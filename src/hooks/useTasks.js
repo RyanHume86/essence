@@ -12,7 +12,7 @@ const tomorrowISO = () => format(addDays(new Date(), 1), "yyyy-MM-dd");
 // drift. Debounced so a burst of edits triggers a single reconcile, and gated on
 // a connection flag (written by CalendarSync) so unconnected users incur no
 // calls. Best-effort and silent; the manual "Sync now" still reports results.
-export const CALENDAR_CONNECTED_KEY = "essence_calendar_connected";
+export const CALENDAR_CONNECTED_KEY = "akha_calendar_connected";
 let autoSyncTimer = null;
 function scheduleAutoSync() {
   if (typeof window === "undefined") return;

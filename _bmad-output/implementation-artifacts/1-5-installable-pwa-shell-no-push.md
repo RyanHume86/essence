@@ -11,7 +11,7 @@ Status: done
 ## Story
 
 As a builder,
-I want to install Essence to my home screen and trust it will never nag me,
+I want to install Akha to my home screen and trust it will never nag me,
 So that it pulls me back by being calm, not by notifications.
 
 ## Acceptance Criteria
@@ -52,10 +52,10 @@ So that it pulls me back by being calm, not by notifications.
 **Owner decision (2026-07-01): option (a) — generate a simple SVG-based brand icon and rasterize it** to `pwa-192x192.png` / `pwa-512x512.png` / `pwa-maskable-512x512.png`. A Deep-Sea tile (`#04141f` ground, `#008080`/`#69c4d2` mark) is fine for v1; replace with polished art later. Implementation: author `public/icon.svg`, rasterize via a one-off script (a wasm rasterizer like `@resvg/resvg-js`, or `sharp`, installed as a dev-only tool; or `@vite-pwa/assets-generator`). If PNG rasterization tooling can't install cleanly in the build environment, fall back to shipping the SVG icon in the manifest (modern browsers accept it) and note that PNG generation should be run in a real environment — do not block the rest of the story on it.
 
 ### ✅ Decision (resolved) — installed app name
-**Owner decision (2026-07-01): keep "Akha".** Manifest `name`/`short_name` = `Akha` (matches the current `index.html` `<title>`). Do **not** rename to Essence and do **not** change the `<title>`.
+**Owner decision (2026-07-01): keep "Akha".** Manifest `name`/`short_name` = `Akha` (matches the current `index.html` `<title>`). Do **not** rename to Akha and do **not** change the `<title>`.
 
 ### What this story is (and is NOT)
-This is the **delivery shell** — the last Epic 1 story. It makes Essence installable and self-updating, with a service worker that is calm by construction: no push, and no caching of the Base44 API (so data is never stale). [Source: epics.md#Story 1.5; ARCHITECTURE-SPINE.md — "Delivery = installable PWA"]
+This is the **delivery shell** — the last Epic 1 story. It makes Akha installable and self-updating, with a service worker that is calm by construction: no push, and no caching of the Base44 API (so data is never stale). [Source: epics.md#Story 1.5; ARCHITECTURE-SPINE.md — "Delivery = installable PWA"]
 
 **NOT in this story:**
 - **Offline data / local-first / IndexedDB** — explicitly a *deferred future adapter, not v1* (the SW caches the static shell only, never the Base44 API). [Source: epics.md Additional Requirements; NFR11]

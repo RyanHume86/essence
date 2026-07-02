@@ -19,7 +19,7 @@
 import { format } from 'date-fns';
 
 /** localStorage key prefix; the day is appended as YYYY-MM-DD. */
-const KEY_PREFIX = 'essence_win_';
+const KEY_PREFIX = 'akha_win_';
 
 /** @returns {string} today as YYYY-MM-DD in local time */
 const todayKey = () => format(new Date(), 'yyyy-MM-dd');

@@ -11,7 +11,7 @@ context: ['_bmad-output/project-context.md']
 
 ## Intent
 
-**Problem:** Completing a task in Essence is a bare checkbox flip — no felt sense of "I achieved something." The whole validated product thesis hinges on one ~30-second "win-moment," but it doesn't exist, so the central bet is untested.
+**Problem:** Completing a task in Akha is a bare checkbox flip — no felt sense of "I achieved something." The whole validated product thesis hinges on one ~30-second "win-moment," but it doesn't exist, so the central bet is untested.
 
 **Approach:** A frontend-only win-moment: when a task is completed, a warm, restrained character reacts (pleased, not hyped) and a daily progress element visibly grows **in real time** on the tick. No backend or Base44 schema change; daily progress lives in `localStorage`.
 
@@ -60,7 +60,7 @@ context: ['_bmad-output/project-context.md']
 
 ## Design Notes
 
-Restraint is the spec, not a nicety. The reaction is a brief scale/glow + one short line that fades — never a modal, never blocks the next tap. The growth element fills proportionally (e.g. ring reaches "full" around ~8 completions, but the count keeps counting). Decoupling: `winMoment.js` is the single source — `useTasks` emits, `Companion` subscribes — keeping the hook UI-free and the component backend-free. `localStorage` key shape: `essence_win_<YYYY-MM-DD> → integer`; a stale date reads 0.
+Restraint is the spec, not a nicety. The reaction is a brief scale/glow + one short line that fades — never a modal, never blocks the next tap. The growth element fills proportionally (e.g. ring reaches "full" around ~8 completions, but the count keeps counting). Decoupling: `winMoment.js` is the single source — `useTasks` emits, `Companion` subscribes — keeping the hook UI-free and the component backend-free. `localStorage` key shape: `akha_win_<YYYY-MM-DD> → integer`; a stale date reads 0.
 
 ## Verification
 

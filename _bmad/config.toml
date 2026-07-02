@@ -11,7 +11,7 @@
 # ─────────────────────────────────────────────────────────────────
 
 [core]
-project_name = "essence"
+project_name = "akha"
 document_output_language = "English"
 output_folder = "_bmad-output"
 

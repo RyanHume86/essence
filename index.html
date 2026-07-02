@@ -12,7 +12,7 @@
          reconciles + validates this on mount. -->
     <script>
       try {
-        var p = JSON.parse(localStorage.getItem('essence_prefs') || '{}');
+        var p = JSON.parse(localStorage.getItem('akha_prefs') || '{}');
         if (p && typeof p.scheme === 'string' && p.scheme) {
           document.documentElement.setAttribute('data-scheme', p.scheme);
         }

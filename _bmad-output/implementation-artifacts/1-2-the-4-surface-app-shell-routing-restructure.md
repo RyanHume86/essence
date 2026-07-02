@@ -68,7 +68,7 @@ This is the **shell + routing** slice of Epic 1. It makes the 4-surface IA real 
 [Source: current `src/App.jsx`, `src/components/layout/BottomNav.jsx`, `TopHeader.jsx`, the 4 shipped pages]
 - **`BottomNav.jsx` is already a 4-item + center-FAB shape** — you are re-labeling/re-pathing it, not rebuilding structure. Today shipped: LEFT `[Today "/", Upcoming "/upcoming"]`, CENTER FAB (`Plus`, `btn-accent-3d -mt-7 w-14 h-14`), RIGHT `[Browse "/browse", Settings "/settings"]`. Active-state, `useLocation`, and safe-area handling already exist and should be preserved.
 - **The FAB already focuses `#task-quick-input`** — but it navigates to `/` and the input lives on `Today.jsx:68`. The spec wants the create-path on **Plan**, so both the FAB target and the input's home move to `/plan` (Task 3). This is the single most important change in the story; get the id uniqueness right.
-- **`TopHeader.jsx`** has no per-route titles (static "Essence" brand) and gates the back button on `ROOT_PATHS` (line 7). Search is global via `SearchContext`. Nothing here needs a rename beyond `ROOT_PATHS`.
+- **`TopHeader.jsx`** has no per-route titles (static "Akha" brand) and gates the back button on `ROOT_PATHS` (line 7). Search is global via `SearchContext`. Nothing here needs a rename beyond `ROOT_PATHS`.
 - **All 4 page bodies are route-agnostic** — each just calls `useTasks()` + `useSearch()` and filters/groups; **they remount at new paths with zero body changes** (only the input relocation in Task 3 touches a page). [Source: Today/Upcoming/Browse/Completed .jsx]
 - **`use-mobile.jsx`** exists but is unused; the shell is mobile-first throughout. No need to wire it.
 

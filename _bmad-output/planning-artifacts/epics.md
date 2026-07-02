@@ -1,20 +1,20 @@
 ---
 stepsCompleted: [step-01-validate-prerequisites, step-02-design-epics, step-03-create-stories]
 inputDocuments:
-  - prds/prd-essence-2026-06-29/prd.md
-  - prds/prd-essence-2026-06-29/addendum.md
-  - architecture/architecture-essence-2026-06-30/ARCHITECTURE-SPINE.md
-  - ux-designs/ux-essence-2026-06-30/DESIGN.md
-  - ux-designs/ux-essence-2026-06-30/EXPERIENCE.md
-  - ../specs/spec-essence/SPEC.md
+  - prds/prd-akha-2026-06-29/prd.md
+  - prds/prd-akha-2026-06-29/addendum.md
+  - architecture/architecture-akha-2026-06-30/ARCHITECTURE-SPINE.md
+  - ux-designs/ux-akha-2026-06-30/DESIGN.md
+  - ux-designs/ux-akha-2026-06-30/EXPERIENCE.md
+  - ../specs/spec-akha/SPEC.md
   - ../project-context.md
 ---
 
-# essence - Epic Breakdown
+# akha - Epic Breakdown
 
 ## Overview
 
-This document provides the complete epic and story breakdown for essence, decomposing the requirements from the PRD, UX Design, and Architecture into implementable stories. The SPEC kernel's nine capabilities (CAP-1…9) are the organizing spine for the epics; the architecture invariants (AD-1…12) govern *how* each story is built.
+This document provides the complete epic and story breakdown for akha, decomposing the requirements from the PRD, UX Design, and Architecture into implementable stories. The SPEC kernel's nine capabilities (CAP-1…9) are the organizing spine for the epics; the architecture invariants (AD-1…12) govern *how* each story is built.
 
 ## Requirements Inventory
 
@@ -26,11 +26,11 @@ FR3: Name, colour scheme, and creature can be changed later from a Settings surf
 FR4: The user can create tasks at any time — planned ahead or added on the fly.
 FR5: Every task carries a priority of 1–5 (5 = most important).
 FR6: A task can be broken into subtasks (one level deep); added at capture or later, editable anytime.
-FR7: During capture, Essence gently nudges decomposition up front (encouraged, not required).
+FR7: During capture, Akha gently nudges decomposition up front (encouraged, not required).
 FR8: The capture/Plan surface is a neutral utility — the full list may be visible; the creature sits passively without reacting.
 FR9: A task carries a due date (date-only, YYYY-MM-DD); time-of-day is out of scope.
 FR10: Tasks and subtasks can be edited and deleted.
-FR11: During execution, Essence shows one task at a time — the highest-ranked — with the backlog off-screen.
+FR11: During execution, Akha shows one task at a time — the highest-ranked — with the backlog off-screen.
 FR12: Task order = (1) priority 5→1, (2) due date sooner-first, (3) order added earliest-first, (4) manual rearrange override.
 FR13: Within a task, subtasks are revealed two at a time, not all at once.
 FR14: Completing a subtask removes it from view, the next flows up, the following incomplete becomes active; creature gives a gentle smile + brief line (exactly one active at a time).
@@ -136,7 +136,7 @@ FR26: Epic 4 — archive structural anti-scoreboard guardrail
 ## Epic List
 
 ### Epic 1: Make it mine — onboarding, personalization & the app shell
-Install Essence and be dropped into a calm 4-surface home that already feels like the user's own: choose a name to be called by, one of 7 colour schemes, and a creature; receive a warm welcome and a one-time first-open beat; change any of it later from Settings — and it never nags. Establishes the local `usePrefs` store (AD-6), the CSS-variable token/theming system for all 7 schemes (UX-DR1), the 4-surface bottom nav + routing restructure (Today→Focus, Upcoming+Browse→Plan, Completed→Archive), and the installable-PWA shell whose service worker never registers push (AD-12).
+Install Akha and be dropped into a calm 4-surface home that already feels like the user's own: choose a name to be called by, one of 7 colour schemes, and a creature; receive a warm welcome and a one-time first-open beat; change any of it later from Settings — and it never nags. Establishes the local `usePrefs` store (AD-6), the CSS-variable token/theming system for all 7 schemes (UX-DR1), the 4-surface bottom nav + routing restructure (Today→Focus, Upcoming+Browse→Plan, Completed→Archive), and the installable-PWA shell whose service worker never registers push (AD-12).
 **Companion boundary:** Epic 1 **reuses the shipped `Companion.jsx` as-is** for the first-open beat (FR24) and greeting — it does **not** author new companion internals. Epic 3 owns and rebuilds the companion (poses, reaction channel, recolor). This keeps onboarding's emotional payload without churning `Companion.jsx` across epics.
 **FRs covered:** FR1, FR2, FR3, FR24
 
@@ -158,7 +158,7 @@ End the day only when the user decides — the explicit "I'm done for today" ges
 
 ## Epic 1: Make it mine — onboarding, personalization & the app shell
 
-Install Essence and be dropped into a calm 4-surface home that already feels like the user's own: choose a name, one of 7 schemes, and a creature; receive a warm welcome and a one-time first-open beat; change any of it later from Settings — and it never nags.
+Install Akha and be dropped into a calm 4-surface home that already feels like the user's own: choose a name, one of 7 schemes, and a creature; receive a warm welcome and a one-time first-open beat; change any of it later from Settings — and it never nags.
 
 ### Story 1.1: The 7-scheme token system & local prefs store
 
@@ -273,7 +273,7 @@ So that depth lives in Settings while onboarding stays minimal.
 ### Story 1.5: Installable PWA shell (no push)
 
 As a builder,
-I want to install Essence to my home screen and trust it will never nag me,
+I want to install Akha to my home screen and trust it will never nag me,
 So that it pulls me back by being calm, not by notifications.
 
 **Acceptance Criteria:**
@@ -517,7 +517,7 @@ So that progress feels like proof, never pressure.
 
 **Given** the shipped `winMoment.js` counter and `RING_TARGET=8` bar
 **When** this story lands
-**Then** the counter is retired (no code reads/writes `essence_win_*` keys) and `RING_TARGET=8` plus the horizontal bar are deleted (AD-3, UX-DR2).
+**Then** the counter is retired (no code reads/writes `akha_win_*` keys) and `RING_TARGET=8` plus the horizontal bar are deleted (AD-3, UX-DR2).
 
 **Given** the progress wheel is currently jammed inside the shipped `Companion.jsx`
 **When** this story lands

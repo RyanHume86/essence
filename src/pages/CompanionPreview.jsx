@@ -14,7 +14,7 @@ export default function CompanionPreview() {
   const complete = () => setCount(recordCompletion());
   const reset = () => {
     if (typeof window !== "undefined") {
-      window.localStorage.removeItem(`essence_win_${format(new Date(), "yyyy-MM-dd")}`);
+      window.localStorage.removeItem(`akha_win_${format(new Date(), "yyyy-MM-dd")}`);
     }
     setCount(0);
     setRemount((n) => n + 1); // remount Companion so it re-reads 0

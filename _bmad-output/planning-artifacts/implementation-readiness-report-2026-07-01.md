@@ -4,35 +4,35 @@ readinessStatus: 'READY'
 blockingIssues: 0
 minorIssues: 5
 documentsIncluded:
-  prd: 'prds/prd-essence-2026-06-29/prd.md'
-  architecture: 'architecture/architecture-essence-2026-06-30/ARCHITECTURE-SPINE.md'
+  prd: 'prds/prd-akha-2026-06-29/prd.md'
+  architecture: 'architecture/architecture-akha-2026-06-30/ARCHITECTURE-SPINE.md'
   epics: 'epics.md'
-  ux: ['ux-designs/ux-essence-2026-06-30/DESIGN.md', 'ux-designs/ux-essence-2026-06-30/EXPERIENCE.md']
-  spec_supplementary: '_bmad-output/specs/spec-essence/SPEC.md'
+  ux: ['ux-designs/ux-akha-2026-06-30/DESIGN.md', 'ux-designs/ux-akha-2026-06-30/EXPERIENCE.md']
+  spec_supplementary: '_bmad-output/specs/spec-akha/SPEC.md'
 ---
 
 # Implementation Readiness Assessment Report
 
 **Date:** 2026-07-01
-**Project:** essence
+**Project:** akha
 
 ## Document Inventory
 
 | Type | File | Size | Modified |
 |------|------|------|----------|
-| PRD | `prds/prd-essence-2026-06-29/prd.md` | 21.5 KB | 2026-06-30 |
-| Architecture | `architecture/architecture-essence-2026-06-30/ARCHITECTURE-SPINE.md` | 22.4 KB | 2026-06-30 |
+| PRD | `prds/prd-akha-2026-06-29/prd.md` | 21.5 KB | 2026-06-30 |
+| Architecture | `architecture/architecture-akha-2026-06-30/ARCHITECTURE-SPINE.md` | 22.4 KB | 2026-06-30 |
 | Epics & Stories | `epics.md` | 45.2 KB | 2026-07-01 |
-| UX Design | `ux-designs/ux-essence-2026-06-30/DESIGN.md` | 22.1 KB | 2026-06-30 |
-| UX Experience | `ux-designs/ux-essence-2026-06-30/EXPERIENCE.md` | 24.1 KB | 2026-06-30 |
-| SPEC (supplementary) | `specs/spec-essence/SPEC.md` | — | — |
+| UX Design | `ux-designs/ux-akha-2026-06-30/DESIGN.md` | 22.1 KB | 2026-06-30 |
+| UX Experience | `ux-designs/ux-akha-2026-06-30/EXPERIENCE.md` | 24.1 KB | 2026-06-30 |
+| SPEC (supplementary) | `specs/spec-akha/SPEC.md` | — | — |
 
 **Duplicates:** None found (no whole-vs-sharded conflicts).
 **Missing:** None — all four required document types present.
 
 ## PRD Analysis
 
-**Source:** `prds/prd-essence-2026-06-29/prd.md` (status: final)
+**Source:** `prds/prd-akha-2026-06-29/prd.md` (status: final)
 
 ### Functional Requirements (26)
 
@@ -281,7 +281,7 @@ This is an unusually clean planning package. PRD, UX (DESIGN + EXPERIENCE), Arch
 
 ### Final Note
 
-This assessment reviewed 5 documents across 6 validation steps and identified **5 minor advisory issues and 0 blocking issues**. Nothing must be fixed before implementation begins; the single doc-drift line is worth a quick edit for hygiene. The planning artifacts are coherent, complete, and internally consistent — Essence is ready to move from *what* to *build*.
+This assessment reviewed 5 documents across 6 validation steps and identified **5 minor advisory issues and 0 blocking issues**. Nothing must be fixed before implementation begins; the single doc-drift line is worth a quick edit for hygiene. The planning artifacts are coherent, complete, and internally consistent — Akha is ready to move from *what* to *build*.
 
 ---
 

@@ -1,6 +1,6 @@
-# Essence: integrating the recurrence engine into the existing repo
+# Akha: integrating the recurrence engine into the existing repo
 
-This supersedes the parts of `essence-spec.md` that assumed a greenfield TypeScript, local-first app. The repo is JavaScript/JSX, Base44-backed, and already uses `date-fns` and react-query. The files below are written to that reality and verified against it.
+This supersedes the parts of `akha-spec.md` that assumed a greenfield TypeScript, local-first app. The repo is JavaScript/JSX, Base44-backed, and already uses `date-fns` and react-query. The files below are written to that reality and verified against it.
 
 ## Canonical files
 
@@ -92,7 +92,7 @@ The recurrence editor is the remaining UI work. It needs to:
 
 Format the preview strings for display with the same `date-fns` `format` the app already uses elsewhere (`format(parseISO(s), "EEE, d MMM")`).
 
-## What in essence-spec.md is now superseded
+## What in akha-spec.md is now superseded
 
 - Section 3 (data ownership). The local-first IndexedDB recommendation and the "defer sync / use Supabase LWW" advice do not apply. The app is already Base44-backed with react-query. Sync is the existing architecture, not a future choice. Export remains a reasonable optional add, but it is a smaller win when Base44 already holds the data, and it is not a substitute for confirming the migration in Step 1.
 - The TypeScript `Task` interface and Date-object API in the spec are illustrative only. `src/lib/recurrence.js` is canonical.
