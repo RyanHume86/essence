@@ -18,9 +18,11 @@ const LEGACY_STRING = { normal: 3, high: 4 };
 // null/undefined/garbage → PRIORITY_DEFAULT; out-of-range numbers are clamped.
 export function normalizePriority(value) {
   if (typeof value === "string") {
-    const mapped = LEGACY_STRING[value.trim().toLowerCase()];
+    const s = value.trim().toLowerCase();
+    const mapped = LEGACY_STRING[s];
     if (mapped !== undefined) return mapped;
-    value = Number(value);
+    // Empty/whitespace-only is "garbage", not 0 — fall through to the default.
+    value = s === "" ? NaN : Number(s);
   }
   if (typeof value !== "number" || !Number.isFinite(value)) return PRIORITY_DEFAULT;
   return Math.min(PRIORITY_MAX, Math.max(PRIORITY_MIN, Math.round(value)));

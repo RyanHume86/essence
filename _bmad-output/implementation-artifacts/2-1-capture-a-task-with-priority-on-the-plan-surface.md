@@ -4,7 +4,7 @@ baseline_commit: 2f9ea6febfb099ec10e1d970ead2545647ef3a64
 
 # Story 2.1: Capture a task with priority on the Plan surface
 
-Status: review — all ACs verified live (Nidus round-trip green after schema publish; see Completion Notes)
+Status: done — all ACs verified live; code review PASS (2 trivial patches applied, 1 deferred to 2.5)
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -57,6 +57,16 @@ So that I can get it out of my head without the list judging me.
   - [x] `npm run lint` clean; `npm run build` clean (exit 0; Vite `logLevel:error` suppresses the summary); `npx vitest run` green (**82 passed**, incl. 10 new `priority.test.js`); typecheck unchanged (93 pre-existing, 0 new). Added `src/lib/priority.js` + colocated Vitest per NFR12.
   - [x] Grep confirms **zero** remaining `priority === "high"`, `"normal"`, or `task.today`/`t.today` in production code (only the intentional legacy-mapping tests/comments in `priority.*`).
   - [x] Grep confirms **zero** `due_time` **writes** — remaining `due_time` tokens are allowed read sites only (`taskUtils.isOverdue`, `DueDateChip`, dormant calendar `syncTasksToCalendar`, which degrades to an all-day event).
+
+### Review Findings
+
+_Code review 2026-07-02 — adversarial (Blind Hunter + Edge Case Hunter + Acceptance Auditor), each fresh-context. **Verdict: PASS** — no Critical/High/Medium. All 6 ACs met and verified against the tree; scope discipline for Stories 2.2–2.5 respected; no direct entity calls; no hardcoded hex._
+
+- [x] [Review][Patch] Re-indent the relocated `PriorityPicker` block to match its siblings [src/components/tasks/TaskInput.jsx:203-204] — fixed (10-space indent).
+- [x] [Review][Patch] `normalizePriority("")`/whitespace-only returns 1 instead of `PRIORITY_DEFAULT` [src/lib/priority.js:19-27] — fixed (empty/blank strings now fall through to the default) + test added. Suite 83 passed.
+- [x] [Review][Defer] Editing a legacy row does not clear a stale `due_time` when the date is removed [src/components/tasks/TaskEditDrawer.jsx:66-72] — harmless (every reader gates on `due_date` first); the Story 2.5 dataset migration strips drift. Deferred to 2.5.
+
+_Dismissed as noise (2): `Flag` import retained in `TaskItem` (correctly still used by the elevated-priority badge); `"high"→4` legacy mapping (sanctioned 2.5 decision per Dev Notes)._
 
 ## Dev Notes
 
@@ -154,3 +164,4 @@ claude-opus-4-8 (Claude Opus 4.8)
 | 2026-07-02 | Implemented Story 2.1: integer priority 1–5 capture + schema migration; dropped `due_time`/`today` drift; legacy-safe read helpers. Offline gates green (lint/build/vitest 82). AC-4 Nidus round-trip + manual Plan capture blocked on live authenticated Base44 (owner action). Status → in-progress (blocked). |
 | 2026-07-02 | Live Nidus verification run (owner logged in): **FAILED** — `POST /entities/Task` 422 `priority: Input should be a valid string`. Backend schema still string; `Task.jsonc` not pushed to Base44. Code correct (sends integer 3); blocker is the un-deployed schema. Do not merge until schema pushed. |
 | 2026-07-02 | Committed to `main` (85563b6) + pushed; owner published the app (GitHub→Base44). Re-ran live verification: **Nidus round-trip GREEN** (create 200, integer 4 persisted + read back). UI capture at priority 5 verified (via `useTasks`, sorted, "High" badge). Test tasks cleaned up. All ACs satisfied → Status `review`. |
+| 2026-07-02 | Code review (3 fresh-context adversarial layers): **PASS**, no Critical/High/Medium. Applied 2 trivial patches (PriorityPicker indentation; `normalizePriority` empty/whitespace→default +test, suite 83 green); 1 low finding deferred to Story 2.5 (stale legacy `due_time` on edit); 2 dismissed. Status → `done`. |

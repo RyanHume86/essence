@@ -26,6 +26,10 @@ Surfaced during review but intentionally out of scope for the current change. No
 - **[1.4] Scheme↔CSS coupling** — swatch relies on SCHEMES keys matching [data-scheme] blocks; no parity test.
 - **[1.4] Runtime unverified** — live re-skin, reload persistence, toggle-no-permission — confirm at /verify.
 
+## Deferred from: code review of story 2-1-capture-a-task-with-priority-on-the-plan-surface (2026-07-02)
+
+- **[2.1] Editing a legacy task doesn't clear a stale `due_time` when its due date is removed** — the new `TaskEditDrawer` save patch omits `due_time` (was `due_time: due_date ? … : null`), and `patchM` merges, so a pre-2.5 row keeps an orphaned `due_time` with `due_date: null`. Harmless today (every reader — `isOverdue`, `DueDateChip`, calendar `buildEventBody` — gates on `due_date` first). The Story 2.5 dataset migration strips drift fields; confirm these rows are covered there. Severity: low (latent data hygiene).
+
 ## Deferred from: code review of story 1.5 (2026-07-01)
 
 - **[1.5] autoUpdate mid-session shell swap → chunk-load error** — only if React.lazy/dynamic imports are added (routes static today). Future watch-item; consider a reload-on-chunk-error boundary then.

@@ -59,7 +59,7 @@ development_status:
 
   # Epic 2: Get it out of my head — capture & planning
   epic-2: in-progress
-  2-1-capture-a-task-with-priority-on-the-plan-surface: review
+  2-1-capture-a-task-with-priority-on-the-plan-surface: done
   2-2-break-a-task-into-subtasks-with-a-gentle-nudge: backlog
   2-3-set-a-due-date-and-edit-or-delete-tasks-and-subtasks: backlog
   2-4-order-the-backlog-and-rearrange-it-by-hand: backlog

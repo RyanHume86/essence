@@ -200,8 +200,8 @@ export default function TaskInput({ onAdd }) {
         </div>
       </div>
 
-      {/* Priority 1–5 (planning aid; hidden on Focus) */}
-      <PriorityPicker value={priority} onChange={setPriority} />
+          {/* Priority 1–5 (planning aid; hidden on Focus) */}
+          <PriorityPicker value={priority} onChange={setPriority} />
 
           {/* Recurrence */}
           <div className="px-1">

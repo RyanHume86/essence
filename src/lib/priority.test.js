@@ -21,6 +21,12 @@ describe("normalizePriority", () => {
     expect(normalizePriority({})).toBe(PRIORITY_DEFAULT);
   });
 
+  it("treats empty / whitespace-only strings as the default (not 0→1)", () => {
+    expect(normalizePriority("")).toBe(PRIORITY_DEFAULT);
+    expect(normalizePriority("   ")).toBe(PRIORITY_DEFAULT);
+    expect(normalizePriority("\t")).toBe(PRIORITY_DEFAULT);
+  });
+
   it("maps shipped legacy string priorities (pre-2.5 rows)", () => {
     expect(normalizePriority("normal")).toBe(3);
     expect(normalizePriority("high")).toBe(4);
