@@ -1,0 +1,85 @@
+# generated: 2026-07-01
+# last_updated: 2026-07-01
+# project: essence
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# Action Item Status:
+#   - open: Committed during a retrospective, not yet addressed
+#   - in-progress: Actively being worked on
+#   - done: Completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+# - Retrospective appends its action items to action_items; sprint-status surfaces open ones
+
+generated: 2026-07-01
+last_updated: 2026-07-01
+project: essence
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+  # Epic 1: Make it mine — onboarding, personalization & the app shell
+  epic-1: done
+  1-1-the-7-scheme-token-system-local-prefs-store: done
+  1-2-the-4-surface-app-shell-routing-restructure: done
+  1-3-first-run-onboarding-name-scheme-creature-welcome-beat: done
+  1-4-settings-personalization-notifications-off-toggle: done
+  1-5-installable-pwa-shell-no-push: done
+  epic-1-retrospective: optional
+
+  # Epic 2: Get it out of my head — capture & planning
+  epic-2: backlog
+  2-1-capture-a-task-with-priority-on-the-plan-surface: backlog
+  2-2-break-a-task-into-subtasks-with-a-gentle-nudge: backlog
+  2-3-set-a-due-date-and-edit-or-delete-tasks-and-subtasks: backlog
+  2-4-order-the-backlog-and-rearrange-it-by-hand: backlog
+  2-5-migrate-the-live-task-dataset-to-the-new-schema: backlog
+  epic-2-retrospective: optional
+
+  # Epic 3: One thing at a time — the focus view, the win-moment & the companion
+  epic-3: backlog
+  3-1-the-focus-surface-one-task-at-a-time: backlog
+  3-2-two-at-a-time-subtask-reveal-completion: backlog
+  3-3-the-whole-task-win-auto-complete-dim-and-sink-completed-at: backlog
+  3-4-the-accumulation-progress-wheel-derived: backlog
+  3-5-the-companion-greeting-the-reaction-channel-subtask-tier: backlog
+  3-6-the-whole-task-reaction-the-little-dance: backlog
+  3-7-per-scheme-creature-recolor-deferrable-tail: backlog
+  epic-3-retrospective: optional
+
+  # Epic 4: On his terms — day-end, carry-forward & the archive
+  epic-4: backlog
+  4-1-calm-carry-forward-still-needs-doing: backlog
+  4-2-im-done-for-today-the-sweep-and-the-sigh: backlog
+  4-3-the-archive-a-calm-what-i-did: backlog
+  epic-4-retrospective: optional

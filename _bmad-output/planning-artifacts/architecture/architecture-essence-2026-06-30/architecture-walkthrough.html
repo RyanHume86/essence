@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Essence — Architecture Walkthrough</title>
+<style>
+  :root{
+    --bg:#04141f; --surface:#0a3450; --surface2:#0e3d5e; --border:#0a3a52;
+    --fg:#ffffff; --muted:rgba(255,255,255,.7); --faint:rgba(255,255,255,.45);
+    --accent:#008080; --accent-h:#00a1a1; --highlight:#69c4d2; --success:#2D6D54;
+    --carry:#8a9aa6; --serif:"Playfair Display",Georgia,serif; --sans:"Inter",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55;display:flex;overflow:hidden}
+  a{color:var(--highlight)}
+  /* sidebar */
+  nav#toc{width:248px;flex:0 0 248px;height:100vh;overflow:auto;border-right:1px solid var(--border);
+    background:linear-gradient(180deg,#06202f,#04141f);padding:20px 14px}
+  nav#toc h1{font-family:var(--serif);font-weight:600;font-size:18px;margin:0 6px 4px}
+  nav#toc .sub{color:var(--faint);font-size:11.5px;margin:0 6px 16px;letter-spacing:.02em}
+  nav#toc button{display:block;width:100%;text-align:left;background:none;border:0;color:var(--muted);
+    font:inherit;font-size:12.5px;padding:7px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px}
+  nav#toc button:hover{background:rgba(255,255,255,.05);color:var(--fg)}
+  nav#toc button.active{background:rgba(0,128,128,.18);color:var(--fg);box-shadow:inset 2px 0 0 var(--highlight)}
+  nav#toc .grp{color:var(--faint);font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;margin:16px 8px 6px}
+  /* stage */
+  main{flex:1;height:100vh;overflow:auto;position:relative}
+  .wrap{max-width:900px;margin:0 auto;padding:56px 48px 120px}
+  section.slide{display:none;animation:fade .35s ease}
+  section.slide.show{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .kicker{color:var(--highlight);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin:0 0 10px}
+  h2{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.2;margin:0 0 8px}
+  h3{font-family:var(--serif);font-weight:600;font-size:19px;margin:26px 0 10px}
+  p{color:var(--muted);margin:0 0 14px}
+  .lead{font-size:17px;color:var(--fg)}
+  .card{background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--border);
+    border-top-color:rgba(255,255,255,.08);border-radius:12px;padding:18px 20px;margin:14px 0;
+    box-shadow:0 10px 26px -14px rgba(0,0,0,.6)}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:1fr 1fr}
+  .pill{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:999px;
+    background:rgba(0,128,128,.16);color:var(--highlight);border:1px solid rgba(0,128,128,.32);margin-right:6px}
+  .pill.win{background:rgba(45,109,84,.2);color:#7fc9a6;border-color:rgba(45,109,84,.4)}
+  .pill.warn{background:rgba(138,154,166,.16);color:var(--carry);border-color:rgba(138,154,166,.35)}
+  ul{margin:0 0 14px;padding-left:18px;color:var(--muted)}
+  li{margin:5px 0}
+  li b,p b,td b{color:var(--fg);font-weight:600}
+  .ad{border-left:3px solid var(--accent);padding:4px 0 4px 16px;margin:14px 0}
+  .ad .id{font-weight:700;color:var(--highlight);font-family:var(--sans)}
+  .ad .binds{font-size:12.5px;color:var(--faint);margin:3px 0}
+  .ad .rule{color:var(--muted);font-size:14px}
+  table{width:100%;border-collapse:collapse;margin:10px 0;font-size:13.5px}
+  th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+  th{color:var(--highlight);font-size:11.5px;text-transform:uppercase;letter-spacing:.08em}
+  td{color:var(--muted)}
+  .opt{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;margin:8px 0}
+  .opt .mk{font-weight:700;font-size:13px;width:26px;height:26px;border-radius:7px;display:grid;place-items:center}
+  .opt.win .mk{background:var(--accent);color:#fff}
+  .opt.no .mk{background:rgba(255,255,255,.07);color:var(--faint)}
+  .opt .txt{font-size:13.5px;color:var(--muted)}
+  .opt.win .txt b{color:#fff}
+  .foot{position:fixed;bottom:0;right:0;left:248px;display:flex;justify-content:space-between;align-items:center;
+    padding:12px 28px;background:linear-gradient(0deg,var(--bg),transparent);pointer-events:none}
+  .foot .nav{pointer-events:auto;display:flex;gap:8px}
+  .foot button{font:inherit;font-size:13px;color:var(--fg);background:linear-gradient(180deg,var(--accent-h),var(--accent));
+    border:0;border-radius:10px;padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 #00484a;font-weight:600}
+  .foot button:active{transform:translateY(3px);box-shadow:none}
+  .foot button.ghost{background:none;box-shadow:none;color:var(--muted);border:1px solid var(--border)}
+  .foot .count{pointer-events:none;color:var(--faint);font-size:12px}
+  .diagram{display:flex;flex-direction:column;gap:10px;margin:16px 0}
+  .layer{display:flex;align-items:center;gap:12px}
+  .layer .box{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:11px 14px}
+  .layer .box .t{font-weight:600;color:var(--fg);font-size:13.5px}
+  .layer .box .d{font-size:12px;color:var(--faint)}
+  .layer .arrow{color:var(--accent);font-size:18px}
+  .tag{font-size:11px;color:var(--faint);font-family:var(--sans)}
+  .flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+  .node{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:7px 14px;font-size:12.5px;color:var(--fg)}
+  .node.accent{border-color:var(--accent);background:rgba(0,128,128,.15)}
+  .node.win{border-color:var(--success);background:rgba(45,109,84,.18);color:#9fdcbd}
+  .node.muted{color:var(--carry)}
+  .edge{color:var(--faint);font-size:12px}
+  .note{font-size:12.5px;color:var(--faint);border-top:1px dashed var(--border);padding-top:10px;margin-top:14px}
+  kbd{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:1px 6px;font-size:11px;font-family:var(--sans);color:var(--muted)}
+</style>
+</head>
+<body>
+<nav id="toc">
+  <h1>Essence</h1>
+  <div class="sub">Architecture Spine · walkthrough</div>
+  <div id="tocItems"></div>
+</nav>
+<main id="stage">
+  <div class="wrap" id="slides">
+
+    <!-- 0 -->
+    <section class="slide" data-title="Overview" data-grp="Start">
+      <p class="kicker">Architecture Spine · 2026-06-30</p>
+      <h2>A calm task companion, structured for restraint</h2>
+      <p class="lead">This is the consistency contract for Essence v1 — the invariants that keep the four surfaces and the core logic from diverging, built <b>on top of a shipped React / Vite / Base44 codebase</b>. It fixes only the load-bearing calls; everything the code can own, the code owns.</p>
+      <div class="grid g2">
+        <div class="card"><span class="pill">Altitude</span><p style="margin:10px 0 0">Initiative — the whole v1, governing FR1–26 / NFR1–12.</p></div>
+        <div class="card"><span class="pill win">Gate</span><p style="margin:10px 0 0">Lint clean · 4 adversarial reviewers · all fixes applied.</p></div>
+      </div>
+      <p class="note">Navigate with the sidebar, the buttons below, or <kbd>←</kbd> <kbd>→</kbd> arrow keys.</p>
+    </section>
+
+    <!-- 1 -->
+    <section class="slide" data-title="The paradigm" data-grp="The model">
+      <p class="kicker">Design paradigm</p>
+      <h2>Client-side SPA · ports &amp; adapters at the data edge</h2>
+      <p>Four layers, dependencies pointing one way — down. Each layer can be built independently because the layer below it is fixed.</p>
+      <div class="diagram">
+        <div class="layer"><div class="box"><div class="t">Surfaces — pages + components</div><div class="d">render &amp; capture intent · never touch a backend directly</div></div></div>
+        <div class="layer"><span class="arrow">↓</span><div class="box"><div class="t">Domain stores — <span class="tag">useTasks · usePrefs</span></div><div class="d">the <b>ports</b> · single funnel per domain · own cache, optimistic mutation, rollback</div></div></div>
+        <div class="layer"><span class="arrow">↓</span><div class="box"><div class="t">Pure logic — <span class="tag">src/lib</span></div><div class="d">ordering · derivations · day-end · unit-tested, depends on nothing above</div></div></div>
+        <div class="layer"><span class="arrow">↓</span><div class="box"><div class="t">Adapter — <span class="tag">base44Client</span></div><div class="d">the <b>only</b> module that imports the backend SDK · swappable</div></div></div>
+      </div>
+      <p class="note">A separate transient <b>reaction channel</b> carries companion signals — orthogonal to persistence. State is <i>derived</i>; reactions are <i>signaled</i>.</p>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide" data-title="Brownfield reality" data-grp="The model">
+      <p class="kicker">What we inherited</p>
+      <h2>Ratify the code; resolve only what was punted</h2>
+      <p>The spine accepts the conventions the shipped code already proves, and spends its decisions on the forks the PRD/UX explicitly deferred to "the architecture phase."</p>
+      <div class="grid g2">
+        <div class="card">
+          <h3 style="margin-top:0">Ratified from the code</h3>
+          <ul>
+            <li>React 18 / Vite 6 / Tailwind / shadcn / TanStack Query / framer-motion</li>
+            <li>All task I/O funnels through <b>useTasks</b> (optimistic + rollback)</li>
+            <li>Core logic in <b>src/lib</b> — Vitest is the only safety net there</li>
+            <li>JS/JSX only · <code>@/</code> alias · tokens, no hardcoded hex</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 style="margin-top:0">Debt the spine targets</h3>
+          <ul>
+            <li><b>Split-brain:</b> tasks in Base44, win-count in localStorage</li>
+            <li><b>clearCompleted deletes</b> — but the Archive must retain</li>
+            <li><b>RING_TARGET=8</b> — a denominator the wheel forbids</li>
+            <li>Schema drift: code writes <code>priority/today/due_time</code> not in the entity</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 fork 1 -->
+    <section class="slide" data-title="Fork 1 · Data ownership" data-grp="The four forks">
+      <p class="kicker">Fork 1 — the biggest</p>
+      <h2>How v1 holds the local-first door open</h2>
+      <p>v1 stays on <b>Base44</b> (PRD NFR2). But local-first is the documented target (NFR11). The real question: fix an invariant now, or bake in cloud assumptions?</p>
+      <div class="opt no"><div class="mk">A</div><div class="txt">Document local-first as future, no boundary — cheapest now, a <b>rewrite</b> later.</div></div>
+      <div class="opt win"><div class="mk">B</div><div class="txt"><b>Persistence port</b> — surfaces touch data only through per-domain stores; stores are the only code that imports the backend. Base44 is the swappable v1 adapter. <b>Chosen.</b></div></div>
+      <div class="opt no"><div class="mk">C</div><div class="txt">Build local-first now — contradicts NFR2, over-builds for a solo v1.</div></div>
+      <div class="card" style="margin-top:18px"><span class="pill win">Decision → AD-1</span><p style="margin:10px 0 0">The port rule kills the split-brain by making "where does this live?" a store-module decision — and it's mostly formalizing the <code>useTasks</code> funnel that already exists.</p></div>
+    </section>
+
+    <!-- 4 fork 2 -->
+    <section class="slide" data-title="Fork 2 · Schema gaps" data-grp="The four forks">
+      <p class="kicker">Fork 2 — homes for homeless state</p>
+      <h2>Priority, order, and prefs</h2>
+      <table>
+        <tr><th>State</th><th>Home</th><th>Why</th></tr>
+        <tr><td><b>priority</b> 1–5 · <b>order</b></td><td>Base44 Task fields</td><td>They belong with the task; manual-rearrange can't persist without <code>order</code>.</td></tr>
+        <tr><td><b>prefs</b><br>(name · scheme · creature)</td><td><b>Local</b> — usePrefs</td><td>Small, private, device-feel state — the local-first side of the port in v1. Privacy-aligned. <span class="pill">chosen ii</span></td></tr>
+      </table>
+      <p class="note">Reconcile the drift: <code>priority</code> becomes integer 1–5, add <code>order</code>, <b>drop</b> <code>due_time</code> &amp; <code>today</code>. Every schema change round-trip-verified (the "Nidus" failure). → <b>AD-5, AD-6</b></p>
+    </section>
+
+    <!-- 5 fork 3 -->
+    <section class="slide" data-title="Fork 3 · Archive" data-grp="The four forks">
+      <p class="kicker">Fork 3 — completed → archived</p>
+      <h2>Stamp, never delete</h2>
+      <p>Today's code deletes completed tasks; the PRD needs them retained as "what I did." One nullable field models the whole lifecycle.</p>
+      <div class="flow">
+        <span class="node accent">Active</span><span class="edge">— complete (set completed_at) →</span>
+        <span class="node win">Completed-unswept</span><span class="edge">— "I'm done for today" (stamp archived_at) →</span>
+        <span class="node muted">Archived</span>
+      </div>
+      <ul>
+        <li><b>archived_at</b> set = in the Archive (ordered by <code>archived_at</code> desc — the single sort key).</li>
+        <li>"I'm done for today" <b>bulk-stamps</b>; it never deletes. "Ended day" is an action, not a flag.</li>
+        <li>Archiving fires <b>only</b> on that explicit gesture — never by age or midnight.</li>
+      </ul>
+      <p class="note">Honest consequence: never-swept tasks linger dimmed across days — faithful to "manual-only," not a bug. → <b>AD-7</b></p>
+    </section>
+
+    <!-- 6 fork 4 -->
+    <section class="slide" data-title="Fork 4 · Progress" data-grp="The four forks">
+      <p class="kicker">Fork 4 — the second half of the split-brain</p>
+      <h2>Derive progress; don't store it</h2>
+      <div class="opt win"><div class="mk">A</div><div class="txt"><b>Derive from tasks</b> via a <code>completed_at</code> timestamp — today's progress = tasks completed today. Single source of truth, both deferred bugs vanish, doubles as nothing-stored. <b>Chosen.</b></div></div>
+      <div class="opt no"><div class="mk">B</div><div class="txt">Keep the localStorage counter — no schema change, but stays a second source of truth with its midnight + double-count bugs.</div></div>
+      <div class="card" style="margin-top:16px"><span class="pill win">Decision → AD-3</span>
+        <p style="margin:10px 0 0">The <code>winMoment</code> counter is retired. The wheel is accumulation-only — no denominator, <code>RING_TARGET=8</code> deleted, never <code>role="progressbar"</code>. Trade-off: un-completing now shrinks the wheel (the honest behavior).</p>
+      </div>
+    </section>
+
+    <!-- 7 extra decisions -->
+    <section class="slide" data-title="Three more calls" data-grp="The four forks">
+      <p class="kicker">Beyond the big four</p>
+      <h2>Recolor · reactions · shell</h2>
+      <div class="grid">
+        <div class="card"><span class="pill">Creature recolor → AD-10</span>
+          <p style="margin:10px 0 0">The art is a ~255KB, 470-fill painterly SVG. Recolor via a per-scheme <b>SVG feColorMatrix</b> (desaturate→tint) over <b>one inlined art set</b> — not per-scheme baked assets, not CSS hue-rotate.</p></div>
+        <div class="card"><span class="pill">Reaction channel → AD-9</span>
+          <p style="margin:10px 0 0">A transient tier-tagged emitter (<code>subtask</code>/<code>task</code>/<code>dayend</code>). Reactions are <b>signaled, never persisted</b> — and the line is random within a tier, closing the variable-reward loophole.</p></div>
+        <div class="card"><span class="pill">Delivery shell → AD-1 / AD-12</span>
+          <p style="margin:10px 0 0">An <b>installable PWA</b> → local-first future targets IndexedDB. The service worker is for install only and <b>never registers push</b>.</p></div>
+      </div>
+    </section>
+
+    <!-- 8 AD catalog 1 -->
+    <section class="slide" data-title="AD catalog · core" data-grp="The invariants">
+      <p class="kicker">Invariants &amp; rules — the durable heart</p>
+      <h2>What a builder can't read off the code</h2>
+      <div class="ad"><span class="id">AD-1</span> Persistence port<div class="rule">Surfaces read/write only through per-domain stores; stores are the only code that imports the backend. Swap = rewrite store internals, never callers.</div></div>
+      <div class="ad"><span class="id">AD-2</span> Single-funnel optimistic store<div class="rule">One query cache per domain; patch computed in both onMutate &amp; mutationFn; rollback to ctx.previous; never network-gated.</div></div>
+      <div class="ad"><span class="id">AD-3</span> Derived read-state<div class="rule">Progress &amp; carry-forward are computed from tasks, never stored. completed_at drives today-count; no-due-date is never carry-forward.</div></div>
+      <div class="ad"><span class="id">AD-4</span> Pure logic in src/lib<div class="rule">Ordering, derivations, day-end live as pure, Vitest-tested functions — never re-implemented inline in a surface.</div></div>
+    </section>
+
+    <!-- 9 AD catalog 2 -->
+    <section class="slide" data-title="AD catalog · domain" data-grp="The invariants">
+      <p class="kicker">Invariants &amp; rules</p>
+      <h2>Schema, lifecycle, exposure</h2>
+      <div class="ad"><span class="id">AD-5</span> Task schema invariants<div class="rule">priority 1–5 · order · completed_at · archived_at; due_date date-only; drift reconciled; changes round-trip-verified.</div></div>
+      <div class="ad"><span class="id">AD-6</span> Personalization is local<div class="rule">Prefs + onboarded flag live in localStorage behind usePrefs; never on Base44.</div></div>
+      <div class="ad"><span class="id">AD-7</span> Archive: stamp, never delete<div class="rule">archived_at encodes the lifecycle; sweep bulk-stamps; Archive sorts by archived_at desc; archiving only on the explicit gesture.</div></div>
+      <div class="ad"><span class="id">AD-8</span> Focus exposure boundary<div class="rule">Focus shows exactly one task in effective order; full backlog only on Plan; manual order is a global override; comparator is total.</div></div>
+    </section>
+
+    <!-- 10 AD catalog 3 -->
+    <section class="slide" data-title="AD catalog · feel" data-grp="The invariants">
+      <p class="kicker">Invariants &amp; rules</p>
+      <h2>The restraint, made enforceable</h2>
+      <div class="ad"><span class="id">AD-9</span> Reaction channel — signals, not state<div class="rule">Transient tier-tagged emitter; no-subtask task fires the task tier; line random within a tier; not revoked on rollback.</div></div>
+      <div class="ad"><span class="id">AD-10</span> Theming &amp; recolor via tokens<div class="rule">7 schemes re-skin one primitive set; creature via feColorMatrix over one inlined art set; accent never body/link text.</div></div>
+      <div class="ad"><span class="id">AD-11</span> Reduced-motion &amp; no-alarm<div class="rule">Every animation resolves to its end-state; info never silently dropped; completion needs check + strike, never colour alone; no red in the loop.</div></div>
+      <div class="ad"><span class="id">AD-12</span> Notifications off by construction<div class="rule">Service worker never registers push; opt-in toggle starts off; content bound by no-shame / no-absence.</div></div>
+    </section>
+
+    <!-- 11 deferred -->
+    <section class="slide" data-title="Deferred &amp; open" data-grp="Closing">
+      <p class="kicker">The other half of the contract</p>
+      <h2>What this spine deliberately won't decide</h2>
+      <div class="grid g2">
+        <div class="card"><ul style="margin:0">
+          <li><b>Local-first IndexedDB adapter</b> — the port keeps it cheap; build post-v1.</li>
+          <li><b>Cross-device pref sync</b> — out by AD-6's trade-off.</li>
+          <li><b>Full offline PWA</b> — v1 is Base44-online.</li>
+          <li><b>Recurrence engine</b> — built, stays unwired (PRD §3).</li>
+        </ul></div>
+        <div class="card"><ul style="margin:0">
+          <li><b>Google Calendar sync</b> — kept dormant, gated off, not surfaced.</li>
+          <li><b>Category UI</b> — field kept, no UI; v1 is pure-priority.</li>
+          <li><b>manual-order representation</b> — owned by lib + store at build.</li>
+          <li><b>CI quality gate</b> — open item: a pre-merge lint+vitest+build.</li>
+        </ul></div>
+      </div>
+      <p class="note"><span class="pill warn">needs you</span> The PWA delivery decision <b>supersedes</b> the UX spines' "WebView-wrapped native" assumption — the UX docs should be updated to match.</p>
+    </section>
+
+    <!-- 12 next -->
+    <section class="slide" data-title="Next steps" data-grp="Closing">
+      <p class="kicker">Where this goes</p>
+      <h2>From spine to build</h2>
+      <div class="grid">
+        <div class="card"><span class="pill">1</span> <b>Adopt the spine as a spec companion</b> — run <code>bmad-spec</code> so downstream work cites stable AD ids.</div>
+        <div class="card"><span class="pill">2</span> <b>Break into epics &amp; stories</b> — <code>bmad-create-epics-and-stories</code>, each story governed by the ADs it touches.</div>
+        <div class="card"><span class="pill">3</span> <b>Update the UX docs</b> — reconcile the PWA-vs-WebView decision of record.</div>
+      </div>
+      <p class="note">Full spine: <code>ARCHITECTURE-SPINE.md</code> · reasoning trail: <code>.memlog.md</code> · reviews: <code>reviews/</code> — all in this run folder.</p>
+    </section>
+
+  </div>
+  <div class="foot">
+    <span class="count" id="count"></span>
+    <div class="nav">
+      <button class="ghost" id="prev">← Prev</button>
+      <button id="next">Next →</button>
+    </div>
+  </div>
+</main>
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const toc=document.getElementById('tocItems');
+  let i=0, lastGrp=null;
+  slides.forEach((s,idx)=>{
+    const grp=s.dataset.grp;
+    if(grp!==lastGrp){const g=document.createElement('div');g.className='grp';g.textContent=grp;toc.appendChild(g);lastGrp=grp;}
+    const b=document.createElement('button');b.textContent=s.dataset.title;b.onclick=()=>go(idx);toc.appendChild(b);
+  });
+  const tocBtns=[...toc.querySelectorAll('button')];
+  function go(n){
+    i=Math.max(0,Math.min(slides.length-1,n));
+    slides.forEach((s,x)=>s.classList.toggle('show',x===i));
+    tocBtns.forEach((b,x)=>b.classList.toggle('active',x===i));
+    document.getElementById('count').textContent=`${i+1} / ${slides.length}`;
+    document.getElementById('stage').scrollTop=0;
+    document.getElementById('prev').style.visibility=i===0?'hidden':'visible';
+    document.getElementById('next').textContent=i===slides.length-1?'Done':'Next →';
+  }
+  document.getElementById('prev').onclick=()=>go(i-1);
+  document.getElementById('next').onclick=()=>go(i+1);
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'||e.key===' ')go(i+1);
+    if(e.key==='ArrowLeft')go(i-1);
+  });
+  go(0);
+</script>
+</body>
+</html>
