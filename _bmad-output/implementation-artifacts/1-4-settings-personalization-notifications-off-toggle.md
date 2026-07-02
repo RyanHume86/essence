@@ -35,7 +35,7 @@ So that depth lives in Settings while onboarding stays minimal.
 - [x] **Task 3 — Notifications toggle, OFF by construction (AC: 2)**
   - [x] Added `notifications: false` to `DEFAULT_PREFS`, `Boolean(...)` coercion in `normalizePrefs`, and `setNotifications` in `usePrefs`. New Vitest cases (default false; boolean coercion; round-trip) — 25 prefs tests pass.
   - [x] Added a **Notifications** section with an accessible toggle: the whole row is a `button role="switch" aria-checked` (native keyboard Space/Enter, full-row ≥44 tap target), token-driven track (`bg-primary` on / `bg-muted` off) + `bg-primary-foreground` knob. Starts OFF; only the user flips it.
-  - [x] Honest microcopy ("Off — Essence never notifies you by default"). **No** `Notification.requestPermission()` / push registration — persisted opt-in only (AD-12).
+  - [x] Honest microcopy ("Off — Akha never notifies you by default"). **No** `Notification.requestPermission()` / push registration — persisted opt-in only (AD-12).
 - [x] **Task 4 — Preserve the shipped Settings + verify (AC: 1–3)**
   - [x] Profile / `CalendarSync` / Archive link / Sign out / Delete-Account drawer untouched; no second overlay added. New sections placed after Profile (Personalization, then Notifications), before CalendarSync.
   - [x] Onboarding⇄Settings relationship holds: onboarding still exposes only name/scheme/creature; Settings holds those **plus** notifications. No new onboarding steps.

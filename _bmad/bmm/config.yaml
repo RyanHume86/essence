@@ -10,7 +10,7 @@ project_knowledge: "{project-root}/docs"
 
 # Core Configuration Values
 user_name: Ryanr
-project_name: essence
+project_name: akha
 communication_language: English
 document_output_language: English
 output_folder: _bmad-output

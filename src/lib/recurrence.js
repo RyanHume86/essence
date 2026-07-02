@@ -1,5 +1,5 @@
 // src/lib/recurrence.js
-// Recurrence engine for Essence, reconciled to the real Base44 Task entity.
+// Recurrence engine for Akha, reconciled to the real Base44 Task entity.
 //
 // Contract differences from the earlier TypeScript draft (deliberate, to match the repo):
 //   - Dates are date-only "YYYY-MM-DD" strings (Base44 `due_date`, format: date),

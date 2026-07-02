@@ -126,7 +126,7 @@ export default function Onboarding() {
                 onClick={() => setOnboarded(true)}
                 className="btn-accent-3d w-full h-12 rounded-2xl text-primary-foreground font-semibold text-sm select-none"
               >
-                Enter Essence
+                Enter Akha
               </button>
               <p className="text-xs text-muted-foreground/70">You can change any of this later in Settings.</p>
             </div>

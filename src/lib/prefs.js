@@ -37,8 +37,8 @@ export const CREATURES = /** @type {Creature[]} */ ([
   { key: 'default', label: 'Companion', art: '/companion/creature_soft.svg' },
 ]);
 
-/** localStorage key. Follows the shipped `essence_*` convention. */
-export const STORAGE_KEY = 'essence_prefs';
+/** localStorage key. Follows the shipped `akha_*` convention. */
+export const STORAGE_KEY = 'akha_prefs';
 
 /** The default preferences for a fresh install. */
 export const DEFAULT_PREFS = Object.freeze({

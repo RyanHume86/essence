@@ -116,7 +116,7 @@ export default function Settings() {
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground">Notifications</p>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {notifications ? "On" : "Off — Essence never notifies you by default"}
+                {notifications ? "On" : "Off — Akha never notifies you by default"}
               </p>
             </div>
             <span
